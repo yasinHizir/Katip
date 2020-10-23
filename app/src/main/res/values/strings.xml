@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Katip</string>
+    <string name="button_login">Giriş Yap</string>
+    <string name="edit_text_password">Şifre</string>
+    <string name="edit_text_username">Kullanıcı Adı</string>
+    <string name="text_app_name">Katip</string>
+    <string name="text_welcome">Hoşgeldiniz</string>
+    <string name="text_registration">Henüz üye değil misiniz? Kayıt Ol.</string>
+    <string name="todo">TODO</string>
+    <string name="edit_text_verify_password">Şifreyi doğrulayın</string>
+    <string name="button_register">Kayıt Ol</string>
 </resources>
