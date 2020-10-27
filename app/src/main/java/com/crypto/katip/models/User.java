@@ -12,26 +12,28 @@ public class User {
 
     private UserDatabase userDatabase;
 
-    public User(Context context) {
+    public User() {
 //        this.id = id;
 //        this.username = username;
 //        this.password = password;
-        this.userDatabase = new UserDatabase(new DbHelper(context));
     }
 
-    public void select(String username) {
+    public void select(String username, Context context) {
+        this.userDatabase = new UserDatabase(new DbHelper(context));
         User temp_user = userDatabase.selectUser(username);
         this.id = temp_user.getId();
         this.username = temp_user.getUsername();
         this.password = temp_user.getPassword();
     }
 
-    public boolean save() {
+    public boolean save(Context context) {
+        this.userDatabase = new UserDatabase(new DbHelper(context));
         userDatabase.createUser(username, password);
         return true;
     }
 
-    public boolean isRegistered() {
+    public boolean isRegistered(Context context) {
+        this.userDatabase = new UserDatabase(new DbHelper(context));
         return userDatabase.isRegistered(this.username, this.password);
     }
 

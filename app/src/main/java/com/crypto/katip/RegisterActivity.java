@@ -1,5 +1,6 @@
 package com.crypto.katip;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
     }
 
+    @SuppressLint("SetTextI18n")
     public void register(View view) {
         EditText username = findViewById(R.id.username);
         EditText password = findViewById(R.id.password);
@@ -26,7 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         TextView notice = findViewById(R.id.notice);
 
-        User user = new User(getApplicationContext());
+        User user = new User();
         user.setUsername(username.getText().toString());
         user.setPassword(password.getText().toString());
         String passwordVerifyStr = passwordVerify.getText().toString();
@@ -37,12 +39,12 @@ public class RegisterActivity extends AppCompatActivity {
         }else if (!user.getPassword().equals(passwordVerifyStr)){
             notice.setText("Lütfen aynı şifreyi girdiğinizden emin olun");
         }else {
-            user.save();
+            user.save(getApplicationContext());
             onBackPressed();
         }
 
-        User selected_user = new User(null);
-        selected_user.select("mongo");
+        User selected_user = new User();
+        selected_user.select("mongo", getApplicationContext());
         Log.i("=======>>> User: ", selected_user.show());
     }
 
