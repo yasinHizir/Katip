@@ -1,8 +1,7 @@
 package com.crypto.katip;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -12,8 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.crypto.katip.models.User;
 
-import java.util.HashMap;
-
 public class LoginActivity extends AppCompatActivity {
 
     @Override
@@ -22,19 +19,22 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
+    @SuppressLint("SetTextI18n")
     public void login(View view) {
-        EditText username = findViewById(R.id.username);
-        EditText password = findViewById(R.id.password);
+        EditText usernameTextEdit = findViewById(R.id.username);
+        EditText passwordTextEdit = findViewById(R.id.password);
         TextView notice = findViewById(R.id.notice);
 
-        User user = new User(getApplicationContext());
-        user.setUsername(username.getText().toString());
-        user.setPassword(password.getText().toString());
+        String username = usernameTextEdit.getText().toString();
+        String password = passwordTextEdit.getText().toString();
 
-        if ( user.getUsername().equals("") || user.getPassword().equals("") ) {
+        if ( username.equals("") || password.equals("") ) {
             notice.setText("Kullanıcı adı veya şifre boş bırakılamaz!");
-        }else if (!user.isRegistered()) {
+        }else if (!User.isRegistered(username, password, getApplicationContext())) {
             notice.setText("Kullanıcı adı veya şifre hatalı!");
+        }else {
+            User user = User.getUser(username, getApplicationContext());
+            notice.setText(user.getUsername());
         }
     }
 

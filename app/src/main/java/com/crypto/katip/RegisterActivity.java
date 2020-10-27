@@ -3,7 +3,6 @@ package com.crypto.katip;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,30 +21,28 @@ public class RegisterActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     public void register(View view) {
-        EditText username = findViewById(R.id.username);
-        EditText password = findViewById(R.id.password);
+        EditText usernameTextEdit = findViewById(R.id.username);
+        EditText passwordTextEdit = findViewById(R.id.password);
         EditText passwordVerify = findViewById(R.id.passwordVerify);
 
         TextView notice = findViewById(R.id.notice);
 
-        User user = new User();
-        user.setUsername(username.getText().toString());
-        user.setPassword(password.getText().toString());
+        String username = usernameTextEdit.getText().toString();
+        String password = passwordTextEdit.getText().toString();
         String passwordVerifyStr = passwordVerify.getText().toString();
 
 
-        if (user.getUsername().equals("") || user.getPassword().equals("") || passwordVerifyStr.equals("")) {
+        if ( username.equals("") || password.equals("") || passwordVerifyStr.equals("")) {
             notice.setText("Lütfen istenilen alanları doğru bir şekilde doldurun");
-        }else if (!user.getPassword().equals(passwordVerifyStr)){
+        }else if (!password.equals(passwordVerifyStr)){
             notice.setText("Lütfen aynı şifreyi girdiğinizden emin olun");
         }else {
-            user.save(getApplicationContext());
-            onBackPressed();
+            if(User.save(username, password, getApplicationContext())) {
+                onBackPressed();
+            }else{
+                notice.setText("Hata");
+            }
         }
-
-        User selected_user = new User();
-        selected_user.select("mongo", getApplicationContext());
-        Log.i("=======>>> User: ", selected_user.show());
     }
 
     public void loginPage(View view) {

@@ -20,5 +20,7 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL(UserDatabase.getDropTable());
+
+        onCreate(sqLiteDatabase);
     }
 }

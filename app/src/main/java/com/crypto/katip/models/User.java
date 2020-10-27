@@ -10,31 +10,16 @@ public class User {
     private String username;
     private String password;
 
-    private UserDatabase userDatabase;
-
-    public User() {
-//        this.id = id;
-//        this.username = username;
-//        this.password = password;
+    public static User getUser(String username, Context context) {
+        return new UserDatabase(new DbHelper(context)).getUser(username);
     }
 
-    public void select(String username, Context context) {
-        this.userDatabase = new UserDatabase(new DbHelper(context));
-        User temp_user = userDatabase.selectUser(username);
-        this.id = temp_user.getId();
-        this.username = temp_user.getUsername();
-        this.password = temp_user.getPassword();
+    public static boolean save(String username, String password, Context context) {
+        return new UserDatabase(new DbHelper(context)).saveUser(username, password);
     }
 
-    public boolean save(Context context) {
-        this.userDatabase = new UserDatabase(new DbHelper(context));
-        userDatabase.createUser(username, password);
-        return true;
-    }
-
-    public boolean isRegistered(Context context) {
-        this.userDatabase = new UserDatabase(new DbHelper(context));
-        return userDatabase.isRegistered(this.username, this.password);
+    public static boolean isRegistered(String username, String password, Context context) {
+        return new UserDatabase(new DbHelper(context)).isRegistered(username, password);
     }
 
     public String show() {
