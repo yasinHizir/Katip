@@ -1,11 +1,9 @@
-package com.crypto.katip.controllers;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.crypto.katip;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.crypto.katip.R;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class HomeActivity extends AppCompatActivity {
 

@@ -1,8 +1,11 @@
 package com.crypto.katip.database;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.crypto.katip.models.User;
 
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.IdentityKeyPair;
@@ -11,7 +14,7 @@ import org.whispersystems.libsignal.ecc.Curve;
 import org.whispersystems.libsignal.ecc.ECPrivateKey;
 import org.whispersystems.libsignal.util.KeyHelper;
 
-public class UserDatabase extends Database{
+public class UserDatabase extends Database {
     private static final String TABLE_NAME = "user";
     private static final String ID = "id";
     private static final String USERNAME = "username";
@@ -26,10 +29,10 @@ public class UserDatabase extends Database{
 
     public IdentityKeyPair getIdentityKeyPair(String username) {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.query(TABLE_NAME, new String[] {IDENTITY_PUBLIC_KEY, IDENTITY_PRIVATE_KEY}, USERNAME + "=?", new String[] {username},  null, null, null);
+        Cursor cursor = database.query(TABLE_NAME, new String[]{IDENTITY_PUBLIC_KEY, IDENTITY_PRIVATE_KEY}, USERNAME + "=?", new String[]{username}, null, null, null);
         IdentityKeyPair identityKeyPair = null;
 
-        if (cursor != null){
+        if (cursor != null) {
             cursor.moveToFirst();
             try {
                 IdentityKey publicKey = new IdentityKey(Curve.decodePoint(cursor.getBlob(cursor.getColumnIndexOrThrow(IDENTITY_PUBLIC_KEY)), 0));
@@ -44,12 +47,12 @@ public class UserDatabase extends Database{
         return identityKeyPair;
     }
 
-    public int getRegistrationID(String username){
+    public int getRegistrationID(String username) {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.query(TABLE_NAME, new String[] {REGISTRATION_ID}, USERNAME + "=?",new String[]{username}, null, null, null);
+        Cursor cursor = database.query(TABLE_NAME, new String[]{REGISTRATION_ID}, USERNAME + "=?", new String[]{username}, null, null, null);
         int registrationID = -1;
 
-        if (cursor != null){
+        if (cursor != null) {
             cursor.moveToFirst();
             registrationID = cursor.getInt(cursor.getColumnIndexOrThrow(REGISTRATION_ID));
             cursor.close();
@@ -57,7 +60,26 @@ public class UserDatabase extends Database{
         return registrationID;
     }
 
-    public void save(String username, String password){
+    public User selectUser(String id) {
+        User user = new User(null);
+        String query = "SELECT * FROM " + TABLE_NAME+ " WHERE id="+id;
+
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery(query, null);
+
+        cursor.moveToFirst();
+        if(cursor.getCount() > 0){
+            user.setId(cursor.getInt(0));
+            user.setUsername(cursor.getString(1));
+            user.setPassword(cursor.getString(2));
+        }
+        cursor.close();
+        database.close();
+
+        return user;
+    }
+
+    public void createUser(String username, String password) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         int passwordHash = password.hashCode();
         IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
@@ -71,29 +93,31 @@ public class UserDatabase extends Database{
         database.insert(TABLE_NAME, null, values);
     }
 
-    public boolean isRegistered(String username, String password){
+    public boolean isRegistered(String username, String password) {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         int passwordHash = password.hashCode();
         Cursor cursor = database.query(TABLE_NAME, new String[]{PASSWORD}, USERNAME + "=?", new String[]{username}, null, null, null);
 
-        if (cursor != null && cursor.moveToFirst()){
+        if (cursor != null && cursor.moveToFirst()) {
             int passwordRegistered = cursor.getInt(cursor.getColumnIndexOrThrow(PASSWORD));
             cursor.close();
             return passwordRegistered == passwordHash;
         }
+        database.close();
         return false;
     }
 
-    public void remove(String username){
+    public void removeUser(String username) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         database.delete(TABLE_NAME, USERNAME + "=?", new String[]{username});
+        database.close();
     }
 
-    public static String getCreateTable(){
+    public static String getCreateTable() {
         return "CREATE TABLE " + TABLE_NAME + "(" + ID + " INTEGER PRIMARY KEY, " + USERNAME + " TEXT UNIQUE, " + PASSWORD + " INTEGER, " + IDENTITY_PUBLIC_KEY + " BLOB," + IDENTITY_PRIVATE_KEY + " BLOB," + REGISTRATION_ID + " INTEGER " + ")";
     }
 
-    public static String getDropTable(){
+    public static String getDropTable() {
         return "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 }

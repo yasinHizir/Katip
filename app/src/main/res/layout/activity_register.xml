@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_weight="0.35"
     android:background="@color/black"
-    tools:context=".controllers.RegisterActivity">
+    tools:context=".RegisterActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -27,7 +28,7 @@
             android:layout_height="102dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="20dp"
             android:contentDescription="@string/todo"
             app:srcCompat="@drawable/logo" />
 
@@ -50,15 +51,16 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/appName"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="40dp" />
+            android:layout_marginTop="20dp"
+            android:textColor="@color/light" />
 
         <EditText
             android:id="@+id/username"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
+            android:layout_width="256dp"
+            android:layout_height="55dp"
             android:layout_below="@id/notice"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="20dp"
             android:autofillHints=""
             android:background="@drawable/rounded"
             android:ems="10"
@@ -68,8 +70,8 @@
 
         <EditText
             android:id="@+id/password"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
+            android:layout_width="256dp"
+            android:layout_height="55dp"
             android:layout_below="@id/username"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
@@ -83,8 +85,8 @@
 
         <EditText
             android:id="@+id/passwordVerify"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
+            android:layout_width="256dp"
+            android:layout_height="55dp"
             android:layout_below="@id/password"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
@@ -99,15 +101,26 @@
         <Button
             android:id="@+id/register"
             android:layout_width="100dp"
-            android:layout_height="60dp"
+            android:layout_height="55dp"
             android:layout_below="@id/passwordVerify"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="20dp"
             android:alpha=".7"
             android:background="@drawable/rounded"
             android:backgroundTint="@color/primary"
             android:onClick="register"
-            android:text="@string/button_login"
+            android:text="@string/button_register"
+            android:textColor="@color/light" />
+
+        <TextView
+            android:id="@+id/loginPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/register"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:onClick="loginPage"
+            android:text="@string/text_login"
             android:textColor="@color/light" />
 
     </RelativeLayout>
