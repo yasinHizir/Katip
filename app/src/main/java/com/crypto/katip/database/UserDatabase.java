@@ -32,6 +32,40 @@ public class UserDatabase extends Database {
         super(dbHelper);
     }
 
+    public boolean saveUser(String username, String password) {
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
+        Date date = new Date();
+
+        ContentValues values = new ContentValues();
+        values.put(USERNAME, username);
+        values.put(PASSWORD, passwordDigest(password));
+        values.put(REGISTRATION_ID, KeyHelper.generateRegistrationId(false));
+        values.put(IDENTITY_PUBLIC_KEY, identityKeyPair.getPublicKey().serialize());
+        values.put(IDENTITY_PRIVATE_KEY, identityKeyPair.getPrivateKey().serialize());
+        values.put(CREATED_AT, date.getTime());
+        values.put(UPDATED_AT, date.getTime());
+        database.insert(TABLE_NAME, null, values);
+
+        database.close();
+        return isRegistered(username, password);
+    }
+
+    public User getUser(String username) {
+        User user = new User();
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(ID)));
+            user.setUsername(username);
+            cursor.close();
+        }
+
+        database.close();
+        return user;
+    }
+
     public IdentityKeyPair getIdentityKeyPair(int id) {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + IDENTITY_PUBLIC_KEY + ", " + IDENTITY_PRIVATE_KEY + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id, null);
@@ -67,40 +101,6 @@ public class UserDatabase extends Database {
         return registrationID;
     }
 
-    public User getUser(String username) {
-        User user = new User();
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(ID)));
-            user.setUsername(username);
-            cursor.close();
-        }
-
-        database.close();
-        return user;
-    }
-
-    public boolean saveUser(String username, String password) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
-        Date date = new Date();
-
-        ContentValues values = new ContentValues();
-        values.put(USERNAME, username);
-        values.put(PASSWORD, passwordDigest(password));
-        values.put(REGISTRATION_ID, KeyHelper.generateRegistrationId(false));
-        values.put(IDENTITY_PUBLIC_KEY, identityKeyPair.getPublicKey().serialize());
-        values.put(IDENTITY_PRIVATE_KEY, identityKeyPair.getPrivateKey().serialize());
-        values.put(CREATED_AT, date.getTime());
-        values.put(UPDATED_AT, date.getTime());
-        database.insert(TABLE_NAME, null, values);
-
-        database.close();
-        return isRegistered(username, password);
-    }
-
     public boolean isRegistered(String username, String password) {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + PASSWORD + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
@@ -116,17 +116,28 @@ public class UserDatabase extends Database {
         return result;
     }
 
-    public void update(int id, String newUsername, String newPassword){
+    public void updateUsername(int id, String newUsername) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Date date = new Date();
 
-        database.execSQL("UPDATE " + TABLE_NAME + " SET " + USERNAME + " = '" + newUsername + "', " + PASSWORD + " = '" + passwordDigest(newPassword) + "', " + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id);
+        database.execSQL("UPDATE " + TABLE_NAME + " SET " + USERNAME + " = '" + newUsername + "', " + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id);
 
         database.close();
     }
 
-    public void remove(int id) {
+    public void updatePassword(int id, String newPassword) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Date date = new Date();
+
+        database.execSQL("UPDATE " + TABLE_NAME + " SET " + PASSWORD + " = '" + passwordDigest(newPassword) + "', " + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id);
+
+        database.close();
+    }
+
+
+    public void removeUser(int id) {
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id);
 
         database.close();
