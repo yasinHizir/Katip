@@ -30,18 +30,18 @@ public class SignedPreKeyDatabase extends Database{
         Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId, null);
         SignedPreKeyRecord record = null;
 
-        if (cursor != null && cursor.moveToFirst()){
-            try {
+        try {
+            if (cursor != null && cursor.moveToFirst()){
                 create(keyId, cursor);
-
-            } catch (InvalidKeyException e){
-                e.printStackTrace();
-
-            } finally {
                 cursor.close();
-                database.close();
             }
+        } catch (InvalidKeyException e){
+            e.printStackTrace();
+            cursor.close();
+        } finally {
+            database.close();
         }
+
         return record;
     }
 
@@ -50,17 +50,18 @@ public class SignedPreKeyDatabase extends Database{
         Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId, null);
         List<SignedPreKeyRecord> records = null;
 
-        if (cursor != null && cursor.moveToFirst()){
-            try {
+        try {
+            if (cursor != null && cursor.moveToFirst()){
                 do {
                     records.add(create(userId, cursor));
                 } while (cursor.moveToNext());
-            } catch (InvalidKeyException e){
-                e.printStackTrace();
-            } finally {
                 cursor.close();
-                database.close();
             }
+        } catch (InvalidKeyException e){
+            e.printStackTrace();
+            cursor.close();
+        } finally {
+            database.close();
         }
 
         return records;
