@@ -18,11 +18,14 @@ public class SessionDatabase extends Database{
     private static final String NAME = "name";
     private static final String RECORD = "record";
 
-    public SessionDatabase(DbHelper dbHelper) {
+    private int userId;
+
+    public SessionDatabase(DbHelper dbHelper, int userId) {
         super(dbHelper);
+        this.userId = userId;
     }
 
-    public SessionRecord load(int userId, SignalProtocolAddress address){
+    public SessionRecord load(SignalProtocolAddress address){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + RECORD + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + DEVICE_ID + " = " + address.getDeviceId() + " AND " + NAME + " = '" + address.getName() + "';", null);
         SessionRecord record = null;
@@ -42,7 +45,7 @@ public class SessionDatabase extends Database{
         return record;
     }
 
-    public List<Integer> getSubDevices(int userId, String name){
+    public List<Integer> getSubDevices(String name){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + DEVICE_ID + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + NAME + " = '" + name + "';", null);
         List<Integer> integers = null;
@@ -58,7 +61,7 @@ public class SessionDatabase extends Database{
         return integers;
     }
 
-    public void store(int userId, SignalProtocolAddress address, SessionRecord record){
+    public void store(SignalProtocolAddress address, SessionRecord record){
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -71,11 +74,11 @@ public class SessionDatabase extends Database{
         database.close();
     }
 
-    public boolean contain(int userId, SignalProtocolAddress address){
-        return load(userId, address) != null;
+    public boolean contain(SignalProtocolAddress address){
+        return load(address) != null;
     }
 
-    public void delete(int userId, SignalProtocolAddress address){
+    public void delete(SignalProtocolAddress address){
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId +" AND " + DEVICE_ID + " = " + address.getDeviceId() + " AND " + NAME + " = '" + address.getName() + "';");
@@ -83,7 +86,7 @@ public class SessionDatabase extends Database{
         database.close();
     }
 
-    public void deleteAll(int userId, String name){
+    public void deleteAll(String name){
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + NAME + " = '" + name + "';");

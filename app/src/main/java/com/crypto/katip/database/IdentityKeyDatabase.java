@@ -15,11 +15,14 @@ public class IdentityKeyDatabase extends Database{
     private static final String ADDRESS = "address";
     private static final String KEY = "key";
 
-    public IdentityKeyDatabase(DbHelper dbHelper) {
+    private int userId;
+
+    public IdentityKeyDatabase(DbHelper dbHelper, int userId) {
         super(dbHelper);
+        this.userId = userId;
     }
 
-    public IdentityKey get(int userId, String address){
+    public IdentityKey get(String address){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + KEY + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + ADDRESS + " = '" + address + "';", null);
         IdentityKey identityKey = null;
@@ -39,7 +42,7 @@ public class IdentityKeyDatabase extends Database{
         return identityKey;
     }
 
-    public boolean save(int userId, String address, IdentityKey identityKey){
+    public boolean save(String address, IdentityKey identityKey){
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -49,7 +52,7 @@ public class IdentityKeyDatabase extends Database{
         database.insert(TABLE_NAME, null,values);
 
         database.close();
-        return get(userId, address) != null;
+        return get(address) != null;
     }
 
     public static String getCreateTable(){

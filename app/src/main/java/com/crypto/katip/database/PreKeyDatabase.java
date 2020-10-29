@@ -17,11 +17,14 @@ public class PreKeyDatabase extends Database{
     private static final String PUBLIC_KEY = "public_key";
     private static final String PRIVATE_KEY = "private_key";
 
-    public PreKeyDatabase(DbHelper dbHelper) {
+    private int userId;
+
+    public PreKeyDatabase(DbHelper dbHelper, int userId) {
         super(dbHelper);
+        this.userId = userId;
     }
 
-    public PreKeyRecord load(int userId, int keyId){
+    public PreKeyRecord load(int keyId){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + " FROM " + TABLE_NAME + " WHERE " + KEY_ID + " = " + keyId + " AND " + USER_ID + " = " + userId, null);
         PreKeyRecord record = null;
@@ -43,7 +46,7 @@ public class PreKeyDatabase extends Database{
         return record;
     }
 
-    public void store(int userId, int keyId, PreKeyRecord record){
+    public void store(int keyId, PreKeyRecord record){
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -56,11 +59,11 @@ public class PreKeyDatabase extends Database{
         database.close();
     }
 
-    public boolean contain(int userId, int keyId){
-        return load(userId, keyId) != null;
+    public boolean contain(int keyId){
+        return load(keyId) != null;
     }
 
-    public void remove(int userId, int keyId){
+    public void remove(int keyId){
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId +" AND " + KEY_ID + " = " + keyId);

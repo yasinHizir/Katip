@@ -21,11 +21,14 @@ public class SignedPreKeyDatabase extends Database{
     private static final String SIGNATURE = "signature";
     private static final String TIMESTAMP = "timestamp";
 
-    public SignedPreKeyDatabase(DbHelper dbHelper) {
+    private int userId;
+
+    public SignedPreKeyDatabase(DbHelper dbHelper, int userId) {
         super(dbHelper);
+        this.userId = userId;
     }
 
-    public SignedPreKeyRecord load(int userId, int keyId){
+    public SignedPreKeyRecord load(int keyId){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId, null);
         SignedPreKeyRecord record = null;
@@ -45,7 +48,7 @@ public class SignedPreKeyDatabase extends Database{
         return record;
     }
 
-    public List<SignedPreKeyRecord> loadAll(int userId){
+    public List<SignedPreKeyRecord> loadAll(){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId, null);
         List<SignedPreKeyRecord> records = null;
@@ -67,7 +70,7 @@ public class SignedPreKeyDatabase extends Database{
         return records;
     }
 
-    public void store(int userId, int keyId, SignedPreKeyRecord record){
+    public void store(int keyId, SignedPreKeyRecord record){
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -82,11 +85,11 @@ public class SignedPreKeyDatabase extends Database{
         database.close();
     }
 
-    public boolean contain(int userId, int keyId){
-        return load(userId, keyId) != null;
+    public boolean contain(int keyId){
+        return load(keyId) != null;
     }
 
-    public void remove(int userId, int keyId){
+    public void remove(int keyId){
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId);
