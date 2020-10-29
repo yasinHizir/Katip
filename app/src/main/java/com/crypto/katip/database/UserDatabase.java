@@ -175,6 +175,6 @@ public class UserDatabase extends Database {
             e.printStackTrace();
         }
 
-        return new String(messageDigest.digest());
+        return messageDigest.toString();
     }
 }

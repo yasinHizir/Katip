@@ -12,10 +12,11 @@ public class User {
 
 //    private UserDatabase userDatabase;
 
-    public User() {
-//        this.id = id;
-//        this.username = username;
-//        this.password = password;
+    public User() { }
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public static User find(int id, Context context) {
@@ -27,15 +28,15 @@ public class User {
     public static User select(String username, Context context) {
         UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
         User user = userDatabase.selectUser(username);
-        return  user;
+        return user;
     }
 
-    public boolean save(String username, String password, Context context) {
-        return new UserDatabase(new DbHelper(context)).saveUser(username, password);
+    public boolean save(Context context) {
+        return new UserDatabase(new DbHelper(context)).saveUser(this.username, this.password);
     }
 
-    public static boolean isRegistered(String username, String password, Context context) {
-        return new UserDatabase(new DbHelper(context)).isRegistered(username, password);
+    public boolean isRegistered(Context context) {
+        return new UserDatabase(new DbHelper(context)).isRegistered(this.username, this.password);
     }
 
     public String show() {

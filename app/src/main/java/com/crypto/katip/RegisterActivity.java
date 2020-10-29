@@ -38,10 +38,11 @@ public class RegisterActivity extends AppCompatActivity {
         }else if (!password.equals(passwordVerifyStr)){
             notice.setText("Lütfen aynı şifreyi girdiğinizden emin olun");
         }else {
-            if(User.save(username, password, getApplicationContext())) {
-                onBackPressed();
+            User user = new User(username, password);
+            if(user.save(getApplicationContext())) {
+                notice.setText(user.getUsername());
             }else{
-                notice.setText("Hata");
+                notice.setText("Kullanıcı adı daha önce kullanıldı!");
             }
         }
     }

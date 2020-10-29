@@ -30,14 +30,15 @@ public class LoginActivity extends AppCompatActivity {
         String username = usernameTextEdit.getText().toString();
         String password = passwordTextEdit.getText().toString();
 
+        User user = new User(username, password);
+
         if ( username.equals("") || password.equals("") ) {
             notice.setText("Kullanıcı adı veya şifre boş bırakılamaz!");
-
-        }else if (!User.isRegistered(username, password, getApplicationContext())) {
+        }else if (!user.isRegistered(getApplicationContext())) {
             notice.setText("Kullanıcı adı veya şifre hatalı!");
         }else {
-            User user = User.select(username, getApplicationContext());
-            notice.setText(user.getUsername());
+            User show_user = User.select(username, getApplicationContext());
+            notice.setText(show_user.getUsername());
         }
     }
 
