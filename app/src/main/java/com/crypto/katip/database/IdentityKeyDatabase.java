@@ -24,15 +24,16 @@ public class IdentityKeyDatabase extends Database{
         Cursor cursor = database.rawQuery("SELECT " + KEY + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + ADDRESS + " = '" + address + "';", null);
         IdentityKey identityKey = null;
 
-        if (cursor != null && cursor.moveToFirst()){
-            try {
+        try {
+            if (cursor != null && cursor.moveToFirst()){
                 identityKey = new IdentityKey(Curve.decodePoint(cursor.getBlob(cursor.getColumnIndexOrThrow(KEY)), 0));
-            } catch (InvalidKeyException e) {
-                e.printStackTrace();
-            } finally {
                 cursor.close();
-                database.close();
             }
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+            cursor.close();
+        } finally {
+            database.close();
         }
 
         return identityKey;
