@@ -18,9 +18,9 @@ public class User {
 //        this.password = password;
     }
 
-    public void select(String username, Context context) {
+    public void find(int id, Context context) {
         this.userDatabase = new UserDatabase(new DbHelper(context));
-        User temp_user = userDatabase.selectUser(username);
+        User temp_user = userDatabase.findUser(id);
         this.id = temp_user.getId();
         this.username = temp_user.getUsername();
         this.password = temp_user.getPassword();

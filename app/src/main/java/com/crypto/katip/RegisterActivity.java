@@ -36,15 +36,15 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (user.getUsername().equals("") || user.getPassword().equals("") || passwordVerifyStr.equals("")) {
             notice.setText("Lütfen istenilen alanları doğru bir şekilde doldurun");
-        }else if (!user.getPassword().equals(passwordVerifyStr)){
+        } else if (!user.getPassword().equals(passwordVerifyStr)) {
             notice.setText("Lütfen aynı şifreyi girdiğinizden emin olun");
-        }else {
+        } else {
             user.save(getApplicationContext());
             onBackPressed();
         }
 
         User selected_user = new User();
-        selected_user.select("mongo", getApplicationContext());
+        selected_user.find(1, getApplicationContext());
         Log.i("=======>>> User: ", selected_user.show());
     }
 

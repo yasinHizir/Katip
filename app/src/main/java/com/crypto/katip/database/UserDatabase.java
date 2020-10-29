@@ -1,7 +1,6 @@
 package com.crypto.katip.database;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -60,8 +59,8 @@ public class UserDatabase extends Database {
         return registrationID;
     }
 
-    public User selectUser(String id) {
-        User user = new User(null);
+    public User findUser(int id) {
+        User user = new User();
         String query = "SELECT * FROM " + TABLE_NAME+ " WHERE id="+id;
 
         SQLiteDatabase database = dbHelper.getReadableDatabase();

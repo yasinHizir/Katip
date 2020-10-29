@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -12,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.crypto.katip.models.User;
 
-import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -22,18 +22,19 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
-    public void login(View view) {
+    public void login(View view) throws InterruptedException {
         EditText username = findViewById(R.id.username);
         EditText password = findViewById(R.id.password);
         TextView notice = findViewById(R.id.notice);
 
-        User user = new User(getApplicationContext());
+        User user = new User();
         user.setUsername(username.getText().toString());
         user.setPassword(password.getText().toString());
 
         if ( user.getUsername().equals("") || user.getPassword().equals("") ) {
             notice.setText("Kullanıcı adı veya şifre boş bırakılamaz!");
-        }else if (!user.isRegistered()) {
+
+        }else if (!user.isRegistered(getApplicationContext())) {
             notice.setText("Kullanıcı adı veya şifre hatalı!");
         }
     }
