@@ -26,17 +26,18 @@ public class PreKeyDatabase extends Database{
         Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + " FROM " + TABLE_NAME + " WHERE " + KEY_ID + " = " + keyId + " AND " + USER_ID + " = " + userId, null);
         PreKeyRecord record = null;
 
-        if (cursor != null && cursor.moveToFirst()){
-            try {
+        try {
+            if (cursor != null && cursor.moveToFirst()){
                 byte[] publicKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PUBLIC_KEY));
                 byte[] privateKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PRIVATE_KEY));
                 record = new PreKeyRecord(keyId, new ECKeyPair(Curve.decodePoint(publicKey, 0),Curve.decodePrivatePoint(privateKey)));
-            } catch (InvalidKeyException e){
-                e.printStackTrace();
-            } finally {
                 cursor.close();
-                database.close();
             }
+        } catch (InvalidKeyException e){
+            e.printStackTrace();
+            cursor.close();
+        } finally {
+            database.close();
         }
 
         return record;
