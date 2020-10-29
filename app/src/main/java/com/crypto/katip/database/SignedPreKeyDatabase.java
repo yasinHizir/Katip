@@ -99,4 +99,12 @@ public class SignedPreKeyDatabase extends Database{
         byte[] signature = cursor.getBlob(cursor.getColumnIndexOrThrow(SIGNATURE));
         return new SignedPreKeyRecord(keyId, cursor.getInt(cursor.getColumnIndexOrThrow(TIMESTAMP)), new ECKeyPair(Curve.decodePoint(publicKey, 0),Curve.decodePrivatePoint(privateKey)), signature);
     }
+
+    public static String getCreateTable(){
+        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + KEY_ID + " INTEGER, " + PUBLIC_KEY + " BLOB, " + PRIVATE_KEY + " BLOB, " + SIGNATURE + " BLOB, " + TIMESTAMP + " INTEGER, UNIQUE(" + USER_ID + "," + KEY_ID + "), FOREIGN KEY(" + USER_ID + ") REFERENCES user (ID));";
+    }
+
+    public static String getDropTable(){
+        return "DROP TABLE " + TABLE_NAME;
+    }
 }
