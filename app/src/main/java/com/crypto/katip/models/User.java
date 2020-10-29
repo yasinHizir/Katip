@@ -10,7 +10,7 @@ public class User {
     private String username;
     private String password;
 
-    private UserDatabase userDatabase;
+//    private UserDatabase userDatabase;
 
     public User() {
 //        this.id = id;
@@ -18,23 +18,24 @@ public class User {
 //        this.password = password;
     }
 
-    public void find(int id, Context context) {
-        this.userDatabase = new UserDatabase(new DbHelper(context));
-        User temp_user = userDatabase.findUser(id);
-        this.id = temp_user.getId();
-        this.username = temp_user.getUsername();
-        this.password = temp_user.getPassword();
+    public static User find(int id, Context context) {
+        UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
+        User user = userDatabase.findUser(id);
+        return user;
     }
 
-    public boolean save(Context context) {
-        this.userDatabase = new UserDatabase(new DbHelper(context));
-        userDatabase.createUser(username, password);
-        return true;
+    public static User select(String username, Context context) {
+        UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
+        User user = userDatabase.selectUser(username);
+        return  user;
     }
 
-    public boolean isRegistered(Context context) {
-        this.userDatabase = new UserDatabase(new DbHelper(context));
-        return userDatabase.isRegistered(this.username, this.password);
+    public boolean save(String username, String password, Context context) {
+        return new UserDatabase(new DbHelper(context)).saveUser(username, password);
+    }
+
+    public static boolean isRegistered(String username, String password, Context context) {
+        return new UserDatabase(new DbHelper(context)).isRegistered(username, password);
     }
 
     public String show() {
