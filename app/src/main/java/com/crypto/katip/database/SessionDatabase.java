@@ -42,7 +42,7 @@ public class SessionDatabase extends Database{
         return record;
     }
 
-    public List<Integer> getSubdevices(int userId, String name){
+    public List<Integer> getSubDevices(int userId, String name){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + DEVICE_ID + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + NAME + " = '" + name + "';", null);
         List<Integer> integers = null;
