@@ -15,7 +15,7 @@ public class IdentityKeyDatabase extends Database{
     private static final String ADDRESS = "address";
     private static final String KEY = "key";
 
-    private int userId;
+    private final int userId;
 
     public IdentityKeyDatabase(DbHelper dbHelper, int userId) {
         super(dbHelper);
@@ -23,35 +23,35 @@ public class IdentityKeyDatabase extends Database{
     }
 
     public IdentityKey get(String address){
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + KEY + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + ADDRESS + " = '" + address + "';", null);
         IdentityKey identityKey = null;
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
 
-        try {
-            if (cursor != null && cursor.moveToFirst()){
-                identityKey = new IdentityKey(Curve.decodePoint(cursor.getBlob(cursor.getColumnIndexOrThrow(KEY)), 0));
-                cursor.close();
+            String query = "SELECT " + KEY + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + ADDRESS + " = '" + address + "';";
+            try (Cursor cursor = database.rawQuery(query, null)) {
+
+                try {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        identityKey = new IdentityKey(Curve.decodePoint(cursor.getBlob(cursor.getColumnIndexOrThrow(KEY)), 0));
+                    }
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-            cursor.close();
-        } finally {
-            database.close();
         }
 
         return identityKey;
     }
 
     public boolean save(String address, IdentityKey identityKey){
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
+            ContentValues values = new ContentValues();
 
-        values.put(USER_ID, userId);
-        values.put(ADDRESS, address);
-        values.put(KEY, identityKey.serialize());
-        database.insert(TABLE_NAME, null,values);
+            values.put(USER_ID, userId);
+            values.put(ADDRESS, address);
+            values.put(KEY, identityKey.serialize());
+            database.insert(TABLE_NAME, null, values);
+        }
 
-        database.close();
         return get(address) != null;
     }
 

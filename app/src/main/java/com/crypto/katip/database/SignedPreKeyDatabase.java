@@ -21,7 +21,7 @@ public class SignedPreKeyDatabase extends Database{
     private static final String SIGNATURE = "signature";
     private static final String TIMESTAMP = "timestamp";
 
-    private int userId;
+    private final int userId;
 
     public SignedPreKeyDatabase(DbHelper dbHelper, int userId) {
         super(dbHelper);
@@ -29,60 +29,55 @@ public class SignedPreKeyDatabase extends Database{
     }
 
     public SignedPreKeyRecord load(int keyId){
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId, null);
         SignedPreKeyRecord record = null;
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
+            String query = "SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId;
+            try (Cursor cursor = database.rawQuery(query, null)) {
 
-        try {
-            if (cursor != null && cursor.moveToFirst()){
-                create(keyId, cursor);
-                cursor.close();
+                try {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        create(keyId, cursor);
+                    }
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (InvalidKeyException e){
-            e.printStackTrace();
-            cursor.close();
-        } finally {
-            database.close();
         }
 
         return record;
     }
 
     public List<SignedPreKeyRecord> loadAll(){
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId, null);
         List<SignedPreKeyRecord> records = null;
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
 
-        try {
-            if (cursor != null && cursor.moveToFirst()){
-                do {
-                    records.add(create(userId, cursor));
-                } while (cursor.moveToNext());
-                cursor.close();
+            String query = "SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId;
+            try (Cursor cursor = database.rawQuery(query , null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    do {
+                        records.add(create(userId, cursor));
+                    } while (cursor.moveToNext());
+                }
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
             }
-        } catch (InvalidKeyException e){
-            e.printStackTrace();
-            cursor.close();
-        } finally {
-            database.close();
         }
 
         return records;
     }
 
     public void store(int keyId, SignedPreKeyRecord record){
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
+            ContentValues values = new ContentValues();
 
-        values.put(USER_ID, userId);
-        values.put(KEY_ID, keyId);
-        values.put(PUBLIC_KEY, record.getKeyPair().getPublicKey().serialize());
-        values.put(PRIVATE_KEY, record.getKeyPair().getPrivateKey().serialize());
-        values.put(SIGNATURE, record.getSignature());
-        values.put(TIMESTAMP, record.getTimestamp());
-        database.insert(TABLE_NAME, null, values);
-
-        database.close();
+            values.put(USER_ID, userId);
+            values.put(KEY_ID, keyId);
+            values.put(PUBLIC_KEY, record.getKeyPair().getPublicKey().serialize());
+            values.put(PRIVATE_KEY, record.getKeyPair().getPrivateKey().serialize());
+            values.put(SIGNATURE, record.getSignature());
+            values.put(TIMESTAMP, record.getTimestamp());
+            database.insert(TABLE_NAME, null, values);
+        }
     }
 
     public boolean contain(int keyId){
@@ -90,11 +85,9 @@ public class SignedPreKeyDatabase extends Database{
     }
 
     public void remove(int keyId){
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-        database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId);
-
-        database.close();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
+            database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId);
+        }
     }
 
     private SignedPreKeyRecord create(int keyId, Cursor cursor) throws InvalidKeyException{

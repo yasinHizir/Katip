@@ -17,7 +17,7 @@ public class PreKeyDatabase extends Database{
     private static final String PUBLIC_KEY = "public_key";
     private static final String PRIVATE_KEY = "private_key";
 
-    private int userId;
+    private final int userId;
 
     public PreKeyDatabase(DbHelper dbHelper, int userId) {
         super(dbHelper);
@@ -25,38 +25,34 @@ public class PreKeyDatabase extends Database{
     }
 
     public PreKeyRecord load(int keyId){
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + " FROM " + TABLE_NAME + " WHERE " + KEY_ID + " = " + keyId + " AND " + USER_ID + " = " + userId, null);
         PreKeyRecord record = null;
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
+            Cursor cursor = database.rawQuery("SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + " FROM " + TABLE_NAME + " WHERE " + KEY_ID + " = " + keyId + " AND " + USER_ID + " = " + userId, null);
 
-        try {
-            if (cursor != null && cursor.moveToFirst()){
-                byte[] publicKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PUBLIC_KEY));
-                byte[] privateKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PRIVATE_KEY));
-                record = new PreKeyRecord(keyId, new ECKeyPair(Curve.decodePoint(publicKey, 0),Curve.decodePrivatePoint(privateKey)));
-                cursor.close();
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    byte[] publicKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PUBLIC_KEY));
+                    byte[] privateKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PRIVATE_KEY));
+                    record = new PreKeyRecord(keyId, new ECKeyPair(Curve.decodePoint(publicKey, 0), Curve.decodePrivatePoint(privateKey)));
+                }
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
             }
-        } catch (InvalidKeyException e){
-            e.printStackTrace();
-            cursor.close();
-        } finally {
-            database.close();
         }
 
         return record;
     }
 
     public void store(int keyId, PreKeyRecord record){
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
+            ContentValues values = new ContentValues();
 
-        values.put(USER_ID, userId);
-        values.put(KEY_ID, keyId);
-        values.put(PUBLIC_KEY, record.getKeyPair().getPublicKey().serialize());
-        values.put(PRIVATE_KEY, record.getKeyPair().getPrivateKey().serialize());
-        database.insert(TABLE_NAME, null, values);
-
-        database.close();
+            values.put(USER_ID, userId);
+            values.put(KEY_ID, keyId);
+            values.put(PUBLIC_KEY, record.getKeyPair().getPublicKey().serialize());
+            values.put(PRIVATE_KEY, record.getKeyPair().getPrivateKey().serialize());
+            database.insert(TABLE_NAME, null, values);
+        }
     }
 
     public boolean contain(int keyId){
@@ -64,11 +60,9 @@ public class PreKeyDatabase extends Database{
     }
 
     public void remove(int keyId){
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-        database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId +" AND " + KEY_ID + " = " + keyId);
-
-        database.close();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
+            database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId);
+        }
     }
 
     public static String getCreateTable(){

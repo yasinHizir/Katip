@@ -18,7 +18,7 @@ public class SessionDatabase extends Database{
     private static final String NAME = "name";
     private static final String RECORD = "record";
 
-    private int userId;
+    private final int userId;
 
     public SessionDatabase(DbHelper dbHelper, int userId) {
         super(dbHelper);
@@ -26,52 +26,52 @@ public class SessionDatabase extends Database{
     }
 
     public SessionRecord load(SignalProtocolAddress address){
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + RECORD + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + DEVICE_ID + " = " + address.getDeviceId() + " AND " + NAME + " = '" + address.getName() + "';", null);
         SessionRecord record = null;
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
 
-        try {
-            if (cursor != null && cursor.moveToFirst()){
-                record = new SessionRecord(cursor.getBlob(cursor.getColumnIndexOrThrow(RECORD)));
-                cursor.close();
+            String query = "SELECT " + RECORD + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + DEVICE_ID + " = " + address.getDeviceId() + " AND " + NAME + " = '" + address.getName() + "';";
+            try (Cursor cursor = database.rawQuery(query, null)) {
+
+                try {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        record = new SessionRecord(cursor.getBlob(cursor.getColumnIndexOrThrow(RECORD)));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            cursor.close();
-        } finally {
-            database.close();
         }
 
         return record;
     }
 
     public List<Integer> getSubDevices(String name){
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + DEVICE_ID + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + NAME + " = '" + name + "';", null);
         List<Integer> integers = null;
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
 
-        if (cursor != null && cursor.moveToFirst()){
-            do {
-                integers.add(cursor.getInt(cursor.getColumnIndexOrThrow(DEVICE_ID)));
-            } while (cursor.moveToNext());
-            cursor.close();
+            String query = "SELECT " + DEVICE_ID + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + NAME + " = '" + name + "';";
+            try (Cursor cursor = database.rawQuery(query, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    do {
+                        integers.add(cursor.getInt(cursor.getColumnIndexOrThrow(DEVICE_ID)));
+                    } while (cursor.moveToNext());
+                }
+            }
         }
 
-        database.close();
         return integers;
     }
 
     public void store(SignalProtocolAddress address, SessionRecord record){
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
+            ContentValues values = new ContentValues();
 
-        values.put(USER_ID, userId);
-        values.put(DEVICE_ID, address.getDeviceId());
-        values.put(NAME, address.getName());
-        values.put(RECORD, record.serialize());
-        database.insert(TABLE_NAME, null, values);
-
-        database.close();
+            values.put(USER_ID, userId);
+            values.put(DEVICE_ID, address.getDeviceId());
+            values.put(NAME, address.getName());
+            values.put(RECORD, record.serialize());
+            database.insert(TABLE_NAME, null, values);
+        }
     }
 
     public boolean contain(SignalProtocolAddress address){
@@ -79,19 +79,15 @@ public class SessionDatabase extends Database{
     }
 
     public void delete(SignalProtocolAddress address){
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-        database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId +" AND " + DEVICE_ID + " = " + address.getDeviceId() + " AND " + NAME + " = '" + address.getName() + "';");
-
-        database.close();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
+            database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + DEVICE_ID + " = " + address.getDeviceId() + " AND " + NAME + " = '" + address.getName() + "';");
+        }
     }
 
     public void deleteAll(String name){
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-        database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + NAME + " = '" + name + "';");
-
-        database.close();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
+            database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + NAME + " = '" + name + "';");
+        }
     }
 
     public static String getCreateTable(){
