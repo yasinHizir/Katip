@@ -20,111 +20,111 @@ import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import java.util.List;
 
 public class SignalProtocolStore implements org.whispersystems.libsignal.state.SignalProtocolStore{
-    private int userId;
-    private DbHelper dbHelper;
+    private final int userId;
+    private final Context context;
 
     public SignalProtocolStore(int userId, Context context){
         this.userId = userId;
-        this.dbHelper = new DbHelper(context);
+        this.context = context;
     }
 
     @Override
     public IdentityKeyPair getIdentityKeyPair() {
-        return new UserDatabase(dbHelper).getIdentityKeyPair(userId);
+        return new UserDatabase(new DbHelper(context)).getIdentityKeyPair(userId);
     }
 
     @Override
     public int getLocalRegistrationId() {
-        return new UserDatabase(dbHelper).getRegistrationID(userId);
+        return new UserDatabase(new DbHelper(context)).getRegistrationID(userId);
     }
 
     @Override
     public boolean saveIdentity(SignalProtocolAddress address, IdentityKey identityKey) {
-        return new IdentityKeyDatabase(dbHelper,userId).save(address.toString(), identityKey);
+        return new IdentityKeyDatabase(new DbHelper(context),userId).save(address.toString(), identityKey);
     }
 
     @Override
     public boolean isTrustedIdentity(SignalProtocolAddress address, IdentityKey identityKey, Direction direction) {
-        return new IdentityKeyDatabase(dbHelper, userId).get(address.toString()) != null;
+        return new IdentityKeyDatabase(new DbHelper(context), userId).get(address.toString()) != null;
     }
 
     @Override
     public IdentityKey getIdentity(SignalProtocolAddress address) {
-        return new IdentityKeyDatabase(dbHelper, userId).get(address.toString());
+        return new IdentityKeyDatabase(new DbHelper(context), userId).get(address.toString());
     }
 
     @Override
     public PreKeyRecord loadPreKey(int preKeyId) throws InvalidKeyIdException {
-        return new PreKeyDatabase(dbHelper, userId).load(preKeyId);
+        return new PreKeyDatabase(new DbHelper(context), userId).load(preKeyId);
     }
 
     @Override
     public void storePreKey(int preKeyId, PreKeyRecord record) {
-        new PreKeyDatabase(dbHelper, userId).store(preKeyId, record);
+        new PreKeyDatabase(new DbHelper(context), userId).store(preKeyId, record);
     }
 
     @Override
     public boolean containsPreKey(int preKeyId) {
-        return new PreKeyDatabase(dbHelper, userId).contain(preKeyId);
+        return new PreKeyDatabase(new DbHelper(context), userId).contain(preKeyId);
     }
 
     @Override
     public void removePreKey(int preKeyId) {
-        new PreKeyDatabase(dbHelper, userId).remove(preKeyId);
+        new PreKeyDatabase(new DbHelper(context), userId).remove(preKeyId);
     }
 
     @Override
     public SessionRecord loadSession(SignalProtocolAddress address) {
-        return new SessionDatabase(dbHelper, userId).load(address);
+        return new SessionDatabase(new DbHelper(context), userId).load(address);
     }
 
     @Override
     public List<Integer> getSubDeviceSessions(String name) {
-        return new SessionDatabase(dbHelper, userId).getSubDevices(name);
+        return new SessionDatabase(new DbHelper(context), userId).getSubDevices(name);
     }
 
     @Override
     public void storeSession(SignalProtocolAddress address, SessionRecord record) {
-        new SessionDatabase(dbHelper, userId).store(address, record);
+        new SessionDatabase(new DbHelper(context), userId).store(address, record);
     }
 
     @Override
     public boolean containsSession(SignalProtocolAddress address) {
-        return new SessionDatabase(dbHelper, userId).contain(address);
+        return new SessionDatabase(new DbHelper(context), userId).contain(address);
     }
 
     @Override
     public void deleteSession(SignalProtocolAddress address) {
-        new SessionDatabase(dbHelper, userId).delete(address);
+        new SessionDatabase(new DbHelper(context), userId).delete(address);
     }
 
     @Override
     public void deleteAllSessions(String name) {
-        new SessionDatabase(dbHelper, userId).deleteAll(name);
+        new SessionDatabase(new DbHelper(context), userId).deleteAll(name);
     }
 
     @Override
     public SignedPreKeyRecord loadSignedPreKey(int signedPreKeyId) throws InvalidKeyIdException {
-        return new SignedPreKeyDatabase(dbHelper, userId).load(signedPreKeyId);
+        return new SignedPreKeyDatabase(new DbHelper(context), userId).load(signedPreKeyId);
     }
 
     @Override
     public List<SignedPreKeyRecord> loadSignedPreKeys() {
-        return new SignedPreKeyDatabase(dbHelper, userId).loadAll();
+        return new SignedPreKeyDatabase(new DbHelper(context), userId).loadAll();
     }
 
     @Override
     public void storeSignedPreKey(int signedPreKeyId, SignedPreKeyRecord record) {
-        new SignedPreKeyDatabase(dbHelper, userId).store(signedPreKeyId, record);
+        new SignedPreKeyDatabase(new DbHelper(context), userId).store(signedPreKeyId, record);
     }
 
     @Override
     public boolean containsSignedPreKey(int signedPreKeyId) {
-        return new SignedPreKeyDatabase(dbHelper, userId).contain(signedPreKeyId);
+        return new SignedPreKeyDatabase(new DbHelper(context), userId).contain(signedPreKeyId);
     }
 
     @Override
     public void removeSignedPreKey(int signedPreKeyId) {
-        new SignedPreKeyDatabase(dbHelper, userId).contain(signedPreKeyId);
+        new SignedPreKeyDatabase(new DbHelper(context), userId).contain(signedPreKeyId);
     }
 }
