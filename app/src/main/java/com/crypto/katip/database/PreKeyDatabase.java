@@ -3,6 +3,7 @@ package com.crypto.katip.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Base64;
 
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.ecc.Curve;
@@ -33,7 +34,8 @@ public class PreKeyDatabase extends Database{
                 if (cursor != null && cursor.moveToFirst()) {
                     byte[] publicKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PUBLIC_KEY));
                     byte[] privateKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PRIVATE_KEY));
-                    record = new PreKeyRecord(keyId, new ECKeyPair(Curve.decodePoint(publicKey, 0), Curve.decodePrivatePoint(privateKey)));
+                    cursor.close();
+                    record = new PreKeyRecord(keyId, new ECKeyPair(Curve.decodePoint(Base64.decode(publicKey, Base64.DEFAULT), 0), Curve.decodePrivatePoint(Base64.decode(privateKey, Base64.DEFAULT))));
                 }
             } catch (InvalidKeyException e) {
                 e.printStackTrace();
@@ -44,13 +46,16 @@ public class PreKeyDatabase extends Database{
     }
 
     public void store(int keyId, PreKeyRecord record){
+        byte[] publicKey = record.getKeyPair().getPublicKey().serialize();
+        byte[] privateKey = record.getKeyPair().getPrivateKey().serialize();
+
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
             values.put(USER_ID, userId);
             values.put(KEY_ID, keyId);
-            values.put(PUBLIC_KEY, record.getKeyPair().getPublicKey().serialize());
-            values.put(PRIVATE_KEY, record.getKeyPair().getPrivateKey().serialize());
+            values.put(PUBLIC_KEY, Base64.encode(publicKey, Base64.DEFAULT));
+            values.put(PRIVATE_KEY, Base64.encode(privateKey, Base64.DEFAULT));
             database.insert(TABLE_NAME, null, values);
         }
     }

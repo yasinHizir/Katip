@@ -3,12 +3,14 @@ package com.crypto.katip.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Base64;
 
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.ecc.Curve;
 import org.whispersystems.libsignal.ecc.ECKeyPair;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class SignedPreKeyDatabase extends Database{
@@ -48,7 +50,7 @@ public class SignedPreKeyDatabase extends Database{
     }
 
     public List<SignedPreKeyRecord> loadAll(){
-        List<SignedPreKeyRecord> records = null;
+        List<SignedPreKeyRecord> records = new LinkedList<>();
         try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
 
             String query = "SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId;
@@ -67,13 +69,15 @@ public class SignedPreKeyDatabase extends Database{
     }
 
     public void store(int keyId, SignedPreKeyRecord record){
+        byte[] publicKey = record.getKeyPair().getPublicKey().serialize();
+        byte[] privateKey = record.getKeyPair().getPrivateKey().serialize();
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
             values.put(USER_ID, userId);
             values.put(KEY_ID, keyId);
-            values.put(PUBLIC_KEY, record.getKeyPair().getPublicKey().serialize());
-            values.put(PRIVATE_KEY, record.getKeyPair().getPrivateKey().serialize());
+            values.put(PUBLIC_KEY, Base64.encode(publicKey, Base64.DEFAULT));
+            values.put(PRIVATE_KEY, Base64.encode(privateKey, Base64.DEFAULT));
             values.put(SIGNATURE, record.getSignature());
             values.put(TIMESTAMP, record.getTimestamp());
             database.insert(TABLE_NAME, null, values);
@@ -91,10 +95,10 @@ public class SignedPreKeyDatabase extends Database{
     }
 
     private SignedPreKeyRecord create(int keyId, Cursor cursor) throws InvalidKeyException{
-        byte[] publicKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PUBLIC_KEY));
-        byte[] privateKey = cursor.getBlob(cursor.getColumnIndexOrThrow(PRIVATE_KEY));
+        byte[] publicKeyEncoded = cursor.getBlob(cursor.getColumnIndexOrThrow(PUBLIC_KEY));
+        byte[] privateKeyEncoded = cursor.getBlob(cursor.getColumnIndexOrThrow(PRIVATE_KEY));
         byte[] signature = cursor.getBlob(cursor.getColumnIndexOrThrow(SIGNATURE));
-        return new SignedPreKeyRecord(keyId, cursor.getInt(cursor.getColumnIndexOrThrow(TIMESTAMP)), new ECKeyPair(Curve.decodePoint(publicKey, 0),Curve.decodePrivatePoint(privateKey)), signature);
+        return new SignedPreKeyRecord(keyId, cursor.getInt(cursor.getColumnIndexOrThrow(TIMESTAMP)), new ECKeyPair(Curve.decodePoint(Base64.decode(publicKeyEncoded, Base64.DEFAULT), 0),Curve.decodePrivatePoint(Base64.decode(privateKeyEncoded, Base64.DEFAULT))), signature);
     }
 
     public static String getCreateTable(){
