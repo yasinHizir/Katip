@@ -55,13 +55,15 @@ public class SignedPreKeyDatabase extends Database{
 
             String query = "SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId;
             try (Cursor cursor = database.rawQuery(query , null)) {
-                if (cursor != null && cursor.moveToFirst()) {
-                    do {
-                        records.add(create(userId, cursor));
-                    } while (cursor.moveToNext());
+                try {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        do {
+                            records.add(create(userId, cursor));
+                        } while (cursor.moveToNext());
+                    }
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
                 }
-            } catch (InvalidKeyException e) {
-                e.printStackTrace();
             }
         }
 
