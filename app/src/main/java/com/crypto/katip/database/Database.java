@@ -1,7 +1,7 @@
 package com.crypto.katip.database;
 
 public abstract class Database {
-    private static final String DATABASE_NAME = "katıp.db";
+    private static final String DATABASE_NAME = "katip.db";
     private static int DATABASE_VERSION = 1;
     protected DbHelper dbHelper;
 
