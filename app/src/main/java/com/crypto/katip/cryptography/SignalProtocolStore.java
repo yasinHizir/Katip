@@ -45,7 +45,12 @@ public class SignalProtocolStore implements org.whispersystems.libsignal.state.S
 
     @Override
     public boolean isTrustedIdentity(SignalProtocolAddress address, IdentityKey identityKey, Direction direction) {
-        return new IdentityKeyDatabase(new DbHelper(context), userId).get(address.toString()) != null;
+        IdentityKey ourRegisteredKey = new IdentityKeyDatabase(new DbHelper(context), userId).get(address.toString());
+        if (ourRegisteredKey != null) {
+            return ourRegisteredKey.equals(identityKey);
+        }
+
+        return true;
     }
 
     @Override
@@ -54,7 +59,7 @@ public class SignalProtocolStore implements org.whispersystems.libsignal.state.S
     }
 
     @Override
-    public PreKeyRecord loadPreKey(int preKeyId) throws InvalidKeyIdException {
+    public PreKeyRecord loadPreKey(int preKeyId) {
         return new PreKeyDatabase(new DbHelper(context), userId).load(preKeyId);
     }
 
@@ -75,7 +80,11 @@ public class SignalProtocolStore implements org.whispersystems.libsignal.state.S
 
     @Override
     public SessionRecord loadSession(SignalProtocolAddress address) {
-        return new SessionDatabase(new DbHelper(context), userId).load(address);
+        SessionRecord record = new SessionDatabase(new DbHelper(context), userId).load(address);
+        if (record == null) {
+            return new SessionRecord();
+        }
+        return record;
     }
 
     @Override
@@ -104,7 +113,7 @@ public class SignalProtocolStore implements org.whispersystems.libsignal.state.S
     }
 
     @Override
-    public SignedPreKeyRecord loadSignedPreKey(int signedPreKeyId) throws InvalidKeyIdException {
+    public SignedPreKeyRecord loadSignedPreKey(int signedPreKeyId) {
         return new SignedPreKeyDatabase(new DbHelper(context), userId).load(signedPreKeyId);
     }
 

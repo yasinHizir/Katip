@@ -38,7 +38,7 @@ public class SignedPreKeyDatabase extends Database{
 
                 try {
                     if (cursor != null && cursor.moveToFirst()) {
-                        create(keyId, cursor);
+                        record = create(keyId, cursor);
                     }
                 } catch (InvalidKeyException e) {
                     e.printStackTrace();
