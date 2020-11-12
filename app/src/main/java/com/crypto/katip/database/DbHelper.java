@@ -15,11 +15,19 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(UserDatabase.getCreateTable());
+        sqLiteDatabase.execSQL(PreKeyDatabase.getCreateTable());
+        sqLiteDatabase.execSQL(SignedPreKeyDatabase.getCreateTable());
+        sqLiteDatabase.execSQL(IdentityKeyDatabase.getCreateTable());
+        sqLiteDatabase.execSQL(SessionDatabase.getCreateTable());
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL(UserDatabase.getDropTable());
+        sqLiteDatabase.execSQL(PreKeyDatabase.getDropTable());
+        sqLiteDatabase.execSQL(SignedPreKeyDatabase.getDropTable());
+        sqLiteDatabase.execSQL(IdentityKeyDatabase.getDropTable());
+        sqLiteDatabase.execSQL(SessionDatabase.getDropTable());
 
         onCreate(sqLiteDatabase);
     }
