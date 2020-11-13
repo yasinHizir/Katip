@@ -12,10 +12,13 @@ public class RegisterViewModel extends ViewModel {
     private final MutableLiveData<RegisterResult> registerResult = new MutableLiveData<>();
 
     public void register(String username, String password) {
-        User user = new UserController().save(username, password);
-        if (user.isEmpty()) {
+        UserController userController = new UserController();
+        userController.save(username, password);
+
+        if (userController.isRegistered(username, password)) {
             registerResult.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));
         } else {
+            User user = userController.getUser(username);
             registerResult.setValue(new RegisterResult( new LoggedInUser(user.getId(), user.getUsername())));
         }
     }
