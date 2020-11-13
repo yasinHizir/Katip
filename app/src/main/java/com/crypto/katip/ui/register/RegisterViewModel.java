@@ -15,11 +15,10 @@ public class RegisterViewModel extends ViewModel {
         UserController userController = new UserController();
         userController.save(username, password);
 
-        if (userController.isRegistered(username, password)) {
+        if (!userController.isRegistered(username, password)) {
             registerResult.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));
         } else {
-            User user = userController.getUser(username);
-            registerResult.setValue(new RegisterResult( new LoggedInUser(user.getId(), user.getUsername())));
+            registerResult.setValue(new RegisterResult( new LoggedInUser(userController.getUser(username).getId(), username)));
         }
     }
     public void dataChanged(String username, String password, String passwordVerify) {
