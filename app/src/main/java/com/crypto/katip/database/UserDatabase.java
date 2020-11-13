@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.annotation.Nullable;
+
 import com.crypto.katip.models.User;
 
 import org.whispersystems.libsignal.IdentityKey;
@@ -32,7 +34,7 @@ public class UserDatabase extends Database {
         super(dbHelper);
     }
 
-    public boolean saveUser(String username, String password) {
+    public void saveUser(String username, String password) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
         Date date = new Date();
@@ -48,7 +50,16 @@ public class UserDatabase extends Database {
         database.insert(TABLE_NAME, null, values);
 
         database.close();
-        return isRegistered(username, password);
+    }
+
+    public void updateUser(int id, String username, String password) {
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Date date = new Date();
+
+        String sql = "Update " + TABLE_NAME + " SET " + USERNAME + " = '" + username + "' , " + PASSWORD + " = '" + passwordDigest(password) + "' ," + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id + ";";
+        database.execSQL(sql);
+
+        database.close();
     }
 
     public IdentityKeyPair getIdentityKeyPair(int id) {
@@ -86,14 +97,14 @@ public class UserDatabase extends Database {
         return registrationID;
     }
 
+    @Nullable
     public User selectUser(String username) {
-        User user = new User();
+        User user = null;
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(ID)));
-            user.setUsername(username);
+            user = new User(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username);
             cursor.close();
         }
 
@@ -101,14 +112,14 @@ public class UserDatabase extends Database {
         return user;
     }
 
+    @Nullable
     public User findUser(int id) {
-        User user = new User();
+        User user = null;
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = '" + id + "'", null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            user.setId(id);
-            user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)));
+            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)));
             cursor.close();
         }
 
