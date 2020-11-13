@@ -41,6 +41,10 @@ public class User {
         new UserDatabase(new DbHelper()).saveUser(this.username, this.password);
     }
 
+    public void remove() {
+        new UserDatabase(new DbHelper()).removeUser(this.id);
+    }
+
     public boolean isRegistered() {
         return new UserDatabase(new DbHelper()).isRegistered(this.username, this.password);
     }
