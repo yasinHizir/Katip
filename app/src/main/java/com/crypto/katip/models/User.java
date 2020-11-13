@@ -1,5 +1,6 @@
 package com.crypto.katip.models;
 
+
 import androidx.annotation.Nullable;
 
 import com.crypto.katip.database.DbHelper;
@@ -9,44 +10,46 @@ public class User {
     private int id;
     private String username;
     private String password;
+    private final UserDatabase database;
 
-
-    public User(int id, String username) {
+    public User(int id, String username, DbHelper dbHelper) {
         this.id = id;
         this.username = username;
+        this.database = new UserDatabase(dbHelper);
     }
 
-    public User(String username, String password) {
+    public User(String username, String password, DbHelper dbHelper) {
         this.username = username;
         this.password = password;
+        this.database = new UserDatabase(dbHelper);
     }
 
     @Nullable
-    public static User getInstance(int id) {
-        UserDatabase userDatabase = new UserDatabase(new DbHelper());
+    public static User getInstance(int id, DbHelper dbHelper) {
+        UserDatabase userDatabase = new UserDatabase(dbHelper);
         return userDatabase.findUser(id);
     }
 
     @Nullable
-    public static User getInstance(String username) {
-        UserDatabase userDatabase = new UserDatabase(new DbHelper());
+    public static User getInstance(String username, DbHelper dbHelper) {
+        UserDatabase userDatabase = new UserDatabase(dbHelper);
         return userDatabase.selectUser(username);
     }
 
     public void save() {
-        new UserDatabase(new DbHelper()).saveUser(this.username, this.password);
+        database.saveUser(this.username, this.password);
     }
 
     public void update() {
-        new UserDatabase(new DbHelper()).saveUser(this.username, this.password);
+        database.updateUser(this.id, this.username, this.password);
     }
 
     public void remove() {
-        new UserDatabase(new DbHelper()).removeUser(this.id);
+        database.removeUser(this.id);
     }
 
     public boolean isRegistered() {
-        return new UserDatabase(new DbHelper()).isRegistered(this.username, this.password);
+        return database.isRegistered(this.username, this.password);
     }
 
     public int getId() {

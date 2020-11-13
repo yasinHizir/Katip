@@ -104,7 +104,7 @@ public class UserDatabase extends Database {
         Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            user = new User(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username);
+            user = new User(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username, dbHelper);
             cursor.close();
         }
 
@@ -119,7 +119,7 @@ public class UserDatabase extends Database {
         Cursor cursor = database.rawQuery("SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = '" + id + "'", null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)));
+            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)), dbHelper);
             cursor.close();
         }
 
@@ -140,24 +140,6 @@ public class UserDatabase extends Database {
 
         database.close();
         return result;
-    }
-
-    public void updateUsername(int id, String newUsername) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Date date = new Date();
-
-        database.execSQL("UPDATE " + TABLE_NAME + " SET " + USERNAME + " = '" + newUsername + "', " + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id);
-
-        database.close();
-    }
-
-    public void updatePassword(int id, String newPassword) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Date date = new Date();
-
-        database.execSQL("UPDATE " + TABLE_NAME + " SET " + PASSWORD + " = '" + passwordDigest(newPassword) + "', " + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id);
-
-        database.close();
     }
 
 
@@ -186,6 +168,6 @@ public class UserDatabase extends Database {
             e.printStackTrace();
         }
 
-        return messageDigest.toString();
+        return new String(messageDigest.digest());
     }
 }

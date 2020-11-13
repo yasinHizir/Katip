@@ -1,24 +1,26 @@
 package com.crypto.katip.ui.register;
 
+import android.content.Context;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.crypto.katip.controllers.UserController;
+import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.models.LoggedInUser;
-import com.crypto.katip.models.User;
 
 public class RegisterViewModel extends ViewModel {
     private final MutableLiveData<RegisterFormState> formState = new MutableLiveData<>();
-    private final MutableLiveData<RegisterResult> registerResult = new MutableLiveData<>();
+    private final MutableLiveData<RegisterResult> result = new MutableLiveData<>();
 
-    public void register(String username, String password) {
-        UserController userController = new UserController();
+    public void register(String username, String password, Context context) {
+        UserController userController = new UserController(new DbHelper(context));
         userController.save(username, password);
 
         if (!userController.isRegistered(username, password)) {
-            registerResult.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));
+            result.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));
         } else {
-            registerResult.setValue(new RegisterResult( new LoggedInUser(userController.getUser(username).getId(), username)));
+            result.setValue(new RegisterResult( new LoggedInUser(userController.getUser(username).getId(), username)));
         }
     }
     public void dataChanged(String username, String password, String passwordVerify) {
@@ -37,7 +39,7 @@ public class RegisterViewModel extends ViewModel {
         return formState;
     }
 
-    public MutableLiveData<RegisterResult> getRegisterResult() {
-        return registerResult;
+    public MutableLiveData<RegisterResult> getResult() {
+        return result;
     }
 }

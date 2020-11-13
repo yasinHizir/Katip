@@ -52,7 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.getRegisterResult().observe(this, new Observer<RegisterResult>() {
+        viewModel.getResult().observe(this, new Observer<RegisterResult>() {
             @Override
             public void onChanged(RegisterResult registerResult) {
                 if (registerResult.getError() != null) {
@@ -87,7 +87,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void register(View view) {
-        viewModel.register(usernameTextEdit.getText().toString(), passwordTextEdit.getText().toString());
+        viewModel.register(usernameTextEdit.getText().toString(), passwordTextEdit.getText().toString(), getApplicationContext());
     }
 
     public void loginPage(View view) {

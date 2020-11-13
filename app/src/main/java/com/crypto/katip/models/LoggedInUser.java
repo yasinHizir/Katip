@@ -1,8 +1,8 @@
 package com.crypto.katip.models;
 
 public class LoggedInUser {
-    private int id;
-    private String username;
+    private final int id;
+    private final String username;
 
     public LoggedInUser(int id, String username) {
         this.id = id;
