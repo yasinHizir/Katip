@@ -59,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), registerResult.getError(), Toast.LENGTH_SHORT).show();
                 } else if (registerResult.getSuccess() != null) {
                     Toast.makeText(getApplicationContext(), registerResult.getSuccess().getUsername(), Toast.LENGTH_SHORT).show();
-                   // startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
+
                     finish();
                 }
             }
