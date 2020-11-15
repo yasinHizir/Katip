@@ -17,7 +17,7 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String username, String password, Context context) {
         LoginController loginController = LoginController.getInstance();
-        loginController.login(username, password, new DbHelper(context));
+        loginController.login(username, password, context);
         if (loginController.getUser() != null) {
             result.setValue(new LoginResult(loginController.getUser()));
         } else {

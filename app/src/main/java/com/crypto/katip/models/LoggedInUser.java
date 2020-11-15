@@ -1,6 +1,8 @@
 package com.crypto.katip.models;
 
-public class LoggedInUser {
+import java.io.Serializable;
+
+public class LoggedInUser implements Serializable {
     private final int id;
     private final String username;
 
@@ -16,4 +18,6 @@ public class LoggedInUser {
     public String getUsername() {
         return username;
     }
+
+
 }
