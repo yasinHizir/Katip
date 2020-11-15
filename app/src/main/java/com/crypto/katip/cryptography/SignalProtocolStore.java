@@ -40,7 +40,12 @@ public class SignalProtocolStore implements org.whispersystems.libsignal.state.S
 
     @Override
     public boolean saveIdentity(SignalProtocolAddress address, IdentityKey identityKey) {
-        return new IdentityKeyDatabase(new DbHelper(context),userId).save(address.toString(), identityKey);
+        IdentityKeyDatabase database = new IdentityKeyDatabase(new DbHelper(context),userId);
+        IdentityKey verifyIdentityKey = database.get(address.toString());
+        if (identityKey.equals(verifyIdentityKey)) {
+            return true;
+        }
+        return database.save(address.toString(), identityKey);
     }
 
     @Override
