@@ -5,7 +5,6 @@ public abstract class Database {
     private static int DATABASE_VERSION = 1;
     protected DbHelper dbHelper;
 
-
     public Database(DbHelper dbHelper){
         this.dbHelper = dbHelper;
     }

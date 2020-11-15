@@ -4,11 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import androidx.annotation.Nullable;
-
 public class DbHelper extends SQLiteOpenHelper {
 
-    public DbHelper(@Nullable Context context) {
+    public DbHelper(Context context) {
         super(context, Database.getDatabaseName(), null, Database.getDatabaseVersion());
     }
 

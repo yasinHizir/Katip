@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.annotation.Nullable;
+
 import com.crypto.katip.models.User;
 
 import org.whispersystems.libsignal.IdentityKey;
@@ -32,12 +34,12 @@ public class UserDatabase extends Database {
         super(dbHelper);
     }
 
-    public boolean saveUser(String username, String password) {
+    public void save(String username, String password) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
         Date date = new Date();
-
         ContentValues values = new ContentValues();
+
         values.put(USERNAME, username);
         values.put(PASSWORD, passwordDigest(password));
         values.put(REGISTRATION_ID, KeyHelper.generateRegistrationId(false));
@@ -48,22 +50,16 @@ public class UserDatabase extends Database {
         database.insert(TABLE_NAME, null, values);
 
         database.close();
-        return isRegistered(username, password);
     }
 
-    public User getUser(String username) {
-        User user = new User();
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
+    public void update(int id, String username, String password) {
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Date date = new Date();
 
-        if (cursor != null && cursor.moveToFirst()) {
-            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(ID)));
-            user.setUsername(username);
-            cursor.close();
-        }
+        String sql = "Update " + TABLE_NAME + " SET " + USERNAME + " = '" + username + "' , " + PASSWORD + " = '" + passwordDigest(password) + "' ," + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id + ";";
+        database.execSQL(sql);
 
         database.close();
-        return user;
     }
 
     public IdentityKeyPair getIdentityKeyPair(int id) {
@@ -101,6 +97,36 @@ public class UserDatabase extends Database {
         return registrationID;
     }
 
+    @Nullable
+    public User getUser(String username) {
+        User user = null;
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username, dbHelper);
+            cursor.close();
+        }
+
+        database.close();
+        return user;
+    }
+
+    @Nullable
+    public User getUser(int id) {
+        User user = null;
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = '" + id + "'", null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)), dbHelper);
+            cursor.close();
+        }
+
+        database.close();
+        return user;
+    }
+
     public boolean isRegistered(String username, String password) {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + PASSWORD + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
@@ -116,26 +142,8 @@ public class UserDatabase extends Database {
         return result;
     }
 
-    public void updateUsername(int id, String newUsername) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Date date = new Date();
 
-        database.execSQL("UPDATE " + TABLE_NAME + " SET " + USERNAME + " = '" + newUsername + "', " + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id);
-
-        database.close();
-    }
-
-    public void updatePassword(int id, String newPassword) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Date date = new Date();
-
-        database.execSQL("UPDATE " + TABLE_NAME + " SET " + PASSWORD + " = '" + passwordDigest(newPassword) + "', " + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id);
-
-        database.close();
-    }
-
-
-    public void removeUser(int id) {
+    public void remove(int id) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id);
@@ -153,6 +161,7 @@ public class UserDatabase extends Database {
 
     private String passwordDigest(String password){
         MessageDigest messageDigest = null;
+
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
             messageDigest.update(password.getBytes());

@@ -1,44 +1,54 @@
 package com.crypto.katip;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.crypto.katip.models.User;
+import com.crypto.katip.viewmodels.login.LoginResult;
+import com.crypto.katip.viewmodels.login.LoginViewModel;
+import com.crypto.katip.viewmodels.login.LoginViewModelFactory;
 
 public class LoginActivity extends AppCompatActivity {
+    public LoginViewModel viewModel;
+
+    EditText usernameTextEdit;
+    EditText passwordTextEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        viewModel = new ViewModelProvider(this, new LoginViewModelFactory()).get(LoginViewModel.class);
+        usernameTextEdit = findViewById(R.id.username);
+        passwordTextEdit = findViewById(R.id.password);
+
+        viewModel.getResult().observe(this, new Observer<LoginResult>() {
+            @Override
+            public void onChanged(LoginResult loginResult) {
+                if (loginResult.getError() != null) {
+                    Toast.makeText(getApplicationContext(), loginResult.getError(), Toast.LENGTH_LONG).show();
+                } else if (loginResult.getSuccess() != null) {
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                    finish();
+                }
+            }
+        });
     }
 
-    @SuppressLint("SetTextI18n")
+
     public void login(View view) {
-        EditText usernameTextEdit = findViewById(R.id.username);
-        EditText passwordTextEdit = findViewById(R.id.password);
-        TextView notice = findViewById(R.id.notice);
-
-        String username = usernameTextEdit.getText().toString();
-        String password = passwordTextEdit.getText().toString();
-
-        if ( username.equals("") || password.equals("") ) {
-            notice.setText("Kullanıcı adı veya şifre boş bırakılamaz!");
-        }else if (!User.isRegistered(username, password, getApplicationContext())) {
-            notice.setText("Kullanıcı adı veya şifre hatalı!");
-        }else {
-            User user = User.getUser(username, getApplicationContext());
-            notice.setText(user.getUsername());
-        }
+        viewModel.login(usernameTextEdit.getText().toString(), passwordTextEdit.getText().toString(), getApplicationContext());
     }
 
     public void registerPage(View view) {
         startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+        finish();
     }
 }
