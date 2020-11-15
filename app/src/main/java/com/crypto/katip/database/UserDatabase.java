@@ -34,12 +34,12 @@ public class UserDatabase extends Database {
         super(dbHelper);
     }
 
-    public void saveUser(String username, String password) {
+    public void save(String username, String password) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
         Date date = new Date();
-
         ContentValues values = new ContentValues();
+
         values.put(USERNAME, username);
         values.put(PASSWORD, passwordDigest(password));
         values.put(REGISTRATION_ID, KeyHelper.generateRegistrationId(false));
@@ -52,7 +52,7 @@ public class UserDatabase extends Database {
         database.close();
     }
 
-    public void updateUser(int id, String username, String password) {
+    public void update(int id, String username, String password) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Date date = new Date();
 
@@ -98,7 +98,7 @@ public class UserDatabase extends Database {
     }
 
     @Nullable
-    public User selectUser(String username) {
+    public User getUser(String username) {
         User user = null;
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
@@ -113,7 +113,7 @@ public class UserDatabase extends Database {
     }
 
     @Nullable
-    public User findUser(int id) {
+    public User getUser(int id) {
         User user = null;
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = '" + id + "'", null);
@@ -143,7 +143,7 @@ public class UserDatabase extends Database {
     }
 
 
-    public void removeUser(int id) {
+    public void remove(int id) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id);
@@ -161,6 +161,7 @@ public class UserDatabase extends Database {
 
     private String passwordDigest(String password){
         MessageDigest messageDigest = null;
+
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
             messageDigest.update(password.getBytes());

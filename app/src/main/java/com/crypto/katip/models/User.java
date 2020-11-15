@@ -24,28 +24,16 @@ public class User {
         this.database = new UserDatabase(dbHelper);
     }
 
-    @Nullable
-    public static User getInstance(int id, DbHelper dbHelper) {
-        UserDatabase userDatabase = new UserDatabase(dbHelper);
-        return userDatabase.findUser(id);
-    }
-
-    @Nullable
-    public static User getInstance(String username, DbHelper dbHelper) {
-        UserDatabase userDatabase = new UserDatabase(dbHelper);
-        return userDatabase.selectUser(username);
-    }
-
     public void save() {
-        database.saveUser(this.username, this.password);
+        database.save(this.username, this.password);
     }
 
     public void update() {
-        database.updateUser(this.id, this.username, this.password);
+        database.update(this.id, this.username, this.password);
     }
 
     public void remove() {
-        database.removeUser(this.id);
+        database.remove(this.id);
     }
 
     public boolean isRegistered() {
@@ -68,5 +56,15 @@ public class User {
         this.password = password;
     }
 
+    @Nullable
+    public static User getInstance(int id, DbHelper dbHelper) {
+        UserDatabase userDatabase = new UserDatabase(dbHelper);
+        return userDatabase.getUser(id);
+    }
 
+    @Nullable
+    public static User getInstance(String username, DbHelper dbHelper) {
+        UserDatabase userDatabase = new UserDatabase(dbHelper);
+        return userDatabase.getUser(username);
+    }
 }

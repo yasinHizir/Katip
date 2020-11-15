@@ -1,4 +1,4 @@
-package com.crypto.katip.ui.register;
+package com.crypto.katip.viewmodels.register;
 
 public class RegisterFormState {
     private String usernameError;

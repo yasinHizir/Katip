@@ -1,4 +1,4 @@
-package com.crypto.katip.ui.register;
+package com.crypto.katip.viewmodels.register;
 
 import com.crypto.katip.models.LoggedInUser;
 
@@ -13,7 +13,6 @@ public class RegisterResult {
     public RegisterResult(String error) {
         this.error = error;
     }
-
 
     public LoggedInUser getSuccess() {
         return success;

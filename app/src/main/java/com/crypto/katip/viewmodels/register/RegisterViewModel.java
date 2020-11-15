@@ -1,4 +1,4 @@
-package com.crypto.katip.ui.register;
+package com.crypto.katip.viewmodels.register;
 
 import android.content.Context;
 
@@ -23,6 +23,7 @@ public class RegisterViewModel extends ViewModel {
             result.setValue(new RegisterResult( new LoggedInUser(userController.getUser(username).getId(), username)));
         }
     }
+
     public void dataChanged(String username, String password, String passwordVerify) {
         if (username.equals("")) {
             formState.setValue(new RegisterFormState("Kullanıcı adı boş bırakılamaz", null, null));

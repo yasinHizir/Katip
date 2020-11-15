@@ -31,21 +31,23 @@ public class LoginController {
 
     public void login(String username, String password, Context context) {
         UserController userController = new UserController(new DbHelper(context));
+
         if (userController.isRegistered(username, password)) {
             if (setLoggedInUser(new LoggedInUser(Objects.requireNonNull(userController.getUser(username)).getId(), username), context)) {
-                getloggedInUser(context);
+                getLoggedInUser(context);
             }
         }
     }
 
     public boolean isLoggedIn(Context context) {
         if (this.user == null) {
-            getloggedInUser(context);
+            getLoggedInUser(context);
         }
+
         return this.user != null;
     }
 
-    public void logout(Context context) {
+    public void logout() {
         removeLoggedInUser();
     }
 
@@ -64,6 +66,7 @@ public class LoginController {
                     masterKey,
                     EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
             ).build();
+
             OutputStream stream = file.openFileOutput();
             ObjectOutputStream objectStream = new ObjectOutputStream(stream);
             objectStream.writeObject(user);
@@ -73,10 +76,11 @@ public class LoginController {
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
         }
+
         return result;
     }
 
-    private void getloggedInUser(Context context) {
+    private void getLoggedInUser(Context context) {
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
             @SuppressLint("SdCardPath")
@@ -86,8 +90,10 @@ public class LoginController {
                     masterKey,
                     EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
             ).build();
+
             InputStream stream = file.openFileInput();
             ObjectInputStream objectStream = new ObjectInputStream(stream);
+
             this.user = (LoggedInUser) objectStream.readObject();
         } catch (GeneralSecurityException | IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -97,6 +103,7 @@ public class LoginController {
     private void removeLoggedInUser() {
         @SuppressLint("SdCardPath")
         File file = new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt");
+
         if (file.delete()) {
             this.user = null;
         }
