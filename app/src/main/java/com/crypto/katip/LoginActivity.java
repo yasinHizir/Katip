@@ -35,8 +35,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResult.getError() != null) {
                     Toast.makeText(getApplicationContext(), loginResult.getError(), Toast.LENGTH_LONG).show();
                 } else if (loginResult.getSuccess() != null) {
-                    Toast.makeText(getApplicationContext(), loginResult.getSuccess().getUsername(), Toast.LENGTH_LONG).show();
-
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                     finish();
                 }
             }

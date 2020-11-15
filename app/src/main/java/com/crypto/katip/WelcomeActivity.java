@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.crypto.katip.controllers.LoginController;
+
 public class WelcomeActivity extends AppCompatActivity {
 
     @Override
@@ -12,7 +14,14 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
+        LoginController loginController = LoginController.getInstance();
+        if (loginController.isLoggedIn(getApplicationContext())) {
+            startActivity(new Intent(WelcomeActivity.this, HomeActivity.class));
+        } else {
+            startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
+        }
+
+
 
     }
 }
