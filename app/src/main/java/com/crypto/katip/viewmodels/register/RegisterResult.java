@@ -1,24 +1,14 @@
 package com.crypto.katip.viewmodels.register;
 
-import com.crypto.katip.models.LoggedInUser;
-
 public class RegisterResult {
-    private LoggedInUser success;
-    private String error;
+    private boolean success;
 
-    public RegisterResult(LoggedInUser user) {
-        this.success = user;
+    public RegisterResult(boolean success) {
+        this.success = success;
     }
 
-    public RegisterResult(String error) {
-        this.error = error;
-    }
-
-    public LoggedInUser getSuccess() {
+    public boolean getSuccess() {
         return success;
     }
 
-    public String getError() {
-        return error;
-    }
 }

@@ -8,6 +8,7 @@ import androidx.security.crypto.MasterKey;
 
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.models.LoggedInUser;
+import com.crypto.katip.models.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,10 +31,11 @@ public class LoginController {
     }
 
     public void login(String username, String password, Context context) {
-        UserController userController = new UserController(new DbHelper(context));
+        User user = new User(username, password, new DbHelper(context));
 
-        if (userController.isRegistered(username, password)) {
-            if (setLoggedInUser(new LoggedInUser(Objects.requireNonNull(userController.getUser(username)).getId(), username), context)) {
+        if (user.isRegistered()) {
+            user = User.getInstance(username, new DbHelper(context));
+            if (setLoggedInUser(new LoggedInUser(user.getId(), user.getUsername()), context)) {
                 getLoggedInUser(context);
             }
         }

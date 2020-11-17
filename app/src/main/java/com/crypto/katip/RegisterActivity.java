@@ -55,11 +55,11 @@ public class RegisterActivity extends AppCompatActivity {
         viewModel.getResult().observe(this, new Observer<RegisterResult>() {
             @Override
             public void onChanged(RegisterResult registerResult) {
-                if (registerResult.getError() != null) {
-                    Toast.makeText(getApplicationContext(), registerResult.getError(), Toast.LENGTH_SHORT).show();
-                } else if (registerResult.getSuccess() != null) {
+                if (registerResult.getSuccess()) {
                     startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                     finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Kullanıcı sisteme kayıtlanamadı.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
