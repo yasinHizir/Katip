@@ -5,12 +5,14 @@
 
     <item
         android:id="@+id/menu1"
-        android:title="menu1"
-        app:showAsAction="never"/>
+        android:onClick="add"
+        android:title="sohbet ekle"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu2"
-        android:title="menu2"
+        android:title="@string/button_logout"
+        android:onClick="logout"
         app:showAsAction="never"/>
 
 </menu>
