@@ -17,9 +17,9 @@ public class RegisterViewModel extends ViewModel {
         user.save();
 
         if (user.isRegistered()) {
-            result.setValue(new RegisterResult(true));
+            result.setValue(new RegisterResult(user));
         } else {
-            result.setValue(new RegisterResult(false));
+            result.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));
         }
     }
 

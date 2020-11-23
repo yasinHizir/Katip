@@ -61,7 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
                     startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                     finish();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Kullanıcı sisteme kayıtlanamadı.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), registerResult.getError(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
