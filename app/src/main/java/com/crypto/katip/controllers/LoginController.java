@@ -29,15 +29,14 @@ public class LoginController {
         return instance;
     }
 
-    public void login(String username, String password, Context context) {
-        User user = new User(username, password, new DbHelper(context));
-
+    public void login(User user, Context context) {
         if (user.isRegistered()) {
-            user = User.getInstance(username, new DbHelper(context));
+            user = User.getInstance(user.getUsername(), new DbHelper(context));
             if (setLoggedInUser(new LoggedInUser(user.getId(), user.getUsername()), context)) {
                 getLoggedInUser(context);
             }
         }
+
     }
 
     public boolean isLoggedIn(Context context) {
