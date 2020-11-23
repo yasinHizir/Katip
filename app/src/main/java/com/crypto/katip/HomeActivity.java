@@ -2,47 +2,55 @@ package com.crypto.katip;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import com.crypto.katip.controllers.LoginController;
+import com.crypto.katip.database.DbHelper;
+import com.crypto.katip.models.Chat;
+import com.crypto.katip.models.LoggedInUser;
+import com.crypto.katip.viewmodels.home.HomeViewModel;
+import com.crypto.katip.viewmodels.home.HomeViewModelFactory;
 
 import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity {
+    private HomeViewModel viewModel;
+    private RecyclerView recyclerView;
 
     private Toolbar toolbar;
 
-    private static final String TAG = "HomeActivity";
     private ArrayList<String> mNames = new ArrayList<>();
-    private ArrayList<String> mImageUrls = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        viewModel = new ViewModelProvider(this, new HomeViewModelFactory()).get(HomeViewModel.class);
+        recyclerView = findViewById(R.id.recycle_view);
+
         toolbar = findViewById(R.id.action_bar);
         setSupportActionBar(toolbar);
 
-        //eklendi
-        Log.d(TAG, "onCreate: started.");
+        viewModel.getLiveData().observe(this, new Observer<ArrayList<String>>() {
+            @Override
+            public void onChanged(ArrayList<String> strings) {
+                viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext()));
+            }
+        });
 
-        mNames.add("Ali Veli");
-        mNames.add("Ahmet Dd");
-        mNames.add("Ahmet Dd");
-        mNames.add("Ahmet Dd");
-        mNames.add("Ahmet Dd");
-        mNames.add("Ahmet Dd");
-        mNames.add("XXx");
-        mNames.add("Ahmet Dd");
+        LoggedInUser user = LoginController.getInstance().getUser();
 
-        //initImageBitmaps();  asagiya resim ekleyince bunu yorumdan cikar.
-        initRecycleView();
-
+        viewModel.getLiveData().setValue(Chat.getChatNames(new DbHelper(getApplicationContext()), user.getId()));
     }
 
     @Override
@@ -52,12 +60,13 @@ public class HomeActivity extends AppCompatActivity {
         return true;
     }
 
-    //eklendi
-    private void initRecycleView(){
-        Log.d(TAG, "imageRecycleView: init recycleview");
-        RecyclerView recyclerView = findViewById(R.id.recycle_view);
-        RecycleViewAdapter adapter = new RecycleViewAdapter(this, mNames, mImageUrls);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    public void add(MenuItem item) {
+        viewModel.addChat("Deneme Başarılı");
+    }
+
+    public void logout(MenuItem item) {
+        LoginController loginController = LoginController.getInstance();
+        loginController.logout();
+        startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));
     }
 }
