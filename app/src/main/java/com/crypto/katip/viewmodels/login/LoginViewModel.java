@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.crypto.katip.controllers.LoginController;
+import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.models.User;
 
@@ -17,12 +17,12 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password, Context context) {
-        LoginController loginController = LoginController.getInstance();
+        LoginRepository loginRepository = LoginRepository.getInstance();
         User user = new User(username, password, new DbHelper(context));
 
-        loginController.login(user, context);
-        if (loginController.getUser() != null) {
-            result.setValue(new LoginResult(loginController.getUser()));
+        loginRepository.login(user, context);
+        if (loginRepository.getUser() != null) {
+            result.setValue(new LoginResult(loginRepository.getUser()));
         } else {
             result.setValue(new LoginResult("Kullanıcı sistemde kayıtlı değil."));
         }

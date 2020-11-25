@@ -13,7 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.crypto.katip.controllers.LoginController;
+import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.models.Chat;
 import com.crypto.katip.models.LoggedInUser;
@@ -48,7 +48,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        LoggedInUser user = LoginController.getInstance().getUser();
+        LoggedInUser user = LoginRepository.getInstance().getUser();
 
         viewModel.getLiveData().setValue(Chat.getChatNames(new DbHelper(getApplicationContext()), user.getId()));
     }
@@ -65,8 +65,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void logout(MenuItem item) {
-        LoginController loginController = LoginController.getInstance();
-        loginController.logout();
+        LoginRepository loginRepository = LoginRepository.getInstance();
+        loginRepository.logout();
         startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));
     }
 }

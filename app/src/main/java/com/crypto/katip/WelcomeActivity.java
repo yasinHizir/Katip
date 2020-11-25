@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.crypto.katip.controllers.LoginController;
+import com.crypto.katip.login.LoginRepository;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -14,8 +14,8 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        LoginController loginController = LoginController.getInstance();
-        if (loginController.isLoggedIn(getApplicationContext())) {
+        LoginRepository loginRepository = LoginRepository.getInstance();
+        if (loginRepository.isLoggedIn(getApplicationContext())) {
             startActivity(new Intent(WelcomeActivity.this, HomeActivity.class));
         } else {
             startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));

@@ -1,4 +1,4 @@
-package com.crypto.katip.controllers;
+package com.crypto.katip.login;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,13 +18,13 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
-public class LoginController {
-    private static volatile LoginController instance;
+public class LoginRepository {
+    private static volatile LoginRepository instance;
     private LoggedInUser user;
 
-    public static LoginController getInstance(){
+    public static LoginRepository getInstance(){
         if (instance == null){
-            instance = new LoginController();
+            instance = new LoginRepository();
         }
         return instance;
     }
@@ -32,11 +32,10 @@ public class LoginController {
     public void login(User user, Context context) {
         if (user.isRegistered()) {
             user = User.getInstance(user.getUsername(), new DbHelper(context));
-            if (setLoggedInUser(new LoggedInUser(user.getId(), user.getUsername()), context)) {
+            if (user != null && setLoggedInUser(new LoggedInUser(user.getId(), user.getUsername()), context)) {
                 getLoggedInUser(context);
             }
         }
-
     }
 
     public boolean isLoggedIn(Context context) {
