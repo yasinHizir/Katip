@@ -57,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onChanged(RegisterResult registerResult) {
                 if (registerResult.getSuccess() != null) {
-                    LoginRepository.getInstance().login(registerResult.getSuccess(), getApplicationContext());
+                    LoginRepository.getInstance(getApplicationContext()).login(registerResult.getSuccess());
                     startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                     finish();
                 } else {

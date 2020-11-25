@@ -1,24 +1,11 @@
 package com.crypto.katip.login;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-import androidx.security.crypto.EncryptedFile;
-import androidx.security.crypto.MasterKey;
 
-import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.models.LoggedInUser;
 import com.crypto.katip.models.User;
 import com.crypto.katip.viewmodels.login.LoginResult;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.security.GeneralSecurityException;
 
 public class LoginRepository {
     private static volatile LoginRepository instance;
@@ -36,7 +23,7 @@ public class LoginRepository {
         return instance;
     }
 
-    public LoginResult login(User user, Context context) {
+    public LoginResult login(User user) {
         user = user.isRegistered();
         if (user != null && dataSource.login(new LoggedInUser(user.getId(), user.getUsername()))) {
             return new LoginResult(new LoggedInUser(user.getId(), user.getUsername()));

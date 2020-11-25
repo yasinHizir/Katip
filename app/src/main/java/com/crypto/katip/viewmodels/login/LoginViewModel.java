@@ -20,6 +20,6 @@ public class LoginViewModel extends ViewModel {
         LoginRepository loginRepository = LoginRepository.getInstance(context);
         User user = new User(username, password, new DbHelper(context));
 
-        result.setValue(loginRepository.login(user, context));
+        result.setValue(loginRepository.login(user));
     }
 }

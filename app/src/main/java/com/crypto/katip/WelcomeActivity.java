@@ -14,7 +14,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        LoginRepository loginRepository = LoginRepository.getInstance();
+        LoginRepository loginRepository = LoginRepository.getInstance(getApplicationContext());
         if (loginRepository.isLoggedIn(getApplicationContext())) {
             startActivity(new Intent(WelcomeActivity.this, HomeActivity.class));
         } else {
