@@ -26,7 +26,8 @@ public class LoginRepository {
     public LoginResult login(User user) {
         user = user.isRegistered();
         if (user != null && dataSource.login(new LoggedInUser(user.getId(), user.getUsername()))) {
-            return new LoginResult(new LoggedInUser(user.getId(), user.getUsername()));
+            this.user = new LoggedInUser(user.getId(), user.getUsername());
+            return new LoginResult(this.user);
         }
         return new LoginResult("Kullanıcı sistemde kayıtlı değil.");
     }
