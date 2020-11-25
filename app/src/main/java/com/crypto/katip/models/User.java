@@ -36,7 +36,7 @@ public class User {
         database.remove(this.id);
     }
 
-    public boolean isRegistered() {
+    public User isRegistered() {
         return database.isRegistered(this.username, this.password);
     }
 

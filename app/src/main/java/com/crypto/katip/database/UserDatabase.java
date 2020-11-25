@@ -127,19 +127,22 @@ public class UserDatabase extends Database {
         return user;
     }
 
-    public boolean isRegistered(String username, String password) {
+    @Nullable
+    public User isRegistered(String username, String password) {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + PASSWORD + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
+        User user = null;
 
-        boolean result = false;
         if (cursor != null && cursor.moveToFirst()) {
             String passwordRegistered = cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD));
             cursor.close();
-            result = passwordRegistered.equals(passwordDigest(password));
+            if (passwordRegistered.equals(passwordDigest(password))) {
+                user = getUser(username);
+            }
         }
 
         database.close();
-        return result;
+        return user;
     }
 
 

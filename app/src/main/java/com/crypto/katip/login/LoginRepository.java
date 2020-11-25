@@ -3,12 +3,14 @@ package com.crypto.katip.login;
 import android.annotation.SuppressLint;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.MasterKey;
 
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.models.LoggedInUser;
 import com.crypto.katip.models.User;
+import com.crypto.katip.viewmodels.login.LoginResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,91 +22,43 @@ import java.security.GeneralSecurityException;
 
 public class LoginRepository {
     private static volatile LoginRepository instance;
+    private final LoginDataSource dataSource;
     private LoggedInUser user;
 
-    public static LoginRepository getInstance(){
+    public LoginRepository(LoginDataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public static LoginRepository getInstance(Context context){
         if (instance == null){
-            instance = new LoginRepository();
+            instance = new LoginRepository(new LoginDataSource(context));
         }
         return instance;
     }
 
-    public void login(User user, Context context) {
-        if (user.isRegistered()) {
-            user = User.getInstance(user.getUsername(), new DbHelper(context));
-            if (user != null && setLoggedInUser(new LoggedInUser(user.getId(), user.getUsername()), context)) {
-                getLoggedInUser(context);
-            }
+    public LoginResult login(User user, Context context) {
+        user = user.isRegistered();
+        if (user != null && dataSource.login(new LoggedInUser(user.getId(), user.getUsername()))) {
+            return new LoginResult(new LoggedInUser(user.getId(), user.getUsername()));
         }
+        return new LoginResult("Kullanıcı sistemde kayıtlı değil.");
     }
 
     public boolean isLoggedIn(Context context) {
         if (this.user == null) {
-            getLoggedInUser(context);
+            this.user = dataSource.getLoggedInUser();
         }
 
         return this.user != null;
     }
 
     public void logout() {
-        removeLoggedInUser();
+        if (dataSource.logout()) {
+            this.user = null;
+        }
     }
 
     public LoggedInUser getUser(){
-        return user;
-    }
-
-    private boolean setLoggedInUser(LoggedInUser user, Context context) {
-        boolean result = false;
-        try {
-            MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
-            @SuppressLint("SdCardPath")
-            EncryptedFile file = new EncryptedFile.Builder(
-                    context,
-                    new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt"),
-                    masterKey,
-                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-            ).build();
-
-            OutputStream stream = file.openFileOutput();
-            ObjectOutputStream objectStream = new ObjectOutputStream(stream);
-            objectStream.writeObject(user);
-            objectStream.flush();
-            objectStream.close();
-            result = true;
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    private void getLoggedInUser(Context context) {
-        try {
-            MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
-            @SuppressLint("SdCardPath")
-            EncryptedFile file = new EncryptedFile.Builder(
-                    context,
-                    new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt"),
-                    masterKey,
-                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-            ).build();
-
-            InputStream stream = file.openFileInput();
-            ObjectInputStream objectStream = new ObjectInputStream(stream);
-
-            this.user = (LoggedInUser) objectStream.readObject();
-        } catch (GeneralSecurityException | IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void removeLoggedInUser() {
-        @SuppressLint("SdCardPath")
-        File file = new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt");
-
-        if (file.delete()) {
-            this.user = null;
-        }
+        return this.user;
     }
 }

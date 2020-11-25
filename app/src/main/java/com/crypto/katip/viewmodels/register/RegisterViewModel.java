@@ -16,7 +16,7 @@ public class RegisterViewModel extends ViewModel {
         User user = new User(username, password, new DbHelper(context));
         user.save();
 
-        if (user.isRegistered()) {
+        if (user.isRegistered() != null) {
             result.setValue(new RegisterResult(user));
         } else {
             result.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));

@@ -48,7 +48,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        LoggedInUser user = LoginRepository.getInstance().getUser();
+        LoggedInUser user = LoginRepository.getInstance(getApplicationContext()).getUser();
 
         viewModel.getLiveData().setValue(Chat.getChatNames(new DbHelper(getApplicationContext()), user.getId()));
     }
@@ -65,7 +65,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void logout(MenuItem item) {
-        LoginRepository loginRepository = LoginRepository.getInstance();
+        LoginRepository loginRepository = LoginRepository.getInstance(getApplicationContext());
         loginRepository.logout();
         startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));
     }
