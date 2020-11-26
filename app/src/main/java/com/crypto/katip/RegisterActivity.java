@@ -14,10 +14,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.crypto.katip.login.LoginRepository;
-import com.crypto.katip.viewmodels.register.RegisterFormState;
-import com.crypto.katip.viewmodels.register.RegisterResult;
-import com.crypto.katip.viewmodels.register.RegisterViewModel;
-import com.crypto.katip.viewmodels.register.RegisterViewModelFactory;
+import com.crypto.katip.ui.register.RegisterFormState;
+import com.crypto.katip.ui.register.RegisterResult;
+import com.crypto.katip.ui.register.RegisterViewModel;
+import com.crypto.katip.ui.register.RegisterViewModelFactory;
 
 public class RegisterActivity extends AppCompatActivity {
     public RegisterViewModel viewModel;

@@ -5,7 +5,7 @@ import android.content.Context;
 
 import com.crypto.katip.models.LoggedInUser;
 import com.crypto.katip.models.User;
-import com.crypto.katip.viewmodels.login.LoginResult;
+import com.crypto.katip.ui.login.LoginResult;
 
 public class LoginRepository {
     private static volatile LoginRepository instance;

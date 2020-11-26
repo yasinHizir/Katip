@@ -8,7 +8,7 @@
     android:layout_gravity="center"
     android:orientation="vertical"
     android:background="@color/black"
-    tools:context=".ChatAdderFragment">
+    tools:context=".ui.home.ChatAdderFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"

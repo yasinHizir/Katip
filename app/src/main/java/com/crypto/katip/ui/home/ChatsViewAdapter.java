@@ -1,4 +1,4 @@
-package com.crypto.katip.viewmodels.home;
+package com.crypto.katip.ui.home;
 
 
 import android.view.LayoutInflater;
