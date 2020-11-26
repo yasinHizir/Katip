@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:background="@color/black"
+    tools:context=".ChatAdderFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginTop="32dp"
+        android:background="@color/dark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/create_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="@string/text_chat_adder"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp" />
+
+        <EditText
+            android:id="@+id/interlocutor"
+            android:layout_width="256dp"
+            android:layout_height="55dp"
+            android:layout_below="@id/create_chat"
+            android:layout_marginTop="20dp"
+            android:autofillHints=""
+            android:background="@drawable/rounded"
+            android:ems="10"
+            android:hint="@string/edit_text_interlocutor"
+            android:inputType="text"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/create"
+            android:layout_width="100dp"
+            android:layout_height="55dp"
+            android:layout_below="@id/interlocutor"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:alpha=".7"
+            android:background="@drawable/rounded"
+            android:backgroundTint="@color/primary"
+            android:text="@string/button_create"
+            android:textColor="@color/light" />
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

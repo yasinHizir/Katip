@@ -21,13 +21,16 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void addChat(String username) {
-        ArrayList<String> chatNames = this.liveData.getValue();
+        ArrayList<String> chatNames = getLiveData().getValue();
 
         if (chatNames != null) {
             chatNames.add(username);
+        } else {
+            ArrayList<String> newArray = new ArrayList<>();
+            newArray.add(username);
+            getLiveData().setValue(newArray);
         }
 
-        this.liveData.setValue(chatNames);
+        getLiveData().setValue(chatNames);
     }
-
 }

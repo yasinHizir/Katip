@@ -6,7 +6,7 @@
     <item
         android:id="@+id/menu1"
         android:onClick="add"
-        android:title="sohbet ekle"
+        android:title="@string/button_create_chat"
         app:showAsAction="never" />
 
     <item

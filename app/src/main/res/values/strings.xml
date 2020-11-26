@@ -3,17 +3,20 @@
     <string name="button_login">Giriş Yap</string>
     <string name="edit_text_password">Şifre</string>
     <string name="edit_text_username">Kullanıcı Adı</string>
+    <string name="edit_text_interlocutor">Muhatabın Kullanıcı adı</string>
     <string name="text_app_name">Katip</string>
     <string name="text_welcome">Hoşgeldiniz</string>
     <string name="text_registration">Henüz üye değil misiniz? Kayıt Ol.</string>
     <string name="todo">TODO</string>
     <string name="edit_text_verify_password">Şifreyi doğrulayın</string>
     <string name="button_register">Kayıt Ol</string>
+    <string name="button_create">Oluştur</string>
+    <string name="button_create_chat">Sohbet oluştur</string>
     <string name="button_logout">Çıkış yap</string>
     <string name="text_login">Giriş yapmak için tıklayınız!</string>
     <string name="title_profile">Profile</string>
     <string name="title_chat">Chat</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_chat_adder">Sohbet başlat</string>
     <string name="message">Mesajlar</string>
 </resources>

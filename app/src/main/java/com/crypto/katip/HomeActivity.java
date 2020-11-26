@@ -2,6 +2,7 @@ package com.crypto.katip;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -61,7 +62,9 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void add(MenuItem item) {
-        viewModel.addChat("Deneme Başarılı");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        ChatAdderFragment fragment = ChatAdderFragment.newInstance(viewModel);
+        fragment.show(fragmentManager, "chat_adder_fragment");
     }
 
     public void logout(MenuItem item) {
