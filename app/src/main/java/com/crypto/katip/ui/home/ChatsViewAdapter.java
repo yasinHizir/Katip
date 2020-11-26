@@ -1,6 +1,5 @@
 package com.crypto.katip.ui.home;
 
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
         this.interlocutor = interlocutor;
     }
 
-
     @NonNull
     @Override
     public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -44,8 +42,8 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
 
     public static class ChatViewHolder extends RecyclerView.ViewHolder {
 
-        private CircleImageView image;
-        private TextView interlocutor;
+        private final CircleImageView image;
+        private final TextView interlocutor;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);

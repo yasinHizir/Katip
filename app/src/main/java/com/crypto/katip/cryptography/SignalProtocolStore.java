@@ -11,7 +11,6 @@ import com.crypto.katip.database.UserDatabase;
 
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.IdentityKeyPair;
-import org.whispersystems.libsignal.InvalidKeyIdException;
 import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.SessionRecord;
@@ -139,6 +138,6 @@ public class SignalProtocolStore implements org.whispersystems.libsignal.state.S
 
     @Override
     public void removeSignedPreKey(int signedPreKeyId) {
-        new SignedPreKeyDatabase(new DbHelper(context), userId).contain(signedPreKeyId);
+        new SignedPreKeyDatabase(new DbHelper(context), userId).remove(signedPreKeyId);
     }
 }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Chat {
     private int id;
-    private int userId;
+    private final int userId;
     private String interlocutor;
     private ChatDatabase database;
 

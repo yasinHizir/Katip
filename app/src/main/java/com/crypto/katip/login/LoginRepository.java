@@ -2,7 +2,6 @@ package com.crypto.katip.login;
 
 import android.content.Context;
 
-
 import com.crypto.katip.models.LoggedInUser;
 import com.crypto.katip.models.User;
 import com.crypto.katip.ui.login.LoginResult;

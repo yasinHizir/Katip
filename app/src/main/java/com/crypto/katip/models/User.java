@@ -1,6 +1,5 @@
 package com.crypto.katip.models;
 
-
 import androidx.annotation.Nullable;
 
 import com.crypto.katip.database.DbHelper;

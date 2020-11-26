@@ -8,6 +8,7 @@ import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.libsignal.state.SessionRecord;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SessionDatabase extends Database{
@@ -46,7 +47,7 @@ public class SessionDatabase extends Database{
     }
 
     public List<Integer> getSubDevices(String name){
-        List<Integer> integers = null;
+        List<Integer> integers = new ArrayList<>();
         try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
 
             String query = "SELECT " + DEVICE_ID + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + NAME + " = '" + name + "';";
