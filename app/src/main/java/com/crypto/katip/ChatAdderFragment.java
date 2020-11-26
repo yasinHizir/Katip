@@ -12,18 +12,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.viewmodels.home.HomeViewModel;
 
 public class ChatAdderFragment extends DialogFragment {
     private final HomeViewModel viewModel;
+    private final ChatDatabase chatDatabase;
     private EditText interlocutorTextEdit;
 
-    private ChatAdderFragment(HomeViewModel viewModel) {
+    private ChatAdderFragment(HomeViewModel viewModel, ChatDatabase chatDatabase) {
         this.viewModel = viewModel;
+        this.chatDatabase = chatDatabase;
     }
 
-    public static ChatAdderFragment newInstance(HomeViewModel homeViewModel) {
-        return new ChatAdderFragment(homeViewModel);
+    public static ChatAdderFragment newInstance(HomeViewModel homeViewModel, ChatDatabase chatDatabase) {
+        return new ChatAdderFragment(homeViewModel, chatDatabase);
     }
 
     @Override
@@ -40,7 +43,9 @@ public class ChatAdderFragment extends DialogFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                viewModel.addChat(interlocutorTextEdit.getText().toString());
+                String username = interlocutorTextEdit.getText().toString();
+                viewModel.addChat(username);
+                chatDatabase.save(username);
                 dismiss();
             }
         });

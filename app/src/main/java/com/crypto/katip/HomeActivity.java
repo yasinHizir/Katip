@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.models.Chat;
@@ -26,10 +27,7 @@ import java.util.ArrayList;
 public class HomeActivity extends AppCompatActivity {
     private HomeViewModel viewModel;
     private RecyclerView recyclerView;
-
-    private Toolbar toolbar;
-
-    private ArrayList<String> mNames = new ArrayList<>();
+    private LoggedInUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +36,9 @@ public class HomeActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this, new HomeViewModelFactory()).get(HomeViewModel.class);
         recyclerView = findViewById(R.id.recycle_view);
+        user = LoginRepository.getInstance(getApplicationContext()).getUser();
 
-        toolbar = findViewById(R.id.action_bar);
+        Toolbar toolbar = findViewById(R.id.action_bar);
         setSupportActionBar(toolbar);
 
         viewModel.getLiveData().observe(this, new Observer<ArrayList<String>>() {
@@ -48,9 +47,6 @@ public class HomeActivity extends AppCompatActivity {
                 viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext()));
             }
         });
-
-        LoggedInUser user = LoginRepository.getInstance(getApplicationContext()).getUser();
-
         viewModel.getLiveData().setValue(Chat.getChatNames(new DbHelper(getApplicationContext()), user.getId()));
     }
 
@@ -63,7 +59,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void add(MenuItem item) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        ChatAdderFragment fragment = ChatAdderFragment.newInstance(viewModel);
+        ChatAdderFragment fragment = ChatAdderFragment.newInstance(viewModel, new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()));
         fragment.show(fragmentManager, "chat_adder_fragment");
     }
 
@@ -71,5 +67,6 @@ public class HomeActivity extends AppCompatActivity {
         LoginRepository loginRepository = LoginRepository.getInstance(getApplicationContext());
         loginRepository.logout();
         startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));
+        finish();
     }
 }
