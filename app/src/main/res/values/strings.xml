@@ -19,4 +19,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="text_chat_adder">Sohbet başlat</string>
     <string name="message">Mesajlar</string>
+    <string name="start_chat">Sohbet Başlat</string>
+    <string name="create">Oluştur</string>
 </resources>
