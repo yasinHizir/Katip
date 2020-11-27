@@ -47,8 +47,8 @@
 
         <EditText
             android:id="@+id/username"
-            android:layout_width="256dp"
-            android:layout_height="55dp"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
             android:layout_below="@id/appName"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
@@ -57,12 +57,13 @@
             android:ems="10"
             android:hint="@string/edit_text_username"
             android:inputType="text"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textSize="24sp" />
 
         <EditText
             android:id="@+id/password"
-            android:layout_width="256dp"
-            android:layout_height="55dp"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
             android:layout_below="@id/username"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
@@ -72,12 +73,13 @@
             android:hint="@string/edit_text_password"
             android:inputType="textPassword"
             android:maxLength="10"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textSize="24sp" />
 
         <EditText
             android:id="@+id/passwordVerify"
-            android:layout_width="256dp"
-            android:layout_height="55dp"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
             android:layout_below="@id/password"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
@@ -87,16 +89,16 @@
             android:hint="@string/edit_text_verify_password"
             android:inputType="textPassword"
             android:maxLength="10"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/register"
             android:layout_width="100dp"
-            android:layout_height="55dp"
+            android:layout_height="50dp"
             android:layout_below="@id/passwordVerify"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:alpha=".7"
             android:background="@drawable/rounded"
             android:backgroundTint="@color/primary"
             android:onClick="register"
