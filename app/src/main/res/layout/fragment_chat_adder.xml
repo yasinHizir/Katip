@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/dark"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/create_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/start_chat"
+        android:textAlignment="center"
+        android:textColor="@color/light"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/interlocutor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/create_chat"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/rounded"
+        android:hint="@string/edit_text_username"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/dark"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/create"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:layout_below="@id/interlocutor"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded"
+        android:backgroundTint="@color/primary"
+        android:text="@string/create"
+        android:textColor="@color/light" />
+
+
+</RelativeLayout>

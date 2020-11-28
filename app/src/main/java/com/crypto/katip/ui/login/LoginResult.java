@@ -1,4 +1,4 @@
-package com.crypto.katip.viewmodels.login;
+package com.crypto.katip.ui.login;
 
 import com.crypto.katip.models.LoggedInUser;
 

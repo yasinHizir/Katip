@@ -13,10 +13,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.crypto.katip.viewmodels.register.RegisterFormState;
-import com.crypto.katip.viewmodels.register.RegisterResult;
-import com.crypto.katip.viewmodels.register.RegisterViewModel;
-import com.crypto.katip.viewmodels.register.RegisterViewModelFactory;
+import com.crypto.katip.login.LoginRepository;
+import com.crypto.katip.ui.register.RegisterFormState;
+import com.crypto.katip.ui.register.RegisterResult;
+import com.crypto.katip.ui.register.RegisterViewModel;
+import com.crypto.katip.ui.register.RegisterViewModelFactory;
 
 public class RegisterActivity extends AppCompatActivity {
     public RegisterViewModel viewModel;
@@ -55,11 +56,12 @@ public class RegisterActivity extends AppCompatActivity {
         viewModel.getResult().observe(this, new Observer<RegisterResult>() {
             @Override
             public void onChanged(RegisterResult registerResult) {
-                if (registerResult.getSuccess()) {
+                if (registerResult.getSuccess() != null) {
+                    LoginRepository.getInstance(getApplicationContext()).login(registerResult.getSuccess());
                     startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                     finish();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Kullanıcı sisteme kayıtlanamadı.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), registerResult.getError(), Toast.LENGTH_SHORT).show();
                 }
             }
         });

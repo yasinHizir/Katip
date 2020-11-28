@@ -10,9 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.crypto.katip.viewmodels.login.LoginResult;
-import com.crypto.katip.viewmodels.login.LoginViewModel;
-import com.crypto.katip.viewmodels.login.LoginViewModelFactory;
+import com.crypto.katip.ui.login.LoginResult;
+import com.crypto.katip.ui.login.LoginViewModel;
+import com.crypto.katip.ui.login.LoginViewModelFactory;
 
 public class LoginActivity extends AppCompatActivity {
     public LoginViewModel viewModel;

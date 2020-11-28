@@ -1,4 +1,4 @@
-package com.crypto.katip.viewmodels.register;
+package com.crypto.katip.ui.register;
 
 import android.content.Context;
 
@@ -16,10 +16,10 @@ public class RegisterViewModel extends ViewModel {
         User user = new User(username, password, new DbHelper(context));
         user.save();
 
-        if (user.isRegistered()) {
-            result.setValue(new RegisterResult(true));
+        if (user.isRegistered() != null) {
+            result.setValue(new RegisterResult(user));
         } else {
-            result.setValue(new RegisterResult(false));
+            result.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));
         }
     }
 

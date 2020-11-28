@@ -17,6 +17,7 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SignedPreKeyDatabase.getCreateTable());
         sqLiteDatabase.execSQL(IdentityKeyDatabase.getCreateTable());
         sqLiteDatabase.execSQL(SessionDatabase.getCreateTable());
+        sqLiteDatabase.execSQL(ChatDatabase.getCreateTable());
     }
 
     @Override
@@ -26,6 +27,7 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SignedPreKeyDatabase.getDropTable());
         sqLiteDatabase.execSQL(IdentityKeyDatabase.getDropTable());
         sqLiteDatabase.execSQL(SessionDatabase.getDropTable());
+        sqLiteDatabase.execSQL(ChatDatabase.getDropTable());
 
         onCreate(sqLiteDatabase);
     }

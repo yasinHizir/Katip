@@ -1,6 +1,5 @@
 package com.crypto.katip.models;
 
-
 import androidx.annotation.Nullable;
 
 import com.crypto.katip.database.DbHelper;
@@ -36,7 +35,7 @@ public class User {
         database.remove(this.id);
     }
 
-    public boolean isRegistered() {
+    public User isRegistered() {
         return database.isRegistered(this.username, this.password);
     }
 

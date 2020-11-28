@@ -1,14 +1,13 @@
-package com.crypto.katip.controllers;
+package com.crypto.katip.login;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.MasterKey;
 
-import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.models.LoggedInUser;
-import com.crypto.katip.models.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,46 +17,16 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
-public class LoginController {
-    private static volatile LoginController instance;
-    private LoggedInUser user;
+public class LoginDataSource {
+    private final Context context;
 
-    public static LoginController getInstance(){
-        if (instance == null){
-            instance = new LoginController();
-        }
-        return instance;
+    public LoginDataSource(Context context) {
+        this.context = context;
     }
 
-    public void login(String username, String password, Context context) {
-        User user = new User(username, password, new DbHelper(context));
-
-        if (user.isRegistered()) {
-            user = User.getInstance(username, new DbHelper(context));
-            if (setLoggedInUser(new LoggedInUser(user.getId(), user.getUsername()), context)) {
-                getLoggedInUser(context);
-            }
-        }
-    }
-
-    public boolean isLoggedIn(Context context) {
-        if (this.user == null) {
-            getLoggedInUser(context);
-        }
-
-        return this.user != null;
-    }
-
-    public void logout() {
-        removeLoggedInUser();
-    }
-
-    public LoggedInUser getUser(){
-        return user;
-    }
-
-    private boolean setLoggedInUser(LoggedInUser user, Context context) {
+    public boolean login(LoggedInUser user) {
         boolean result = false;
+
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
             @SuppressLint("SdCardPath")
@@ -81,7 +50,10 @@ public class LoginController {
         return result;
     }
 
-    private void getLoggedInUser(Context context) {
+    @Nullable
+    public LoggedInUser getLoggedInUser() {
+        LoggedInUser user = null;
+
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
             @SuppressLint("SdCardPath")
@@ -95,18 +67,24 @@ public class LoginController {
             InputStream stream = file.openFileInput();
             ObjectInputStream objectStream = new ObjectInputStream(stream);
 
-            this.user = (LoggedInUser) objectStream.readObject();
+            user = (LoggedInUser) objectStream.readObject();
         } catch (GeneralSecurityException | IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+        return user;
     }
 
-    private void removeLoggedInUser() {
+    public boolean logout() {
+        boolean result = false;
+
         @SuppressLint("SdCardPath")
         File file = new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt");
 
         if (file.delete()) {
-            this.user = null;
+            result = true;
         }
+
+        return result;
     }
 }
