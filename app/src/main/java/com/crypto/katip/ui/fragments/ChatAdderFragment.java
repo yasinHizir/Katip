@@ -1,4 +1,4 @@
-package com.crypto.katip.ui.home;
+package com.crypto.katip.ui.fragments;
 
 import android.os.Bundle;
 
@@ -14,6 +14,7 @@ import android.widget.EditText;
 
 import com.crypto.katip.R;
 import com.crypto.katip.database.ChatDatabase;
+import com.crypto.katip.ui.home.HomeViewModel;
 
 public class ChatAdderFragment extends DialogFragment {
     private final HomeViewModel viewModel;

@@ -19,7 +19,7 @@ import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.models.Chat;
 import com.crypto.katip.models.LoggedInUser;
-import com.crypto.katip.ui.home.ChatAdderFragment;
+import com.crypto.katip.ui.fragments.ChatAdderFragment;
 import com.crypto.katip.ui.home.HomeViewModel;
 import com.crypto.katip.ui.home.HomeViewModelFactory;
 
