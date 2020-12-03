@@ -15,11 +15,11 @@
         <include layout="@layout/action_bar"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/adapter_chat"
+            android:id="@+id/recycle_view_messages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/action_bar"
-            android:background="@color/dark" />
+            android:background="@color/white" />
 
     </RelativeLayout>
 
