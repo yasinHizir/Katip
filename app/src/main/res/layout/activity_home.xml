@@ -23,7 +23,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/rounded"
+            android:background="@drawable/rounded_15"
             android:backgroundTint="@color/dark" />
     </RelativeLayout>
 
