@@ -33,6 +33,10 @@ public class Chat {
         database.remove(this.id);
     }
 
+    public int getId() {
+        return this.id;
+    }
+
     public static ArrayList<String> getChatNames(DbHelper dbHelper, int userId) {
         ChatDatabase database = new ChatDatabase(dbHelper, userId);
         return database.getChatNames();
