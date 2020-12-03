@@ -3,7 +3,7 @@
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded"
+    android:background="@drawable/rounded_15"
     android:backgroundTint="@android:color/transparent"
     android:paddingLeft="20dp"
     android:paddingTop="15dp"
