@@ -51,7 +51,6 @@ public class ChatActivity extends AppCompatActivity {
                 viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext()));
             }
         });
-        new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).save("Tamam anladık", false);
         viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).getMessages());
     }
 
