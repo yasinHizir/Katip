@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_15"
     android:backgroundTint="@android:color/transparent"
-    android:onClick="chatDetails"
     android:paddingLeft="15dp"
     android:paddingTop="10dp"
     android:paddingRight="15dp"
@@ -31,7 +29,6 @@
             android:layout_marginStart="20dp"
             android:layout_toRightOf="@id/image"
             android:fontFamily="sans-serif-light"
-            android:text="Canada"
             android:textColor="@color/light"
             android:textSize="20sp" />
     </RelativeLayout>

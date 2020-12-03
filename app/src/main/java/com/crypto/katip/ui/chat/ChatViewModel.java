@@ -1,4 +1,4 @@
-package com.crypto.katip.ui.home;
+package com.crypto.katip.ui.chat;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -7,30 +7,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class HomeViewModel extends ViewModel {
+public class ChatViewModel extends ViewModel {
     private final MutableLiveData<ArrayList<String>> liveData = new MutableLiveData<>();
 
     public void refreshRecycleView(RecyclerView recyclerView, LinearLayoutManager layout) {
-        ChatsViewAdapter adapter = new ChatsViewAdapter(null, liveData.getValue());
+        MessagesViewAdapter adapter = new MessagesViewAdapter(liveData.getValue());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layout);
     }
 
     public MutableLiveData<ArrayList<String>> getLiveData() {
         return this.liveData;
-    }
-
-    public void addChat(String username) {
-        ArrayList<String> chatNames = getLiveData().getValue();
-
-        if (chatNames != null) {
-            chatNames.add(username);
-        } else {
-            ArrayList<String> newArray = new ArrayList<>();
-            newArray.add(username);
-            getLiveData().setValue(newArray);
-        }
-
-        getLiveData().setValue(chatNames);
     }
 }

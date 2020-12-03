@@ -29,7 +29,9 @@ public class Chat {
         database.save(this.interlocutor);
     }
 
-    public void remove() { database.remove(this.id);}
+    public void remove() {
+        database.remove(this.id);
+    }
 
     public static ArrayList<String> getChatNames(DbHelper dbHelper, int userId) {
         ChatDatabase database = new ChatDatabase(dbHelper, userId);
@@ -40,6 +42,12 @@ public class Chat {
     public static Chat getInstance(DbHelper dbHelper, int userId, int chatId) {
         ChatDatabase database = new ChatDatabase(dbHelper, userId);
         return database.getChat(chatId);
+    }
+
+    @Nullable
+    public static Chat getInstance(DbHelper dbHelper, int userId, String interlocutor) {
+        ChatDatabase database = new ChatDatabase(dbHelper, userId);
+        return database.getChat(interlocutor);
     }
 
     public int getUserId() {
