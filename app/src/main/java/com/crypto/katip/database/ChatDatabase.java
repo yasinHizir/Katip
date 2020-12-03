@@ -76,7 +76,7 @@ public class ChatDatabase extends Database{
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Chat chat = null;
 
-        try(Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = " + interlocutor + " AND " + USER_ID + " = " + userId, null)) {
+        try(Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, interlocutor);
             }
