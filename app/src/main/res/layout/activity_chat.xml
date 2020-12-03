@@ -24,7 +24,8 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="77dp"
-            android:background="@color/dark">
+            android:background="@drawable/rounded_15"
+            android:backgroundTint="@color/dark">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycle_view_messages"
