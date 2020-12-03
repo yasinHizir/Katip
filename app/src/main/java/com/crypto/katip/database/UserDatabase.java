@@ -162,6 +162,10 @@ public class UserDatabase extends Database {
         return "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
+    public static String getTableName() {
+        return TABLE_NAME;
+    }
+
     private String passwordDigest(String password){
         MessageDigest messageDigest = null;
 
