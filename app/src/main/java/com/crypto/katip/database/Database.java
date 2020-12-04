@@ -20,4 +20,8 @@ public abstract class Database {
     public static void setDatabaseVersion(int databaseVersion){
         DATABASE_VERSION = databaseVersion;
     }
+
+    public static String getChatRemoveTrigger() {
+        return "CREATE TRIGGER remove_messages_after_delete_chat AFTER DELETE ON " + ChatDatabase.getTableName() + " BEGIN DELETE FROM " + MessageDatabase.getTableName() + " WHERE " + MessageDatabase.getChatId() + " = OLD." + ChatDatabase.getID() + "; END;";
+    }
 }

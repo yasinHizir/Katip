@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.MasterKey;
 
-import com.crypto.katip.models.LoggedInUser;
+import com.crypto.katip.database.models.LoggedInUser;
 
 import java.io.File;
 import java.io.IOException;

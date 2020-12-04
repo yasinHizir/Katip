@@ -2,8 +2,8 @@ package com.crypto.katip.login;
 
 import android.content.Context;
 
-import com.crypto.katip.models.LoggedInUser;
-import com.crypto.katip.models.User;
+import com.crypto.katip.database.UserDatabase;
+import com.crypto.katip.database.models.LoggedInUser;
 import com.crypto.katip.ui.login.LoginResult;
 
 public class LoginRepository {
@@ -22,11 +22,14 @@ public class LoginRepository {
         return instance;
     }
 
-    public LoginResult login(User user) {
-        user = user.isRegistered();
-        if (user != null && dataSource.login(new LoggedInUser(user.getId(), user.getUsername()))) {
-            this.user = new LoggedInUser(user.getId(), user.getUsername());
-            return new LoginResult(this.user);
+    public LoginResult login(String username, String password, UserDatabase database) {
+
+        if (database.isRegistered(username, password)) {
+            LoggedInUser user = database.createLoggedInUser(username);
+            if (dataSource.login(user)) {
+                this.user = user;
+                return new LoginResult(user);
+            }
         }
         return new LoginResult("Kullanıcı sistemde kayıtlı değil.");
     }

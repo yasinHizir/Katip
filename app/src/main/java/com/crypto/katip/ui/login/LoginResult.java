@@ -1,6 +1,6 @@
 package com.crypto.katip.ui.login;
 
-import com.crypto.katip.models.LoggedInUser;
+import com.crypto.katip.database.models.LoggedInUser;
 
 public class LoginResult {
     private LoggedInUser success;

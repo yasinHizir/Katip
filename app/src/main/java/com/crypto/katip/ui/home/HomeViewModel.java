@@ -10,10 +10,10 @@ import java.util.ArrayList;
 public class HomeViewModel extends ViewModel {
     private final MutableLiveData<ArrayList<String>> liveData = new MutableLiveData<>();
 
-    public void refreshRecycleView(RecyclerView recyclerView, LinearLayoutManager manager) {
+    public void refreshRecycleView(RecyclerView recyclerView, LinearLayoutManager layout) {
         ChatsViewAdapter adapter = new ChatsViewAdapter(null, liveData.getValue());
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(manager);
+        recyclerView.setLayoutManager(layout);
     }
 
     public MutableLiveData<ArrayList<String>> getLiveData() {

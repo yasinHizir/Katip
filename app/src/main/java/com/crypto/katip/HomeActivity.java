@@ -17,13 +17,13 @@ import android.view.MenuItem;
 import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.DbHelper;
-import com.crypto.katip.models.Chat;
-import com.crypto.katip.models.LoggedInUser;
+import com.crypto.katip.database.models.LoggedInUser;
 import com.crypto.katip.ui.fragments.ChatAdderFragment;
 import com.crypto.katip.ui.home.HomeViewModel;
 import com.crypto.katip.ui.home.HomeViewModelFactory;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
     private HomeViewModel viewModel;
@@ -38,9 +38,7 @@ public class HomeActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this, new HomeViewModelFactory()).get(HomeViewModel.class);
         recyclerView = findViewById(R.id.recycle_view);
         user = LoginRepository.getInstance(getApplicationContext()).getUser();
-
-        Toolbar toolbar = findViewById(R.id.action_bar);
-        setSupportActionBar(toolbar);
+        setToolbar();
 
         viewModel.getLiveData().observe(this, new Observer<ArrayList<String>>() {
             @Override
@@ -48,13 +46,13 @@ public class HomeActivity extends AppCompatActivity {
                 viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext()));
             }
         });
-        viewModel.getLiveData().setValue(Chat.getChatNames(new DbHelper(getApplicationContext()), user.getId()));
+        viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChatNames());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_menu, menu);
+        inflater.inflate(R.menu.activity_home_menu, menu);
         return true;
     }
 
@@ -69,5 +67,11 @@ public class HomeActivity extends AppCompatActivity {
         loginRepository.logout();
         startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));
         finish();
+    }
+
+    private void setToolbar() {
+        Toolbar toolbar = findViewById(R.id.home_bar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Sohbetler");
     }
 }

@@ -6,12 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.Nullable;
 
-import com.crypto.katip.models.Chat;
+import com.crypto.katip.database.models.Chat;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class ChatDatabase extends Database{
+public class ChatDatabase extends Database {
     private static final String TABLE_NAME = "chat";
     private static final String ID = "ID";
     private static final String USER_ID = "userID";
@@ -44,7 +44,7 @@ public class ChatDatabase extends Database{
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         ArrayList<String> interlocutor = new ArrayList<>();
 
-        try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId, null)){
+        try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     interlocutor.add(cursor.getString((cursor.getColumnIndexOrThrow(INTERLOCUTOR))));
@@ -61,9 +61,24 @@ public class ChatDatabase extends Database{
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Chat chat = null;
 
-        try(Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID + " = " + id + " AND " + USER_ID + " = " + userId, null)) {
+        try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id + " AND " + USER_ID + " = " + userId, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), cursor.getInt(cursor.getColumnIndexOrThrow(USER_ID)), cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR)));
+                chat = new Chat(id, userId, cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR)));
+            }
+        }
+
+        database.close();
+        return chat;
+    }
+
+    @Nullable
+    public Chat getChat(String interlocutor) {
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Chat chat = null;
+
+        try (Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, interlocutor);
             }
         }
 
@@ -85,5 +100,13 @@ public class ChatDatabase extends Database{
 
     public static String getDropTable() {
         return "DROP TABLE IF EXISTS " + TABLE_NAME;
+    }
+
+    public static String getTableName() {
+        return TABLE_NAME;
+    }
+
+    public static String getID() {
+        return ID;
     }
 }

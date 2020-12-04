@@ -6,7 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.Nullable;
 
-import com.crypto.katip.models.User;
+import com.crypto.katip.database.models.LoggedInUser;
+import com.crypto.katip.database.models.User;
 
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.IdentityKeyPair;
@@ -104,7 +105,7 @@ public class UserDatabase extends Database {
         Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            user = new User(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username, dbHelper);
+            user = new User(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username);
             cursor.close();
         }
 
@@ -116,10 +117,10 @@ public class UserDatabase extends Database {
     public User getUser(int id) {
         User user = null;
         SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = '" + id + "'", null);
+        Cursor cursor = database.rawQuery("SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id, null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)), dbHelper);
+            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)));
             cursor.close();
         }
 
@@ -128,21 +129,35 @@ public class UserDatabase extends Database {
     }
 
     @Nullable
-    public User isRegistered(String username, String password) {
+    public LoggedInUser createLoggedInUser(String username) {
+        LoggedInUser user = null;
         SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + PASSWORD + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
-        User user = null;
 
-        if (cursor != null && cursor.moveToFirst()) {
-            String passwordRegistered = cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD));
-            cursor.close();
-            if (passwordRegistered.equals(passwordDigest(password))) {
-                user = getUser(username);
+        try(Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                user = new LoggedInUser(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username);
             }
         }
 
         database.close();
         return user;
+    }
+
+    public boolean isRegistered(String username, String password) {
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT " + PASSWORD + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
+        boolean result = false;
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String passwordRegistered = cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD));
+            cursor.close();
+            if (passwordRegistered.equals(passwordDigest(password))) {
+                result = true;
+            }
+        }
+
+        database.close();
+        return result;
     }
 
 
@@ -162,16 +177,20 @@ public class UserDatabase extends Database {
         return "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
+    public static String getTableName() {
+        return TABLE_NAME;
+    }
+
     private String passwordDigest(String password){
-        MessageDigest messageDigest = null;
 
         try {
-            messageDigest = MessageDigest.getInstance("SHA-256");
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             messageDigest.update(password.getBytes());
+            return new String(messageDigest.digest());
         } catch (NoSuchAlgorithmException | IllegalArgumentException e ) {
             e.printStackTrace();
         }
 
-        return new String(messageDigest.digest());
+        return "";
     }
 }

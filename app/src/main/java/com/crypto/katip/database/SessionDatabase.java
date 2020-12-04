@@ -92,10 +92,10 @@ public class SessionDatabase extends Database{
     }
 
     public static String getCreateTable(){
-        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + DEVICE_ID + " INTEGER, " + NAME + " TEXT, " + RECORD + " BLOB, FOREIGN KEY(" + USER_ID + ") REFERENCES user (ID));";
+        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + DEVICE_ID + " INTEGER, " + NAME + " TEXT, " + RECORD + " BLOB, FOREIGN KEY(" + USER_ID + ") REFERENCES " + UserDatabase.getTableName() + " (ID));";
     }
 
     public static String getDropTable(){
-        return "DROP TABLE " + TABLE_NAME;
+        return "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 }

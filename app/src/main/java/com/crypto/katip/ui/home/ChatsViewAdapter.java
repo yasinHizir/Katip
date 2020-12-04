@@ -1,5 +1,6 @@
 package com.crypto.katip.ui.home;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.crypto.katip.ChatActivity;
 import com.crypto.katip.R;
 
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
     @NonNull
     @Override
     public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chats_list_item, parent, false);
         return new ChatViewHolder(view);
     }
 
@@ -45,7 +47,7 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
         private final CircleImageView image;
         private final TextView interlocutor;
 
-        public ChatViewHolder(@NonNull View itemView) {
+        public ChatViewHolder(@NonNull final View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.image);
             interlocutor = itemView.findViewById(R.id.image_name);
@@ -53,7 +55,9 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    Intent intent = new Intent(view.getContext(), ChatActivity.class);
+                    intent.putExtra(ChatActivity.INTERLOCUTOR, interlocutor.getText().toString());
+                    view.getContext().startActivity(intent);
                 }
             });
         }
