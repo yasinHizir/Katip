@@ -77,6 +77,14 @@ public class MessageDatabase extends Database{
     }
 
     public static String getDropTable() {
-        return "DROP TABLE EXISTS " + TABLE_NAME;
+        return "DROP TABLE IF EXISTS " + TABLE_NAME;
+    }
+
+    public static String getTableName() {
+        return TABLE_NAME;
+    }
+
+    public static String getChatId() {
+        return CHAT_ID;
     }
 }

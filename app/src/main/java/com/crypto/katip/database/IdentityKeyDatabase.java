@@ -61,6 +61,6 @@ public class IdentityKeyDatabase extends Database{
     }
 
     public static String getDropTable(){
-        return  "DROP TABLE " + TABLE_NAME;
+        return  "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 }

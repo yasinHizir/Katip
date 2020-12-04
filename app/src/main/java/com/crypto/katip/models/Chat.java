@@ -19,7 +19,7 @@ public class Chat {
         this.database = database;
     }
 
-    public Chat(int id, int userId, String interlocutor){
+    public Chat(int id, int userId, String interlocutor, ChatDatabase database){
         this.id = id;
         this.userId = userId;
         this.interlocutor = interlocutor;

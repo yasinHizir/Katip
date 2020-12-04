@@ -63,7 +63,7 @@ public class ChatDatabase extends Database {
 
         try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id + " AND " + USER_ID + " = " + userId, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                chat = new Chat(id, userId, cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR)));
+                chat = new Chat(id, userId, cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR)), this);
             }
         }
 
@@ -78,7 +78,7 @@ public class ChatDatabase extends Database {
 
         try (Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, interlocutor);
+                chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, interlocutor, this);
             }
         }
 
@@ -104,5 +104,9 @@ public class ChatDatabase extends Database {
 
     public static String getTableName() {
         return TABLE_NAME;
+    }
+
+    public static String getID() {
+        return ID;
     }
 }
