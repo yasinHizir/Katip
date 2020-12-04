@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.crypto.katip.database.DbHelper;
+import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.ui.register.RegisterFormState;
 import com.crypto.katip.ui.register.RegisterResult;
@@ -56,8 +58,8 @@ public class RegisterActivity extends AppCompatActivity {
         viewModel.getResult().observe(this, new Observer<RegisterResult>() {
             @Override
             public void onChanged(RegisterResult registerResult) {
-                if (registerResult.getSuccess() != null) {
-                    LoginRepository.getInstance(getApplicationContext()).login(registerResult.getSuccess());
+                if (registerResult.getError() == null) {
+                    LoginRepository.getInstance(getApplicationContext()).login(registerResult.getUsername(), registerResult.getPassword(), new UserDatabase(new DbHelper(getApplicationContext())));
                     startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                     finish();
                 } else {

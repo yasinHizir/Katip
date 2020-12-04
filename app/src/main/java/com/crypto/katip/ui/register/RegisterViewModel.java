@@ -6,18 +6,18 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.crypto.katip.database.DbHelper;
-import com.crypto.katip.models.User;
+import com.crypto.katip.database.UserDatabase;
 
 public class RegisterViewModel extends ViewModel {
     private final MutableLiveData<RegisterFormState> formState = new MutableLiveData<>();
     private final MutableLiveData<RegisterResult> result = new MutableLiveData<>();
 
     public void register(String username, String password, Context context) {
-        User user = new User(username, password, new DbHelper(context));
-        user.save();
+        UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
+        userDatabase.save(username, password);
 
-        if (user.isRegistered() != null) {
-            result.setValue(new RegisterResult(user));
+        if (userDatabase.isRegistered(username, password)) {
+            result.setValue(new RegisterResult(username, password));
         } else {
             result.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));
         }

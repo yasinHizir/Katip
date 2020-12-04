@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.crypto.katip.R;
-import com.crypto.katip.models.TextMessage;
+import com.crypto.katip.database.models.TextMessage;
 
 import java.util.ArrayList;
 

@@ -19,9 +19,9 @@ import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.MessageDatabase;
 import com.crypto.katip.login.LoginRepository;
-import com.crypto.katip.models.Chat;
-import com.crypto.katip.models.LoggedInUser;
-import com.crypto.katip.models.TextMessage;
+import com.crypto.katip.database.models.Chat;
+import com.crypto.katip.database.models.LoggedInUser;
+import com.crypto.katip.database.models.TextMessage;
 import com.crypto.katip.ui.chat.ChatViewModel;
 import com.crypto.katip.ui.chat.ChatViewModelFactory;
 
@@ -50,7 +50,7 @@ public class ChatActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String interlocutor = intent.getStringExtra(INTERLOCUTOR);
         setToolbar(interlocutor);
-        chat = Chat.getInstance(new DbHelper(getApplicationContext()), user.getId(), interlocutor);
+        chat = new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChat(interlocutor);
 
         viewModel.getLiveData().observe(this, new Observer<ArrayList<TextMessage>>() {
             @Override
@@ -71,8 +71,8 @@ public class ChatActivity extends AppCompatActivity {
     public void send(View view) {
         String text = messageEditText.getText().toString();
         MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId());
-        viewModel.addMessage(new TextMessage(chat.getId(), true, text, messageDatabase));
         messageDatabase.save(text, true);
+        viewModel.getLiveData().setValue(messageDatabase.getMessages());
     }
 
     public void remove(MenuItem item) {

@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.Nullable;
 
-import com.crypto.katip.models.Chat;
+import com.crypto.katip.database.models.Chat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,7 +63,7 @@ public class ChatDatabase extends Database {
 
         try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id + " AND " + USER_ID + " = " + userId, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                chat = new Chat(id, userId, cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR)), this);
+                chat = new Chat(id, userId, cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR)));
             }
         }
 
@@ -78,7 +78,7 @@ public class ChatDatabase extends Database {
 
         try (Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, interlocutor, this);
+                chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, interlocutor);
             }
         }
 

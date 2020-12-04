@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.crypto.katip.models.TextMessage;
+import com.crypto.katip.database.models.TextMessage;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,7 +63,7 @@ public class MessageDatabase extends Database{
                     if (cursor.getInt(cursor.getColumnIndexOrThrow(SELF)) == 1) {
                         self = true;
                     }
-                    messages.add(new TextMessage(messageId, self, chatId, body, this));
+                    messages.add(new TextMessage(messageId, self, chatId, body));
                 } while (cursor.moveToNext());
             }
         }

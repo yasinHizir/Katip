@@ -17,8 +17,7 @@ import android.view.MenuItem;
 import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.DbHelper;
-import com.crypto.katip.models.Chat;
-import com.crypto.katip.models.LoggedInUser;
+import com.crypto.katip.database.models.LoggedInUser;
 import com.crypto.katip.ui.fragments.ChatAdderFragment;
 import com.crypto.katip.ui.home.HomeViewModel;
 import com.crypto.katip.ui.home.HomeViewModelFactory;
@@ -47,7 +46,7 @@ public class HomeActivity extends AppCompatActivity {
                 viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext()));
             }
         });
-        viewModel.getLiveData().setValue(Chat.getChatNames(new DbHelper(getApplicationContext()), user.getId()));
+        viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChatNames());
     }
 
     @Override

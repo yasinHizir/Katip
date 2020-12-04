@@ -1,4 +1,4 @@
-package com.crypto.katip.models;
+package com.crypto.katip.database.models;
 
 import java.io.Serializable;
 
@@ -18,6 +18,5 @@ public class LoggedInUser implements Serializable {
     public String getUsername() {
         return username;
     }
-
 
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.crypto.katip.models.TextMessage;
+import com.crypto.katip.database.models.TextMessage;
 
 import java.util.ArrayList;
 
@@ -20,19 +20,5 @@ public class ChatViewModel extends ViewModel {
 
     public MutableLiveData<ArrayList<TextMessage>> getLiveData() {
         return this.liveData;
-    }
-
-    public void addMessage(TextMessage message) {
-        ArrayList<TextMessage> messages = getLiveData().getValue();
-
-        if (messages != null) {
-            messages.add(message);
-        } else {
-            ArrayList<TextMessage> newArray = new ArrayList<>();
-            newArray.add(message);
-            getLiveData().setValue(newArray);
-        }
-
-        getLiveData().setValue(messages);
     }
 }
