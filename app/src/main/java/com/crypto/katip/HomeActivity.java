@@ -1,5 +1,6 @@
 package com.crypto.katip;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
@@ -41,6 +42,8 @@ public class HomeActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.action_bar);
         setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        ab.setTitle("Mesajlar");
 
         viewModel.getLiveData().observe(this, new Observer<ArrayList<String>>() {
             @Override

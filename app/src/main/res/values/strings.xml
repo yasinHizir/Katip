@@ -19,7 +19,7 @@
     <string name="title_profile">Profile</string>
     <string name="title_chat">Chat</string>
     <string name="text_chat_adder">Sohbet başlat</string>
-    <string name="message">Mesajlar</string>
+    <string name="messages">Mesajlar</string>
     <string name="start_chat">Sohbet Başlat</string>
     <string name="create">Oluştur</string>
 </resources>
