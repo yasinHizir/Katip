@@ -13,9 +13,13 @@ public class ChatViewModel extends ViewModel {
     private final MutableLiveData<ArrayList<TextMessage>> liveData = new MutableLiveData<>();
 
     public void refreshRecycleView(RecyclerView recyclerView, LinearLayoutManager layout) {
-        MessagesViewAdapter adapter = new MessagesViewAdapter(liveData.getValue());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(layout);
+        ArrayList<TextMessage> messages = liveData.getValue();
+        if (messages != null) {
+            MessagesViewAdapter adapter = new MessagesViewAdapter(messages);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(layout);
+            recyclerView.scrollToPosition(messages.size() - 1);
+        }
     }
 
     public MutableLiveData<ArrayList<TextMessage>> getLiveData() {

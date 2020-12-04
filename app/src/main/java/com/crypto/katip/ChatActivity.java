@@ -73,6 +73,7 @@ public class ChatActivity extends AppCompatActivity {
         MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId());
         messageDatabase.save(text, true);
         viewModel.getLiveData().setValue(messageDatabase.getMessages());
+        messageEditText.setText("");
     }
 
     public void remove(MenuItem item) {

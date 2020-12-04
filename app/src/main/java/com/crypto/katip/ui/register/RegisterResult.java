@@ -1,6 +1,5 @@
 package com.crypto.katip.ui.register;
 
-
 public class RegisterResult {
     private String username;
     private String password;
