@@ -14,13 +14,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:autofillHints=""
         android:background="@drawable/rounded_15"
         android:gravity="top"
-        android:inputType="textMultiLine"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:text="Mesaj"
-        android:textColor="@color/dark" />
+        android:textColor="@color/dark"/>
 
 </RelativeLayout>

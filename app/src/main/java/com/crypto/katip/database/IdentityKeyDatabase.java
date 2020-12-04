@@ -57,7 +57,7 @@ public class IdentityKeyDatabase extends Database{
     }
 
     public static String getCreateTable(){
-        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + ADDRESS + " TEXT, " + KEY + " BLOB, FOREIGN KEY(" + USER_ID + ") REFERENCES user (ID));";
+        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + ADDRESS + " TEXT, " + KEY + " BLOB, FOREIGN KEY(" + USER_ID + ") REFERENCES " + UserDatabase.getTableName() + " (ID));";
     }
 
     public static String getDropTable(){

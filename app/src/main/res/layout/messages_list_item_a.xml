@@ -8,17 +8,14 @@
     android:paddingLeft="20dp"
     android:paddingTop="15dp"
     android:paddingRight="20dp">
-
-
+    
     <TextView
         android:id="@+id/text_view_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_15"
         android:gravity="top"
-        android:inputType="textMultiLine"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:text="Mesaj"
         android:textColor="@color/dark" />
 </RelativeLayout>

@@ -9,26 +9,40 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.crypto.katip.R;
+import com.crypto.katip.models.TextMessage;
 
 import java.util.ArrayList;
 
 public class MessagesViewAdapter extends RecyclerView.Adapter<MessagesViewAdapter.MessageViewHolder> {
-    private ArrayList<String> messages;
+    private final ArrayList<TextMessage> messages;
 
-    public MessagesViewAdapter(ArrayList<String> messages) {
+    public MessagesViewAdapter(ArrayList<TextMessage> messages) {
         this.messages = messages;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        TextMessage message = messages.get(position);
+        if (message.isSelf()) {
+            return 1;
+        }
+        return 0;
     }
 
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_list_item_a, parent, false);
+        if (viewType == 1) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_list_item_b, parent, false);
+        }
         return new MessageViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        holder.getMessageTextView().setText(this.messages.get(position));
+        TextMessage message = this.messages.get(position);
+        holder.getMessageTextView().setText(message.getBody());
     }
 
     @Override
