@@ -1,6 +1,7 @@
 package com.crypto.katip;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,9 +9,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.MessageDatabase;
 import com.crypto.katip.login.LoginRepository;
@@ -21,6 +26,7 @@ import com.crypto.katip.ui.chat.ChatViewModel;
 import com.crypto.katip.ui.chat.ChatViewModelFactory;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
     private ChatViewModel viewModel;
@@ -43,6 +49,7 @@ public class ChatActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String interlocutor = intent.getStringExtra(INTERLOCUTOR);
+        setToolbar(interlocutor);
         chat = Chat.getInstance(new DbHelper(getApplicationContext()), user.getId(), interlocutor);
 
         viewModel.getLiveData().observe(this, new Observer<ArrayList<TextMessage>>() {
@@ -54,10 +61,29 @@ public class ChatActivity extends AppCompatActivity {
         viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).getMessages());
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_chat_menu, menu);
+        return true;
+    }
+
     public void send(View view) {
         String text = messageEditText.getText().toString();
         MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId());
         viewModel.addMessage(new TextMessage(chat.getId(), true, text, messageDatabase));
         messageDatabase.save(text, true);
+    }
+
+    public void remove(MenuItem item) {
+        new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).remove(chat.getId());
+        startActivity(new Intent(ChatActivity.this, HomeActivity.class));
+        finish();
+    }
+
+    private void setToolbar(String title) {
+        Toolbar toolbar = findViewById(R.id.chat_bar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
     }
 }

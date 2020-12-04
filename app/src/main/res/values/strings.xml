@@ -7,6 +7,7 @@
     <string name="text_app_name">Katip</string>
     <string name="text_welcome">Hoşgeldiniz</string>
     <string name="text_registration">Henüz üye değil misiniz? Kayıt Ol.</string>
+    <string name="text_home_screen_title">Sohbetler</string>
     <string name="todo">TODO</string>
     <string name="edit_text_verify_password">Şifreyi doğrulayın</string>
     <string name="edit_text_message">Mesajınızı yazın</string>
@@ -15,6 +16,7 @@
     <string name="button_create_chat">Sohbet oluştur</string>
     <string name="button_logout">Çıkış yap</string>
     <string name="button_send">Gönder</string>
+    <string name="button_delete_chat">Sohbeti Sil</string>
     <string name="text_login">Giriş yapmak için tıklayınız!</string>
     <string name="title_profile">Profile</string>
     <string name="title_chat">Chat</string>

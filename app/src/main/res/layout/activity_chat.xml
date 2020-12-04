@@ -12,14 +12,14 @@
         android:background="@color/black">
 
         <include
-            android:id="@+id/appbar"
+            android:id="@+id/chat_bar"
             layout="@layout/action_bar" />
 
         <RelativeLayout
             android:id="@+id/chat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/appbar"
+            android:layout_below="@id/chat_bar"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="10dp"
