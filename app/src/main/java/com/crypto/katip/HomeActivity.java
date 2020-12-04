@@ -1,6 +1,5 @@
 package com.crypto.katip;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
@@ -25,6 +24,7 @@ import com.crypto.katip.ui.home.HomeViewModel;
 import com.crypto.katip.ui.home.HomeViewModelFactory;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
     private HomeViewModel viewModel;
@@ -39,11 +39,7 @@ public class HomeActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this, new HomeViewModelFactory()).get(HomeViewModel.class);
         recyclerView = findViewById(R.id.recycle_view);
         user = LoginRepository.getInstance(getApplicationContext()).getUser();
-
-        Toolbar toolbar = findViewById(R.id.action_bar);
-        setSupportActionBar(toolbar);
-        ActionBar ab = getSupportActionBar();
-        ab.setTitle("Mesajlar");
+        setToolbar();
 
         viewModel.getLiveData().observe(this, new Observer<ArrayList<String>>() {
             @Override
@@ -57,7 +53,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_menu, menu);
+        inflater.inflate(R.menu.activity_home_menu, menu);
         return true;
     }
 
@@ -72,5 +68,11 @@ public class HomeActivity extends AppCompatActivity {
         loginRepository.logout();
         startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));
         finish();
+    }
+
+    private void setToolbar() {
+        Toolbar toolbar = findViewById(R.id.home_bar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Sohbetler");
     }
 }
