@@ -34,7 +34,7 @@ public class SessionDatabase extends Database{
             try (Cursor cursor = database.rawQuery(query, null)) {
 
                 try {
-                    if (cursor != null && cursor.moveToFirst()) {
+                    if (cursor != null && cursor.moveToLast()) {
                         record = new SessionRecord(cursor.getBlob(cursor.getColumnIndexOrThrow(RECORD)));
                     }
                 } catch (IOException e) {
