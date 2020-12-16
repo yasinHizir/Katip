@@ -3,13 +3,13 @@ package com.crypto.katip.database.models;
 public class TextMessage {
     private final int id;
     private final int chatId;
-    private final boolean self;
+    private final boolean own;
     private final String body;
 
-    public TextMessage(int id, boolean self,int chatId, String body) {
+    public TextMessage(int id, boolean own, int chatId, String body) {
         this.id = id;
         this.chatId = chatId;
-        this.self = self;
+        this.own = own;
         this.body = body;
     }
 
@@ -21,8 +21,8 @@ public class TextMessage {
         return chatId;
     }
 
-    public boolean isSelf() {
-        return self;
+    public boolean isOwn() {
+        return own;
     }
 
     public String getBody() {
