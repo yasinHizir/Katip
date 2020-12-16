@@ -20,6 +20,9 @@ import java.security.GeneralSecurityException;
 public class LoginDataSource {
     private final Context context;
 
+    @SuppressLint("SdCardPath")
+    private final File file = new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt");
+
     public LoginDataSource(Context context) {
         this.context = context;
     }
@@ -29,15 +32,14 @@ public class LoginDataSource {
 
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
-            @SuppressLint("SdCardPath")
-            EncryptedFile file = new EncryptedFile.Builder(
-                    context,
-                    new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt"),
+            EncryptedFile encryptedFile = new EncryptedFile.Builder(
+                    this.context,
+                    this.file,
                     masterKey,
                     EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
             ).build();
 
-            OutputStream stream = file.openFileOutput();
+            OutputStream stream = encryptedFile.openFileOutput();
             ObjectOutputStream objectStream = new ObjectOutputStream(stream);
             objectStream.writeObject(user);
             objectStream.flush();
@@ -56,18 +58,18 @@ public class LoginDataSource {
 
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
-            @SuppressLint("SdCardPath")
-            EncryptedFile file = new EncryptedFile.Builder(
-                    context,
-                    new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt"),
+            EncryptedFile encryptedFile = new EncryptedFile.Builder(
+                    this.context,
+                    this.file,
                     masterKey,
                     EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
             ).build();
 
-            InputStream stream = file.openFileInput();
-            ObjectInputStream objectStream = new ObjectInputStream(stream);
-
-            user = (LoggedInUser) objectStream.readObject();
+            if (this.file.exists()) {
+                InputStream stream = encryptedFile.openFileInput();
+                ObjectInputStream objectStream = new ObjectInputStream(stream);
+                user = (LoggedInUser) objectStream.readObject();
+            }
         } catch (GeneralSecurityException | IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -76,15 +78,6 @@ public class LoginDataSource {
     }
 
     public boolean logout() {
-        boolean result = false;
-
-        @SuppressLint("SdCardPath")
-        File file = new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt");
-
-        if (file.delete()) {
-            result = true;
-        }
-
-        return result;
+        return this.file.delete();
     }
 }
