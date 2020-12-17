@@ -4,18 +4,20 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.StrictMode;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
-
-import com.crypto.katip.database.DbHelper;
-import com.crypto.katip.database.MessageDatabase;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.whispersystems.libsignal.SignalProtocolAddress;
 
 public class MessageReceiverService extends Service {
-    private MessageReceiveTask task;
     public static final String USERNAME = "username";
-    public static final String CHAT_ID = "chatID";
+    public static final String RECEIVED_MESSAGE = "receivedMessage";
+
+    private MessageReceiveTask task;
+    private final Intent intent = new Intent();
+    private final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
 
     @Nullable
     @Override
@@ -26,8 +28,7 @@ public class MessageReceiverService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String localAddress = intent.getStringExtra(USERNAME);
-        int chatId = intent.getIntExtra(CHAT_ID, 0);
-        task = new MessageReceiveTask(localAddress, chatId);
+        task = new MessageReceiveTask(localAddress);
         task.start();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -48,16 +49,18 @@ public class MessageReceiverService extends Service {
     private class MessageReceiveTask extends Thread{
 
         private final String localAddress;
-        private final int chatId;
 
-        public MessageReceiveTask(String localAddress, int chatId) {
+        public MessageReceiveTask(String localAddress) {
             this.localAddress = localAddress;
-            this.chatId = chatId;
         }
 
         @Override
         public void run() {
-            new MessageReceiver().receive(new SignalProtocolAddress(localAddress, 0), message -> new MessageDatabase(new DbHelper(getApplicationContext()), chatId).save(message, false));
+            new MessageReceiver().receive(new SignalProtocolAddress(localAddress, 0), message -> {
+                Log.v("Durum", "Thread içerisinde çalıştı");
+                intent.putExtra(RECEIVED_MESSAGE, message);
+                broadcastManager.sendBroadcast(intent);
+            });
         }
     }
 }
