@@ -58,14 +58,14 @@ public class LoginDataSource {
 
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
-            EncryptedFile encryptedFile = new EncryptedFile.Builder(
-                    this.context,
-                    this.file,
-                    masterKey,
-                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-            ).build();
-
             if (this.file.exists()) {
+                EncryptedFile encryptedFile = new EncryptedFile.Builder(
+                        this.context,
+                        this.file,
+                        masterKey,
+                        EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+                ).build();
+
                 InputStream stream = encryptedFile.openFileInput();
                 ObjectInputStream objectStream = new ObjectInputStream(stream);
                 user = (LoggedInUser) objectStream.readObject();
