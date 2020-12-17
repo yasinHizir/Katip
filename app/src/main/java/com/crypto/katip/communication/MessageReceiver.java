@@ -1,7 +1,5 @@
 package com.crypto.katip.communication;
 
-import android.util.Log;
-
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -24,13 +22,11 @@ public class MessageReceiver {
 
             channel.queueDeclare(localAddress.toString(), false, false, false, null);
             DeliverCallback deliverCallback = (consumerTag, message) -> callBack.handleReceivedMessage(new String(message.getBody()));
-            Log.v("Durum", "Bağlantı gerçekleşti");
             while (true) {
                 channel.basicConsume(localAddress.toString(), true, deliverCallback, consumerTag -> {});
                 if (Thread.interrupted()) {
                     channel.close();
                     connection.close();
-                    Log.v("Durum:", "Bağlantı kesildi.");
                     break;
                 }
             }
