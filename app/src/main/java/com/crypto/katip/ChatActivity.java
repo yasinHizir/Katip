@@ -32,13 +32,13 @@ import com.crypto.katip.ui.chat.MessagesViewAdapter;
 import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
+    public static final String INTERLOCUTOR = "interlocutor";
+
     private ChatViewModel viewModel;
     private RecyclerView recyclerView;
     private EditText messageEditText;
     private LoggedInUser user;
     private Chat chat;
-
-    public static final String INTERLOCUTOR = "interlocutor";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +129,4 @@ public class ChatActivity extends AppCompatActivity {
             recyclerView.scrollToPosition(messages.size() - 1);
         }
     }
-
-
 }
