@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.StrictMode;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -13,10 +12,11 @@ import org.whispersystems.libsignal.SignalProtocolAddress;
 
 public class MessageReceiverService extends Service {
     public static final String USERNAME = "username";
+    public static final String RECEIVE_MESSAGE = "receive_message";
     public static final String RECEIVED_MESSAGE = "receivedMessage";
 
     private MessageReceiveTask task;
-    private final Intent intent = new Intent();
+    private final Intent intent = new Intent(RECEIVE_MESSAGE);
     private final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
 
     @Nullable
@@ -30,6 +30,7 @@ public class MessageReceiverService extends Service {
         String localAddress = intent.getStringExtra(USERNAME);
         task = new MessageReceiveTask(localAddress);
         task.start();
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -57,7 +58,6 @@ public class MessageReceiverService extends Service {
         @Override
         public void run() {
             new MessageReceiver().receive(new SignalProtocolAddress(localAddress, 0), message -> {
-                Log.v("Durum", "Thread içerisinde çalıştı");
                 intent.putExtra(RECEIVED_MESSAGE, message);
                 broadcastManager.sendBroadcast(intent);
             });

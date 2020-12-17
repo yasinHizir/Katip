@@ -2,10 +2,14 @@ package com.crypto.katip;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,11 +21,15 @@ import com.crypto.katip.communication.MessageReceiverService;
 import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.MessageDatabase;
+import com.crypto.katip.database.models.TextMessage;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.models.Chat;
 import com.crypto.katip.database.models.LoggedInUser;
 import com.crypto.katip.ui.chat.ChatViewModel;
 import com.crypto.katip.ui.chat.ChatViewModelFactory;
+import com.crypto.katip.ui.chat.MessagesViewAdapter;
+
+import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
     private ChatViewModel viewModel;
@@ -47,7 +55,7 @@ public class ChatActivity extends AppCompatActivity {
         setToolbar(interlocutor);
         chat = new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChat(interlocutor);
 
-        viewModel.getLiveData().observe(this, messages -> viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext())));
+        viewModel.getLiveData().observe(this, this::refreshRecycleView);
         viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).getMessages());
         startService();
     }
@@ -90,15 +98,37 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra(MessageReceiverService.RECEIVED_MESSAGE);
+            MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId());
+            messageDatabase.save(message, false);
+            viewModel.getLiveData().setValue(messageDatabase.getMessages());
+        }
+    };
+
     private void startService() {
         Intent intent = new Intent(getApplicationContext(), MessageReceiverService.class);
         intent.putExtra(MessageReceiverService.USERNAME, user.getUsername());
-        intent.putExtra(MessageReceiverService.CHAT_ID, chat.getId());
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(MessageReceiverService.RECEIVE_MESSAGE));
         startService(intent);
     }
 
     private void stopService() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         Intent intent = new Intent(getApplicationContext(), MessageReceiverService.class);
         stopService(intent);
     }
+
+    private void refreshRecycleView(ArrayList<TextMessage> messages) {
+        if (messages != null) {
+            MessagesViewAdapter adapter = new MessagesViewAdapter(messages);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            recyclerView.scrollToPosition(messages.size() - 1);
+        }
+    }
+
+
 }
