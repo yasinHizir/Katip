@@ -57,7 +57,8 @@ public class ChatActivity extends AppCompatActivity {
 
         viewModel.getLiveData().observe(this, this::refreshRecycleView);
         viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).getMessages());
-        startService();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(MessageReceiverService.RECEIVE_MESSAGE));
     }
 
     @Override
@@ -69,26 +70,21 @@ public class ChatActivity extends AppCompatActivity {
 
     public void send(View view) {
         String text = messageEditText.getText().toString();
-        viewModel.send(text, chat.getInterlocutor(), chat.getId(), getApplicationContext());
-        messageEditText.setText("");
+        viewModel.send(text, user.getUsername(), chat.getInterlocutor(), chat.getId(), getApplicationContext());
+        messageEditText.getText().clear();
     }
 
     public void remove(MenuItem item) {
         new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).remove(chat.getId());
-        startActivity(new Intent(ChatActivity.this, HomeActivity.class));
+        Intent intent = new Intent(ChatActivity.this, HomeActivity.class);
+        startActivity(intent);
         finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        stopService();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
     private void setToolbar(String title) {
@@ -96,29 +92,6 @@ public class ChatActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
         }
-    }
-
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra(MessageReceiverService.RECEIVED_MESSAGE);
-            MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId());
-            messageDatabase.save(message, false);
-            viewModel.getLiveData().setValue(messageDatabase.getMessages());
-        }
-    };
-
-    private void startService() {
-        Intent intent = new Intent(getApplicationContext(), MessageReceiverService.class);
-        intent.putExtra(MessageReceiverService.USERNAME, user.getUsername());
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(MessageReceiverService.RECEIVE_MESSAGE));
-        startService(intent);
-    }
-
-    private void stopService() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-        Intent intent = new Intent(getApplicationContext(), MessageReceiverService.class);
-        stopService(intent);
     }
 
     private void refreshRecycleView(ArrayList<TextMessage> messages) {
@@ -129,4 +102,14 @@ public class ChatActivity extends AppCompatActivity {
             recyclerView.scrollToPosition(messages.size() - 1);
         }
     }
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int chatId = intent.getIntExtra(MessageReceiverService.CHAT_ID, -1);
+            if (chatId == chat.getId()) {
+                viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chatId).getMessages());
+            }
+        }
+    };
 }
