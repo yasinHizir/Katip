@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.ChatViewHolder> {
-    private ArrayList<String> images;
-    private ArrayList<String> interlocutor;
+    private final ArrayList<String> images;
+    private final ArrayList<String> interlocutor;
 
     public ChatsViewAdapter(ArrayList<String> images, ArrayList<String> interlocutor) {
         this.images = images;
@@ -52,13 +52,10 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
             image = itemView.findViewById(R.id.image);
             interlocutor = itemView.findViewById(R.id.image_name);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(view.getContext(), ChatActivity.class);
-                    intent.putExtra(ChatActivity.INTERLOCUTOR, interlocutor.getText().toString());
-                    view.getContext().startActivity(intent);
-                }
+            itemView.setOnClickListener(view -> {
+                Intent intent = new Intent(view.getContext(), ChatActivity.class);
+                intent.putExtra(ChatActivity.INTERLOCUTOR, interlocutor.getText().toString());
+                view.getContext().startActivity(intent);
             });
         }
 

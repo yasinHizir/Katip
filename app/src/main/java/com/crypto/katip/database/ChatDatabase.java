@@ -45,7 +45,7 @@ public class ChatDatabase extends Database {
         boolean result = false;
 
         try (Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)){
-            if (cursor != null) {
+            if (cursor != null && cursor.moveToFirst()) {
                 result = true;
             }
         }
