@@ -22,9 +22,9 @@ import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.MessageDatabase;
 import com.crypto.katip.database.models.TextMessage;
+import com.crypto.katip.database.models.User;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.models.Chat;
-import com.crypto.katip.database.models.LoggedInUser;
 import com.crypto.katip.ui.chat.ChatViewModel;
 import com.crypto.katip.ui.chat.ChatViewModelFactory;
 import com.crypto.katip.ui.chat.MessagesViewAdapter;
@@ -37,7 +37,7 @@ public class ChatActivity extends AppCompatActivity {
     private ChatViewModel viewModel;
     private RecyclerView recyclerView;
     private EditText messageEditText;
-    private LoggedInUser user;
+    private User user;
     private Chat chat;
 
     @Override

@@ -18,9 +18,9 @@ import android.view.MenuItem;
 
 import com.crypto.katip.communication.MessageReceiverService;
 import com.crypto.katip.database.ChatDatabase;
+import com.crypto.katip.database.models.User;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.DbHelper;
-import com.crypto.katip.database.models.LoggedInUser;
 import com.crypto.katip.ui.fragments.ChatAdderFragment;
 import com.crypto.katip.ui.home.HomeViewModel;
 import com.crypto.katip.ui.home.HomeViewModelFactory;
@@ -28,7 +28,7 @@ import com.crypto.katip.ui.home.HomeViewModelFactory;
 public class HomeActivity extends AppCompatActivity {
     private HomeViewModel viewModel;
     private RecyclerView recyclerView;
-    private LoggedInUser user;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

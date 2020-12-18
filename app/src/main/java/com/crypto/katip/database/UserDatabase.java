@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.Nullable;
 
-import com.crypto.katip.database.models.LoggedInUser;
 import com.crypto.katip.database.models.User;
 
 import org.whispersystems.libsignal.IdentityKey;
@@ -122,21 +121,6 @@ public class UserDatabase extends Database {
         if (cursor != null && cursor.moveToFirst()) {
             user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)));
             cursor.close();
-        }
-
-        database.close();
-        return user;
-    }
-
-    @Nullable
-    public LoggedInUser createLoggedInUser(String username) {
-        LoggedInUser user = null;
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-
-        try(Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                user = new LoggedInUser(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username);
-            }
         }
 
         database.close();
