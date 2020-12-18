@@ -76,7 +76,6 @@ public class MessageReceiverService extends Service {
                 if (!chatDatabase.isRegistered(envelope.getUsername())) {
                     chatDatabase.save(envelope.getUsername());
                 }
-                Log.v("mesaj alındı", envelope.getBody());
                 Chat chat = chatDatabase.getChat(envelope.getUsername());
                 if (chat != null) {
                     new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).save(envelope.getBody(), false);
