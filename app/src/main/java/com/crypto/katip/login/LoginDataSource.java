@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.MasterKey;
 
-import com.crypto.katip.database.models.LoggedInUser;
+import com.crypto.katip.database.models.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,24 +20,26 @@ import java.security.GeneralSecurityException;
 public class LoginDataSource {
     private final Context context;
 
+    @SuppressLint("SdCardPath")
+    private final File file = new File("/data/data/com.crypto.katip/cache", "User.dat");
+
     public LoginDataSource(Context context) {
         this.context = context;
     }
 
-    public boolean login(LoggedInUser user) {
+    public boolean login(User user) {
         boolean result = false;
 
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
-            @SuppressLint("SdCardPath")
-            EncryptedFile file = new EncryptedFile.Builder(
-                    context,
-                    new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt"),
+            EncryptedFile encryptedFile = new EncryptedFile.Builder(
+                    this.context,
+                    this.file,
                     masterKey,
                     EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
             ).build();
 
-            OutputStream stream = file.openFileOutput();
+            OutputStream stream = encryptedFile.openFileOutput();
             ObjectOutputStream objectStream = new ObjectOutputStream(stream);
             objectStream.writeObject(user);
             objectStream.flush();
@@ -51,23 +53,23 @@ public class LoginDataSource {
     }
 
     @Nullable
-    public LoggedInUser getLoggedInUser() {
-        LoggedInUser user = null;
+    public User getLoggedInUser() {
+        User user = null;
 
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
-            @SuppressLint("SdCardPath")
-            EncryptedFile file = new EncryptedFile.Builder(
-                    context,
-                    new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt"),
-                    masterKey,
-                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-            ).build();
+            if (this.file.exists()) {
+                EncryptedFile encryptedFile = new EncryptedFile.Builder(
+                        this.context,
+                        this.file,
+                        masterKey,
+                        EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+                ).build();
 
-            InputStream stream = file.openFileInput();
-            ObjectInputStream objectStream = new ObjectInputStream(stream);
-
-            user = (LoggedInUser) objectStream.readObject();
+                InputStream stream = encryptedFile.openFileInput();
+                ObjectInputStream objectStream = new ObjectInputStream(stream);
+                user = (User) objectStream.readObject();
+            }
         } catch (GeneralSecurityException | IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -76,15 +78,6 @@ public class LoginDataSource {
     }
 
     public boolean logout() {
-        boolean result = false;
-
-        @SuppressLint("SdCardPath")
-        File file = new File("/data/data/com.crypto.katip/cache", "LoggedInUser.txt");
-
-        if (file.delete()) {
-            result = true;
-        }
-
-        return result;
+        return this.file.delete();
     }
 }

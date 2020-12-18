@@ -40,6 +40,20 @@ public class ChatDatabase extends Database {
         database.close();
     }
 
+    public boolean isRegistered(String interlocutor) {
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        boolean result = false;
+
+        try (Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)){
+            if (cursor != null && cursor.moveToFirst()) {
+                result = true;
+            }
+        }
+
+        database.close();
+        return result;
+    }
+
     public ArrayList<String> getChatNames() {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         ArrayList<String> interlocutor = new ArrayList<>();
@@ -54,21 +68,6 @@ public class ChatDatabase extends Database {
 
         database.close();
         return interlocutor;
-    }
-
-    @Nullable
-    public Chat getChat(int id) {
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Chat chat = null;
-
-        try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id + " AND " + USER_ID + " = " + userId, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                chat = new Chat(id, userId, cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR)));
-            }
-        }
-
-        database.close();
-        return chat;
     }
 
     @Nullable

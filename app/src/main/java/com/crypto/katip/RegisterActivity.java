@@ -10,14 +10,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.login.LoginRepository;
-import com.crypto.katip.ui.register.RegisterFormState;
-import com.crypto.katip.ui.register.RegisterResult;
 import com.crypto.katip.ui.register.RegisterViewModel;
 import com.crypto.katip.ui.register.RegisterViewModelFactory;
 
@@ -38,46 +35,36 @@ public class RegisterActivity extends AppCompatActivity {
         final Button button = findViewById(R.id.register);
 
 
-        viewModel.getFormState().observe(this, new Observer<RegisterFormState>() {
-            @Override
-            public void onChanged(RegisterFormState registerFormState) {
-                if (registerFormState == null){
-                    return;
-                }
-                button.setEnabled(registerFormState.isDataValid());
-                if (registerFormState.getUsernameError() != null) {
-                    usernameTextEdit.setError(registerFormState.getUsernameError());
-                } else if (registerFormState.getPasswordError() != null) {
-                    passwordTextEdit.setError(registerFormState.getPasswordError());
-                } else if (registerFormState.getPasswordVerifyError() != null) {
-                    passwordVerifyEdit.setError(registerFormState.getPasswordVerifyError());
-                }
+        viewModel.getFormState().observe(this, registerFormState -> {
+            if (registerFormState == null){
+                return;
+            }
+            button.setEnabled(registerFormState.isDataValid());
+            if (registerFormState.getUsernameError() != null) {
+                usernameTextEdit.setError(registerFormState.getUsernameError());
+            } else if (registerFormState.getPasswordError() != null) {
+                passwordTextEdit.setError(registerFormState.getPasswordError());
+            } else if (registerFormState.getPasswordVerifyError() != null) {
+                passwordVerifyEdit.setError(registerFormState.getPasswordVerifyError());
             }
         });
 
-        viewModel.getResult().observe(this, new Observer<RegisterResult>() {
-            @Override
-            public void onChanged(RegisterResult registerResult) {
-                if (registerResult.getError() == null) {
-                    LoginRepository.getInstance(getApplicationContext()).login(registerResult.getUsername(), registerResult.getPassword(), new UserDatabase(new DbHelper(getApplicationContext())));
-                    startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
-                    finish();
-                } else {
-                    Toast.makeText(getApplicationContext(), registerResult.getError(), Toast.LENGTH_SHORT).show();
-                }
+        viewModel.getResult().observe(this, registerResult -> {
+            if (registerResult.getError() == null) {
+                LoginRepository.getInstance(getApplicationContext()).login(registerResult.getUsername(), registerResult.getPassword(), new UserDatabase(new DbHelper(getApplicationContext())));
+                startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
+                finish();
+            } else {
+                Toast.makeText(getApplicationContext(), registerResult.getError(), Toast.LENGTH_SHORT).show();
             }
         });
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
             public void afterTextChanged(Editable editable) {

@@ -41,14 +41,11 @@ public class ChatAdderFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         interlocutorTextEdit = view.findViewById(R.id.interlocutor);
         Button button = view.findViewById(R.id.create);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String username = interlocutorTextEdit.getText().toString();
-                viewModel.addChat(username);
-                chatDatabase.save(username);
-                dismiss();
-            }
+        button.setOnClickListener(currentView -> {
+            String username = interlocutorTextEdit.getText().toString();
+            viewModel.addChat(username);
+            chatDatabase.save(username);
+            dismiss();
         });
     }
 }

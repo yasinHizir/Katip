@@ -3,11 +3,9 @@
     android:id="@+id/messages_list_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
     android:background="@drawable/rounded_15"
-    android:backgroundTint="@android:color/transparent"
-    android:paddingLeft="20dp"
-    android:paddingTop="15dp"
-    android:paddingRight="20dp">
+    android:backgroundTint="@android:color/transparent">
 
     <TextView
         android:id="@+id/text_view_message"
@@ -16,8 +14,10 @@
         android:layout_alignParentEnd="true"
         android:background="@drawable/rounded_15"
         android:gravity="top"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:textColor="@color/dark"/>
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
+        android:textColor="@color/white"/>
 
 </RelativeLayout>

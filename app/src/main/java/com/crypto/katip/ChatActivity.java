@@ -1,13 +1,15 @@
 package com.crypto.katip;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,27 +17,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.crypto.katip.communication.MessageReceiverService;
 import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.MessageDatabase;
+import com.crypto.katip.database.models.TextMessage;
+import com.crypto.katip.database.models.User;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.models.Chat;
-import com.crypto.katip.database.models.LoggedInUser;
-import com.crypto.katip.database.models.TextMessage;
 import com.crypto.katip.ui.chat.ChatViewModel;
 import com.crypto.katip.ui.chat.ChatViewModelFactory;
+import com.crypto.katip.ui.chat.MessagesViewAdapter;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
+    public static final String INTERLOCUTOR = "interlocutor";
+
     private ChatViewModel viewModel;
     private RecyclerView recyclerView;
     private EditText messageEditText;
-    private LoggedInUser user;
+    private User user;
     private Chat chat;
-
-    public static final String INTERLOCUTOR = "interlocutor";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +55,10 @@ public class ChatActivity extends AppCompatActivity {
         setToolbar(interlocutor);
         chat = new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChat(interlocutor);
 
-        viewModel.getLiveData().observe(this, new Observer<ArrayList<TextMessage>>() {
-            @Override
-            public void onChanged(ArrayList<TextMessage> messages) {
-                viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext()));
-            }
-        });
+        viewModel.getLiveData().observe(this, this::refreshRecycleView);
         viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).getMessages());
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(MessageReceiverService.RECEIVE_MESSAGE));
     }
 
     @Override
@@ -70,21 +70,46 @@ public class ChatActivity extends AppCompatActivity {
 
     public void send(View view) {
         String text = messageEditText.getText().toString();
-        MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId());
-        messageDatabase.save(text, true);
-        viewModel.getLiveData().setValue(messageDatabase.getMessages());
-        messageEditText.setText("");
+        viewModel.send(text, user.getUsername(), chat.getInterlocutor(), chat.getId(), getApplicationContext());
+        messageEditText.getText().clear();
     }
 
     public void remove(MenuItem item) {
         new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).remove(chat.getId());
-        startActivity(new Intent(ChatActivity.this, HomeActivity.class));
+        Intent intent = new Intent(ChatActivity.this, HomeActivity.class);
+        startActivity(intent);
         finish();
     }
 
-    private void setToolbar(String title) {
-        Toolbar toolbar = findViewById(R.id.chat_bar);
-        setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
+
+    private void setToolbar(String title) {
+        setSupportActionBar(findViewById(R.id.chat_bar));
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
+    }
+
+    private void refreshRecycleView(ArrayList<TextMessage> messages) {
+        if (messages != null) {
+            MessagesViewAdapter adapter = new MessagesViewAdapter(messages);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            recyclerView.scrollToPosition(messages.size() - 1);
+        }
+    }
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int chatId = intent.getIntExtra(MessageReceiverService.CHAT_ID, -1);
+            if (chatId == chat.getId()) {
+                viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chatId).getMessages());
+            }
+        }
+    };
 }

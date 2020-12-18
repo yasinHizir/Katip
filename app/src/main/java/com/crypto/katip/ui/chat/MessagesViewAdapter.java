@@ -23,7 +23,7 @@ public class MessagesViewAdapter extends RecyclerView.Adapter<MessagesViewAdapte
     @Override
     public int getItemViewType(int position) {
         TextMessage message = messages.get(position);
-        if (message.isSelf()) {
+        if (!message.isOwn()) {
             return 1;
         }
         return 0;
@@ -32,10 +32,13 @@ public class MessagesViewAdapter extends RecyclerView.Adapter<MessagesViewAdapte
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_list_item_a, parent, false);
-        if (viewType == 1) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_list_item_b, parent, false);
+        View view;
+        if (viewType == 0) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_list_sended_message, parent, false);
+        } else{
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_list_received_message, parent, false);
         }
+
         return new MessageViewHolder(view);
     }
 

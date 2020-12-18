@@ -3,13 +3,13 @@ package com.crypto.katip.login;
 import android.content.Context;
 
 import com.crypto.katip.database.UserDatabase;
-import com.crypto.katip.database.models.LoggedInUser;
+import com.crypto.katip.database.models.User;
 import com.crypto.katip.ui.login.LoginResult;
 
 public class LoginRepository {
     private static volatile LoginRepository instance;
     private final LoginDataSource dataSource;
-    private LoggedInUser user;
+    private User user;
 
     public LoginRepository(LoginDataSource dataSource) {
         this.dataSource = dataSource;
@@ -25,7 +25,7 @@ public class LoginRepository {
     public LoginResult login(String username, String password, UserDatabase database) {
 
         if (database.isRegistered(username, password)) {
-            LoggedInUser user = database.createLoggedInUser(username);
+            User user = database.getUser(username);
             if (dataSource.login(user)) {
                 this.user = user;
                 return new LoginResult(user);
@@ -48,7 +48,7 @@ public class LoginRepository {
         }
     }
 
-    public LoggedInUser getUser(){
+    public User getUser(){
         return this.user;
     }
 }

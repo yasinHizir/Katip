@@ -2,7 +2,7 @@ package com.crypto.katip.database;
 
 public abstract class Database {
     private static final String DATABASE_NAME = "katip.db";
-    private static int DATABASE_VERSION = 1;
+    private final static int DATABASE_VERSION = 1;
     protected DbHelper dbHelper;
 
     public Database(DbHelper dbHelper){
@@ -15,10 +15,6 @@ public abstract class Database {
 
     public static int getDatabaseVersion(){
         return DATABASE_VERSION;
-    }
-
-    public static void setDatabaseVersion(int databaseVersion){
-        DATABASE_VERSION = databaseVersion;
     }
 
     public static String getChatRemoveTrigger() {

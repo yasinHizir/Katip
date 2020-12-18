@@ -1,12 +1,12 @@
 package com.crypto.katip.ui.login;
 
-import com.crypto.katip.database.models.LoggedInUser;
+import com.crypto.katip.database.models.User;
 
 public class LoginResult {
-    private LoggedInUser success;
+    private User success;
     private String error;
 
-    public LoginResult(LoggedInUser user) {
+    public LoginResult(User user) {
         this.success = user;
     }
 
@@ -14,7 +14,7 @@ public class LoginResult {
         this.error = error;
     }
 
-    public LoggedInUser getSuccess() {
+    public User getSuccess() {
         return success;
     }
 

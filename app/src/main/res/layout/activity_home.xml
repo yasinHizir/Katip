@@ -25,7 +25,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/rounded_15"
-            android:backgroundTint="@color/dark" />
+            android:backgroundTint="@color/black" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,8 @@
 package com.crypto.katip.database.models;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private final int id;
     private final String username;
 
