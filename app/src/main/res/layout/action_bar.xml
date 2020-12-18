@@ -5,10 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="@drawable/rounded_bottom"
-    android:backgroundTint="@color/dark"
+    android:backgroundTint="@color/black"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     app:theme="@style/ToolBarTheme">
-
 
 </androidx.appcompat.widget.Toolbar>

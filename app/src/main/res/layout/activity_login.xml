@@ -41,7 +41,7 @@
             android:fontFamily="@font/play_ball"
             android:text="@string/app_name"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/light"
             android:textSize="70sp" />
 
         <EditText
@@ -57,7 +57,8 @@
             android:hint="@string/edit_text_username"
             android:inputType="text"
             android:textAlignment="center"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:textColor="@color/black"/>
 
         <EditText
             android:id="@+id/password"
@@ -73,7 +74,8 @@
             android:inputType="textPassword"
             android:maxLength="10"
             android:textAlignment="center"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:textColor="@color/black"/>
 
         <Button
             android:id="@+id/login"
@@ -83,10 +85,10 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:background="@drawable/rounded_15"
-            android:backgroundTint="@color/primary"
+            android:backgroundTint="@color/dark"
             android:onClick="login"
             android:text="@string/button_login"
-            android:textColor="@color/light" />
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/registerPage"

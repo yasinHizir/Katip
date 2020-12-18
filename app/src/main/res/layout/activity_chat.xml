@@ -65,7 +65,7 @@
                 android:onClick="send"
                 android:contentDescription="@string/todo"
                 android:focusable="true"
-                app:backgroundTint="@color/primary"
+                app:backgroundTint="@color/dark"
                 app:srcCompat="@drawable/ic_baseline_send_24"
                 tools:ignore="RelativeOverlap" />
 
