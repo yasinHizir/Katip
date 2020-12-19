@@ -59,7 +59,7 @@
             android:inputType="text"
             android:textAlignment="center"
             android:textSize="24sp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/light"/>
 
         <EditText
             android:id="@+id/password"
@@ -76,7 +76,7 @@
             android:maxLength="10"
             android:textAlignment="center"
             android:textSize="24sp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/light"/>
 
         <EditText
             android:id="@+id/passwordVerify"
@@ -93,7 +93,7 @@
             android:maxLength="10"
             android:textAlignment="center"
             android:textSize="24sp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/light"/>
 
         <Button
             android:id="@+id/register"
@@ -106,7 +106,7 @@
             android:backgroundTint="@color/dark"
             android:onClick="register"
             android:text="@string/button_register"
-            android:textColor="@color/black" />
+            android:textColor="@color/light" />
 
         <TextView
             android:id="@+id/loginPage"

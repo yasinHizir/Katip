@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/black"
+    android:background="@color/dark"
     android:padding="12dp">
 
     <TextView
@@ -23,14 +23,14 @@
         android:layout_below="@id/create_chat"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp"
-        android:background="@color/dark"
+        android:background="@color/black"
         android:hint="@string/edit_text_username"
         android:importantForAutofill="no"
         android:inputType="text"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/light"
         android:textSize="24sp"
-        android:textColorHint="@color/light"/>
+        android:textColorHint="@color/dark"/>
 
     <Button
         android:id="@+id/create"
@@ -40,7 +40,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="16dp"
         android:background="@drawable/rounded_15"
-        android:backgroundTint="@color/dark"
+        android:backgroundTint="@color/black"
         android:text="@string/create"
         android:textColor="@color/light" />
 
