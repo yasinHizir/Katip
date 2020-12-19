@@ -1,11 +1,13 @@
 package com.crypto.katip.database;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.Nullable;
 
+import com.crypto.katip.cryptography.SignalProtocolStore;
 import com.crypto.katip.database.models.User;
 
 import org.whispersystems.libsignal.IdentityKey;
@@ -98,13 +100,14 @@ public class UserDatabase extends Database {
     }
 
     @Nullable
-    public User getUser(String username) {
+    public User getUser(String username, Context context) {
         User user = null;
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            user = new User(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username);
+            int userId = cursor.getInt(cursor.getColumnIndexOrThrow(ID));
+            user = new User(userId, username, new SignalProtocolStore(userId, context));
             cursor.close();
         }
 
@@ -113,13 +116,13 @@ public class UserDatabase extends Database {
     }
 
     @Nullable
-    public User getUser(int id) {
+    public User getUser(int id, Context context) {
         User user = null;
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id, null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)));
+            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)), new SignalProtocolStore(id, context));
             cursor.close();
         }
 

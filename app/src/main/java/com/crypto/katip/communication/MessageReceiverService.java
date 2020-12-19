@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.StrictMode;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -37,7 +36,7 @@ public class MessageReceiverService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String username = intent.getStringExtra(USERNAME);
-        User user = new UserDatabase(new DbHelper(getApplicationContext())).getUser(username);
+        User user = new UserDatabase(new DbHelper(getApplicationContext())).getUser(username, getApplicationContext());
         if (user != null) {
             chatDatabase = new ChatDatabase(new DbHelper(getApplicationContext()), user.getId());
         } else {

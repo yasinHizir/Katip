@@ -12,7 +12,7 @@ public class LoginRepository {
     private final LoginDataSource dataSource;
     private User user;
 
-    public LoginRepository(LoginDataSource dataSource) {
+    private LoginRepository(LoginDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -27,12 +27,13 @@ public class LoginRepository {
         UserDatabase database = new UserDatabase(new DbHelper(context));
 
         if (database.isRegistered(username, password)) {
-            User user = database.getUser(username);
+            User user = database.getUser(username, context);
             if (dataSource.login(user, context)) {
                 this.user = user;
                 return new LoginResult(user);
             }
         }
+
         return new LoginResult("Kullanıcı sistemde kayıtlı değil.");
     }
 
