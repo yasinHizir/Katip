@@ -78,7 +78,7 @@ public class MessageReceiverService extends Service {
                 }
                 Chat chat = chatDatabase.getChat(envelope.getUsername());
                 if (chat != null) {
-                    new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).save(envelope.getBody(), false);
+                    new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).save(new String(envelope.getBody()), false);
                 } else {
                     return;
                 }

@@ -21,10 +21,10 @@ public class ChatViewModel extends ViewModel {
     public void send(String text, String localUsername, String remoteUsername, int chatID, Context context) {
         MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(context), chatID);
         SignalProtocolAddress remoteAddress = new SignalProtocolAddress(remoteUsername, 0);
-        Envelope envelope = new Envelope(localUsername, text);
+        Envelope envelope = new Envelope(localUsername, text.getBytes());
 
         new MessageSender().send(remoteAddress, envelope, message -> {
-            messageDatabase.save(message.getBody(), true);
+            messageDatabase.save(new String(message.getBody()), true);
             liveData.setValue(messageDatabase.getMessages());
         });
     }

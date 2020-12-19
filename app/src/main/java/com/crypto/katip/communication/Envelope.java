@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public class Envelope implements Serializable {
     private final String username;
-    private final String body;
+    private final byte[] body;
 
-    public Envelope(String username, String body) {
+    public Envelope(String username, byte[] body) {
         this.username = username;
         this.body = body;
     }
@@ -15,7 +15,7 @@ public class Envelope implements Serializable {
         return username;
     }
 
-    public String getBody() {
+    public byte[] getBody() {
         return body;
     }
 }
