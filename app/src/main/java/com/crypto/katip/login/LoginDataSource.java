@@ -18,22 +18,17 @@ import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
 public class LoginDataSource {
-    private final Context context;
 
     @SuppressLint("SdCardPath")
     private final File file = new File("/data/data/com.crypto.katip/cache", "User.dat");
 
-    public LoginDataSource(Context context) {
-        this.context = context;
-    }
-
-    public boolean login(User user) {
+    public boolean login(User user, Context context) {
         boolean result = false;
 
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
             EncryptedFile encryptedFile = new EncryptedFile.Builder(
-                    this.context,
+                    context,
                     this.file,
                     masterKey,
                     EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
@@ -53,14 +48,14 @@ public class LoginDataSource {
     }
 
     @Nullable
-    public User getLoggedInUser() {
+    public User getLoggedInUser(Context context) {
         User user = null;
 
         try {
             MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
             if (this.file.exists()) {
                 EncryptedFile encryptedFile = new EncryptedFile.Builder(
-                        this.context,
+                        context,
                         this.file,
                         masterKey,
                         EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB

@@ -48,7 +48,7 @@ public class ChatActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this, new ChatViewModelFactory()).get(ChatViewModel.class);
         recyclerView = findViewById(R.id.recycle_view_messages);
         messageEditText = findViewById(R.id.edit_text_message);
-        user = LoginRepository.getInstance(getApplicationContext()).getUser();
+        user = LoginRepository.getInstance().getUser();
 
         Intent intent = getIntent();
         String interlocutor = intent.getStringExtra(INTERLOCUTOR);

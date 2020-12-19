@@ -17,8 +17,8 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password, Context context) {
-        LoginRepository loginRepository = LoginRepository.getInstance(context);
+        LoginRepository loginRepository = LoginRepository.getInstance();
 
-        result.setValue(loginRepository.login(username, password, new UserDatabase(new DbHelper(context))));
+        result.setValue(loginRepository.login(username, password, context));
     }
 }
