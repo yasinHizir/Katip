@@ -18,16 +18,17 @@ public class MessageReceiver {
 
     public void receive(SignalProtocolAddress localAddress, ReceiveCallBack callBack){
         ConnectionFactory factory = new ConnectionFactory();
+        String queueName = localAddress.toString();
         factory.setHost("20.71.252.243");
 
         try {
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 
-            channel.queueDeclare(localAddress.toString(), false, false, false, null);
+            channel.queueDeclare(queueName, false, false, false, null);
             DeliverCallback deliverCallback = (consumerTag, message) -> callBack.handleReceivedMessage( deserialize(message.getBody()));
             while (true) {
-                channel.basicConsume(localAddress.toString(), true, deliverCallback, consumerTag -> {});
+                channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
                 if (Thread.interrupted()) {
                     channel.close();
                     connection.close();

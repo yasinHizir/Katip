@@ -8,6 +8,7 @@ import android.os.StrictMode;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.crypto.katip.cryptography.SignalCipher;
 import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.MessageDatabase;
@@ -15,7 +16,15 @@ import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.database.models.Chat;
 import com.crypto.katip.database.models.User;
 
+import org.whispersystems.libsignal.DuplicateMessageException;
+import org.whispersystems.libsignal.InvalidKeyException;
+import org.whispersystems.libsignal.InvalidKeyIdException;
+import org.whispersystems.libsignal.InvalidMessageException;
+import org.whispersystems.libsignal.InvalidVersionException;
+import org.whispersystems.libsignal.LegacyMessageException;
+import org.whispersystems.libsignal.NoSessionException;
 import org.whispersystems.libsignal.SignalProtocolAddress;
+import org.whispersystems.libsignal.UntrustedIdentityException;
 
 public class MessageReceiverService extends Service {
     public static final String USERNAME = "username";
@@ -24,6 +33,7 @@ public class MessageReceiverService extends Service {
 
     private MessageReceiveTask task;
     private ChatDatabase chatDatabase;
+    private User user;
     private final Intent intent = new Intent(RECEIVE_MESSAGE);
     private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
@@ -36,13 +46,13 @@ public class MessageReceiverService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String username = intent.getStringExtra(USERNAME);
-        User user = new UserDatabase(new DbHelper(getApplicationContext())).getUser(username, getApplicationContext());
+        this.user = new UserDatabase(new DbHelper(getApplicationContext())).getUser(username, getApplicationContext());
         if (user != null) {
             chatDatabase = new ChatDatabase(new DbHelper(getApplicationContext()), user.getId());
         } else {
             onDestroy();
         }
-        task = new MessageReceiveTask(username);
+        task = new MessageReceiveTask();
         task.start();
 
         return super.onStartCommand(intent, flags, startId);
@@ -63,21 +73,26 @@ public class MessageReceiverService extends Service {
 
     private class MessageReceiveTask extends Thread {
 
-        private final String localAddress;
-
-        public MessageReceiveTask(String localAddress) {
-            this.localAddress = localAddress;
-        }
-
         @Override
         public void run() {
-            new MessageReceiver().receive(new SignalProtocolAddress(localAddress, 0), envelope -> {
+            SignalProtocolAddress localAddress = new SignalProtocolAddress(user.getUsername(), 0);
+            new MessageReceiver().receive(localAddress, envelope -> {
+                SignalCipher cipher = new SignalCipher(user);
+                String text;
+                try {
+                    text = cipher.decrypt(envelope);
+                } catch (LegacyMessageException | InvalidMessageException | InvalidVersionException | DuplicateMessageException | InvalidKeyIdException | UntrustedIdentityException | InvalidKeyException | NoSessionException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
                 if (!chatDatabase.isRegistered(envelope.getUsername())) {
                     chatDatabase.save(envelope.getUsername());
                 }
+
                 Chat chat = chatDatabase.getChat(envelope.getUsername());
                 if (chat != null) {
-                    new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).save(new String(envelope.getBody()), false);
+                    new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).save(text, false);
                 } else {
                     return;
                 }
