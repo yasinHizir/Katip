@@ -5,8 +5,23 @@ import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.crypto.katip.communication.KeyServer;
+import com.crypto.katip.cryptography.SignalPublicKeyBundle;
 import com.crypto.katip.database.DbHelper;
+import com.crypto.katip.database.PreKeyDatabase;
+import com.crypto.katip.database.SignedPreKeyDatabase;
 import com.crypto.katip.database.UserDatabase;
+import com.crypto.katip.database.models.User;
+
+import org.whispersystems.libsignal.IdentityKey;
+import org.whispersystems.libsignal.IdentityKeyPair;
+import org.whispersystems.libsignal.InvalidKeyException;
+import org.whispersystems.libsignal.SignalProtocolAddress;
+import org.whispersystems.libsignal.state.PreKeyRecord;
+import org.whispersystems.libsignal.state.SignedPreKeyRecord;
+import org.whispersystems.libsignal.util.KeyHelper;
+
+import java.util.List;
 
 public class RegisterViewModel extends ViewModel {
     private final MutableLiveData<RegisterFormState> formState = new MutableLiveData<>();
@@ -18,6 +33,16 @@ public class RegisterViewModel extends ViewModel {
 
         if (userDatabase.isRegistered(username, password)) {
             result.setValue(new RegisterResult(username, password));
+            User user = userDatabase.getUser(username, context);
+            if (user!= null) {
+                //TODO: Anahat yöneticisini ayalaryınca burayı düzenle.
+                new Thread() {
+                    @Override
+                    public void run() {
+                        new KeyServer().send(user, context);
+                    }
+                }.start();
+            }
         } else {
             result.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));
         }
