@@ -5,9 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.login.LoginRepository;
-import com.crypto.katip.database.DbHelper;
 
 public class LoginViewModel extends ViewModel {
     private final MutableLiveData<LoginResult> result = new MutableLiveData<>();

@@ -25,9 +25,10 @@ public class LoginRepository {
 
     public LoginResult login(String username, String password, Context context) {
         UserDatabase database = new UserDatabase(new DbHelper(context));
+        User user = database.getUser(username, context);
 
-        if (database.isRegistered(username, password)) {
-            User user = database.getUser(username, context);
+        if (database.isRegistered(username, password) && user != null) {
+
             if (dataSource.login(user, context)) {
                 this.user = user;
                 return new LoginResult(user);
