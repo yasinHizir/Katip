@@ -14,15 +14,16 @@ import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.SessionRecord;
+import org.whispersystems.libsignal.state.SignalProtocolStore;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 
 import java.util.List;
 
-public class SignalProtocolStore implements org.whispersystems.libsignal.state.SignalProtocolStore{
+public class SignalStore implements SignalProtocolStore {
     private final int userId;
     private final Context context;
 
-    public SignalProtocolStore(int userId, Context context){
+    public SignalStore(int userId, Context context){
         this.userId = userId;
         this.context = context;
     }
