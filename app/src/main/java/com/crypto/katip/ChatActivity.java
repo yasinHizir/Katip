@@ -70,8 +70,12 @@ public class ChatActivity extends AppCompatActivity {
 
     public void send(View view) {
         String text = messageEditText.getText().toString();
-        viewModel.send(text, user.getUsername(), chat.getInterlocutor(), chat.getId(), getApplicationContext());
         messageEditText.getText().clear();
+        if (text.trim().equals("")) {
+            messageEditText.setError("Lütfen mesaj yazınız");
+            return;
+        }
+        viewModel.send(text, user, chat, getApplicationContext());
     }
 
     public void remove(MenuItem item) {
