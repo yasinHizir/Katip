@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.Nullable;
 
-import com.crypto.katip.cryptography.SignalProtocolStore;
+import com.crypto.katip.cryptography.SignalStore;
 import com.crypto.katip.database.models.User;
 
 import org.whispersystems.libsignal.IdentityKey;
@@ -53,7 +53,7 @@ public class UserDatabase extends Database {
 
         database.close();
     }
-
+    //TODO:Kullanıcı güncelleme işlemi geliştirilebilir.
     public void update(int id, String username, String password) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Date date = new Date();
@@ -107,22 +107,7 @@ public class UserDatabase extends Database {
 
         if (cursor != null && cursor.moveToFirst()) {
             int userId = cursor.getInt(cursor.getColumnIndexOrThrow(ID));
-            user = new User(userId, username, new SignalProtocolStore(userId, context));
-            cursor.close();
-        }
-
-        database.close();
-        return user;
-    }
-
-    @Nullable
-    public User getUser(int id, Context context) {
-        User user = null;
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)), new SignalProtocolStore(id, context));
+            user = new User(userId, username, new SignalStore(userId, context));
             cursor.close();
         }
 
@@ -146,8 +131,7 @@ public class UserDatabase extends Database {
         database.close();
         return result;
     }
-
-
+    //TODO:Kullanıcı silme işlemi geliştirebilir.
     public void remove(int id) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
