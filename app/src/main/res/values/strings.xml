@@ -25,4 +25,6 @@
     <string name="start_chat">Sohbet Başlat</string>
     <string name="create">Oluştur</string>
     <string name="button_settings">Ayarlar</string>
+    <string name="button_update">Güncelle</string>
+    <string name="id">ID:</string>
 </resources>

@@ -10,10 +10,12 @@
     <item
         android:id="@+id/menu2"
         android:onClick="settings"
-        android:title="@string/button_settings" />
+        android:title="@string/button_settings"
+        app:showAsAction="never" />
     <item
         android:id="@+id/menu3"
         android:onClick="logout"
-        android:title="@string/button_logout" />
+        android:title="@string/button_logout"
+        app:showAsAction="never" />
 
 </menu>

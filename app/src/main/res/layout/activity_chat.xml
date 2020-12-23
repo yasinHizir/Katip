@@ -53,8 +53,9 @@
                 android:ems="10"
                 android:hint="@string/edit_text_message"
                 android:inputType="textMultiLine|text"
-                android:textSize="18sp"
-                android:textColor="@color/light"/>
+                android:textColor="@color/light"
+                android:textColorHint="@color/gray_light"
+                android:textSize="18sp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/button_send"

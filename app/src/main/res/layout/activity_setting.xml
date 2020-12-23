@@ -12,6 +12,7 @@
         android:background="@color/black">
 
         <include
+            android:id="@+id/setting_bar"
             layout="@layout/action_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -21,25 +22,104 @@
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize">
 
-            <EditText
-                android:id="@+id/editTextTextPassword"
+            <RelativeLayout
+                android:id="@+id/id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:background="@drawable/rounded_30"
-                android:ems="10"
-                android:inputType="textPassword" />
+                android:layout_marginTop="20dp">
+
+                <EditText
+                    android:id="@+id/text_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:autofillHints=""
+                    android:ems="2"
+                    android:inputType="textPersonName"
+                    android:text="@string/id"
+                    android:textAlignment="center"
+                    android:textColor="@color/light" />
+
+                <EditText
+                    android:id="@+id/text_uuid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/text_id"
+                    android:autofillHints=""
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/light" />
+            </RelativeLayout>
 
             <EditText
-                android:id="@+id/editTextTextPassword2"
+                android:id="@+id/username"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/editTextTextPassword"
+                android:layout_height="50dp"
+                android:layout_below="@id/id"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:autofillHints=""
+                android:background="@drawable/rounded_30"
+                android:backgroundTint="@color/dark"
+                android:ems="10"
+                android:hint="@string/edit_text_username"
+                android:inputType="text"
+                android:textAlignment="center"
+                android:textColor="@color/light"
+                android:textColorHint="@color/gray_light"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/username"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
+                android:autofillHints=""
                 android:background="@drawable/rounded_30"
+                android:backgroundTint="@color/dark"
                 android:ems="10"
-                android:inputType="textPassword" />
+                android:hint="@string/edit_text_password"
+                android:inputType="textPassword"
+                android:maxLength="10"
+                android:textAlignment="center"
+                android:textColor="@color/light"
+                android:textColorHint="@color/gray_light"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/passwordVerify"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/password"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp"
+                android:autofillHints=""
+                android:background="@drawable/rounded_30"
+                android:backgroundTint="@color/dark"
+                android:ems="10"
+                android:hint="@string/edit_text_verify_password"
+                android:inputType="textPassword"
+                android:maxLength="10"
+                android:textAlignment="center"
+                android:textColor="@color/light"
+                android:textColorHint="@color/gray_light"
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/update"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_below="@id/passwordVerify"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/rounded_30"
+                android:backgroundTint="@color/dark"
+                android:onClick="update"
+                android:text="@string/button_update"
+                android:textColor="@color/light" />
+
         </RelativeLayout>
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

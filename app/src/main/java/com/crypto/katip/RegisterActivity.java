@@ -31,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
         usernameTextEdit = findViewById(R.id.username);
         passwordTextEdit = findViewById(R.id.password);
         passwordVerifyEdit = findViewById(R.id.passwordVerify);
-        final Button button = findViewById(R.id.register);
+        final Button button = findViewById(R.id.update);
 
 
         viewModel.getFormState().observe(this, registerFormState -> {

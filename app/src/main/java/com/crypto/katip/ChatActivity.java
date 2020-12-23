@@ -86,6 +86,20 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; go home
+                Intent intent = new Intent(this, HomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
@@ -95,8 +109,11 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar(findViewById(R.id.chat_bar));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
+
+
 
     private void refreshRecycleView(ArrayList<TextMessage> messages) {
         if (messages != null) {
