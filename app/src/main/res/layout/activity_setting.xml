@@ -130,7 +130,7 @@
                 android:textSize="24sp" />
 
             <Button
-                android:id="@+id/update_button"
+                android:id="@+id/button_update_user"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:layout_below="@id/text_edit_new_password"
@@ -139,8 +139,20 @@
                 android:background="@drawable/rounded_30"
                 android:backgroundTint="@color/dark"
                 android:onClick="update"
-                android:text="@string/button_update"
+                android:text="@string/button_update_user"
                 android:textColor="@color/light" />
+
+            <Button
+                android:id="@+id/button_delete_user"
+                android:layout_width="128dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/button_update_user"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="64dp"
+                android:background="@color/danger"
+                android:text="@string/button_delete_user"
+                android:textColor="@color/black"
+                android:onClick="delete"/>
 
         </RelativeLayout>
     </RelativeLayout>
