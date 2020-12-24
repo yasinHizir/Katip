@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.UserDatabase;
@@ -80,5 +79,15 @@ public class SettingActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void delete(View view) {
+        UserDatabase database = new UserDatabase(new DbHelper(getApplicationContext()));
+
+        database.remove(user.getId());
+
+        LoginRepository.getInstance().logout();
+        startActivity(new Intent(SettingActivity.this, LoginActivity.class));
+        finish();
     }
 }
