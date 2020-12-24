@@ -72,7 +72,7 @@ public class ChatActivity extends AppCompatActivity {
         String text = messageEditText.getText().toString();
         messageEditText.getText().clear();
         if (text.trim().equals("")) {
-            messageEditText.setError("Lütfen mesaj yazınız");
+            messageEditText.setError(getString(R.string.error_empty_message));
             return;
         }
         viewModel.send(text, user, chat, getApplicationContext());
@@ -86,6 +86,15 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
@@ -95,8 +104,11 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar(findViewById(R.id.chat_bar));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
+
+
 
     private void refreshRecycleView(ArrayList<TextMessage> messages) {
         if (messages != null) {

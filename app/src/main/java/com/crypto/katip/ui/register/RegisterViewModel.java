@@ -35,12 +35,12 @@ public class RegisterViewModel extends ViewModel {
     }
 
     public void dataChanged(String username, String password, String passwordVerify) {
-        if (username.equals("")) {
-            formState.setValue(new RegisterFormState("Kullanıcı adı boş bırakılamaz", null, null));
-        } else if (password.equals("") || password.trim().length() < 5) {
-            formState.setValue(new RegisterFormState(null, "Şifre 5 harften büyük olmalı", null));
+        if (username.trim().equals("")) {
+            formState.setValue(new RegisterFormState(R.string.error_username, -1, -1));
+        } else if (password.trim().equals("") || password.trim().length() < 5) {
+            formState.setValue(new RegisterFormState(-1, R.string.error_password, -1));
         } else if (!password.equals(passwordVerify)) {
-            formState.setValue(new RegisterFormState( null, null, "Lütfen şifreyi doğrulayın."));
+            formState.setValue(new RegisterFormState( -1, -1, R.string.error_verify_password));
         } else {
             formState.setValue(new RegisterFormState(true));
         }

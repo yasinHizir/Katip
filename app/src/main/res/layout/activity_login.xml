@@ -52,13 +52,15 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:autofillHints=""
-            android:background="@drawable/rounded_15"
+            android:background="@drawable/rounded_30"
+            android:backgroundTint="@color/dark"
             android:ems="10"
             android:hint="@string/edit_text_username"
             android:inputType="text"
             android:textAlignment="center"
-            android:textSize="24sp"
-            android:textColor="@color/light"/>
+            android:textColor="@color/light"
+            android:textColorHint="@color/gray_light"
+            android:textSize="24sp" />
 
         <EditText
             android:id="@+id/password"
@@ -68,14 +70,16 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
             android:autofillHints=""
-            android:background="@drawable/rounded_15"
+            android:background="@drawable/rounded_30"
+            android:backgroundTint="@color/dark"
             android:ems="10"
             android:hint="@string/edit_text_password"
             android:inputType="textPassword"
             android:maxLength="10"
             android:textAlignment="center"
-            android:textSize="24sp"
-            android:textColor="@color/light"/>
+            android:textColor="@color/light"
+            android:textColorHint="@color/gray_light"
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/login"
@@ -84,7 +88,7 @@
             android:layout_below="@id/password"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:background="@drawable/rounded_15"
+            android:background="@drawable/rounded_30"
             android:backgroundTint="@color/dark"
             android:onClick="login"
             android:text="@string/button_login"

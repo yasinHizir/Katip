@@ -64,6 +64,10 @@ public class HomeActivity extends AppCompatActivity {
         fragment.show(fragmentManager, "chat_adder_fragment");
     }
 
+    public void settings(MenuItem item) {
+        startActivity(new Intent(HomeActivity.this, SettingActivity.class));
+    }
+
     public void logout(MenuItem item) {
         LoginRepository loginRepository = LoginRepository.getInstance();
         loginRepository.logout();

@@ -4,6 +4,9 @@
     <string name="edit_text_password">Şifre</string>
     <string name="edit_text_username">Kullanıcı Adı</string>
     <string name="edit_text_interlocutor">Muhatabın Kullanıcı adı</string>
+    <string name="edit_text_new_username">Yeni Kullanıcı İsmi</string>
+    <string name="edit_text_old_password">Eski Şifre</string>
+    <string name="edit_text_new_password">Yeni Şifre</string>
     <string name="text_app_name">Katip</string>
     <string name="text_welcome">Hoşgeldiniz</string>
     <string name="text_registration">Henüz üye değil misiniz? Kayıt Ol.</string>
@@ -24,4 +27,13 @@
     <string name="messages">Mesajlar</string>
     <string name="start_chat">Sohbet Başlat</string>
     <string name="create">Oluştur</string>
+    <string name="button_settings">Ayarlar</string>
+    <string name="button_update">Güncelle</string>
+    <string name="error_username">Kullanıcı adı boş bırakılamaz</string>
+    <string name="error_password">Şifre 5 harften büyük olmalı</string>
+    <string name="error_verify_password">Lütfen şifreyi doğrulayın</string>
+    <string name="error_old_password_verification">Lütfen eski şifrenizi doğru giriniz</string>
+    <string name="error_empty_message">Lütfen mesaj yazınız></string>
+    <string name="id">ID:</string>
+    <string name="username">Kullanıcı ismi:</string>
 </resources>

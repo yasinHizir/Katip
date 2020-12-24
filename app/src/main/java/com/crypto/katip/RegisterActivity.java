@@ -31,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
         usernameTextEdit = findViewById(R.id.username);
         passwordTextEdit = findViewById(R.id.password);
         passwordVerifyEdit = findViewById(R.id.passwordVerify);
-        final Button button = findViewById(R.id.register);
+        final Button button = findViewById(R.id.update);
 
 
         viewModel.getFormState().observe(this, registerFormState -> {
@@ -39,12 +39,12 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
             button.setEnabled(registerFormState.isDataValid());
-            if (registerFormState.getUsernameError() != null) {
-                usernameTextEdit.setError(registerFormState.getUsernameError());
-            } else if (registerFormState.getPasswordError() != null) {
-                passwordTextEdit.setError(registerFormState.getPasswordError());
-            } else if (registerFormState.getPasswordVerifyError() != null) {
-                passwordVerifyEdit.setError(registerFormState.getPasswordVerifyError());
+            if (registerFormState.getUsernameError() == R.string.error_username) {
+                usernameTextEdit.setError(getString(R.string.error_username));
+            } else if (registerFormState.getPasswordError() == R.string.error_password) {
+                passwordTextEdit.setError(getString(R.string.error_password));
+            } else if (registerFormState.getPasswordVerifyError() == R.string.error_verify_password) {
+                passwordVerifyEdit.setError(getString(R.string.error_verify_password));
             }
         });
 
