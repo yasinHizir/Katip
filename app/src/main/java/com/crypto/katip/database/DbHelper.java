@@ -19,7 +19,13 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SessionDatabase.getCreateTable());
         sqLiteDatabase.execSQL(ChatDatabase.getCreateTable());
         sqLiteDatabase.execSQL(MessageDatabase.getCreateTable());
-        sqLiteDatabase.execSQL(Database.getChatRemoveTrigger());
+
+        sqLiteDatabase.execSQL(Database.getRemoveMessagesTrigger());
+        sqLiteDatabase.execSQL(Database.getRemoveChatsTrigger());
+        sqLiteDatabase.execSQL(Database.getRemoveIdentityKeysTrigger());
+        sqLiteDatabase.execSQL(Database.getRemovePreKeysTrigger());
+        sqLiteDatabase.execSQL(Database.getRemoveSessionsTrigger());
+        sqLiteDatabase.execSQL(Database.getRemoveSignedPreKeysTrigger());
     }
 
     @Override

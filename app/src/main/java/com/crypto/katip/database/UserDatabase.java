@@ -52,7 +52,7 @@ public class UserDatabase extends Database {
             database.insert(TABLE_NAME, null, values);
         }
     }
-    //TODO:Kullanıcı güncelleme işlemi geliştirilebilir.
+
     public void update(int id, String username, String password) {
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
             Date date = new Date();
@@ -147,7 +147,7 @@ public class UserDatabase extends Database {
 
         return result;
     }
-    //TODO:Kullanıcı silme işlemi geliştirebilir.
+
     public void remove(int id) {
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
             String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
@@ -165,6 +165,10 @@ public class UserDatabase extends Database {
 
     public static String getTableName() {
         return TABLE_NAME;
+    }
+
+    public static String getID() {
+        return ID;
     }
 
     private String passwordDigest(String password){

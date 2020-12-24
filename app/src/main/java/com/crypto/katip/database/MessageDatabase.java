@@ -43,13 +43,6 @@ public class MessageDatabase extends Database{
             database.insert(TABLE_NAME, null, values);
         }
     }
-    //TODO:Mesaj silme işlemi geliştirilebilir.
-    public void remove(int id) {
-        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
-            String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
-            database.execSQL(sql);
-        }
-    }
 
     public ArrayList<TextMessage> getMessages() {
         ArrayList<TextMessage> messages = new ArrayList<>();

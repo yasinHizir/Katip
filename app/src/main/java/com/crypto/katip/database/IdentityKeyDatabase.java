@@ -62,4 +62,12 @@ public class IdentityKeyDatabase extends Database{
     public static String getDropTable(){
         return  "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
+
+    public static String getTableName() {
+        return TABLE_NAME;
+    }
+
+    public static String getUserId() {
+        return USER_ID;
+    }
 }

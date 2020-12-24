@@ -107,4 +107,8 @@ public class ChatDatabase extends Database {
     public static String getID() {
         return ID;
     }
+
+    public static String getUserId() {
+        return USER_ID;
+    }
 }
