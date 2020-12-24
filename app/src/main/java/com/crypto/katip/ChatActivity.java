@@ -72,7 +72,7 @@ public class ChatActivity extends AppCompatActivity {
         String text = messageEditText.getText().toString();
         messageEditText.getText().clear();
         if (text.trim().equals("")) {
-            messageEditText.setError("Lütfen mesaj yazınız");
+            messageEditText.setError(getString(R.string.error_empty_message));
             return;
         }
         viewModel.send(text, user, chat, getApplicationContext());
@@ -87,16 +87,11 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                Intent intent = new Intent(this, HomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

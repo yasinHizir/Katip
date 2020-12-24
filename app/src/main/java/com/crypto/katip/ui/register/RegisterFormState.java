@@ -1,12 +1,12 @@
 package com.crypto.katip.ui.register;
 
 public class RegisterFormState {
-    private String usernameError;
-    private String passwordError;
-    private String passwordVerifyError;
+    private int usernameError;
+    private int passwordError;
+    private int passwordVerifyError;
     private boolean isDataValid;
 
-    public RegisterFormState(String usernameError, String passwordError, String passwordVerifyError) {
+    public RegisterFormState(int usernameError, int passwordError, int passwordVerifyError) {
         this.usernameError = usernameError;
         this.passwordError = passwordError;
         this.passwordVerifyError = passwordVerifyError;
@@ -16,15 +16,15 @@ public class RegisterFormState {
         this.isDataValid = isDataValid;
     }
 
-    public String getUsernameError() {
+    public int getUsernameError() {
         return usernameError;
     }
 
-    public String getPasswordError() {
+    public int getPasswordError() {
         return passwordError;
     }
 
-    public String getPasswordVerifyError() {
+    public int getPasswordVerifyError() {
         return passwordVerifyError;
     }
 

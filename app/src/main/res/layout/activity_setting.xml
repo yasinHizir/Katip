@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,6 +17,7 @@
             android:layout_height="wrap_content" />
 
         <RelativeLayout
+            android:id="@+id/setting_screen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize">
@@ -26,61 +26,83 @@
                 android:id="@+id/id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignStart="@+id/text_edit_new_username"
                 android:layout_marginTop="20dp">
 
                 <TextView
                     android:id="@+id/text_id"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:autofillHints=""
-                    android:ems="2"
-                    android:inputType="text"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
                     android:text="@string/id"
                     android:textAlignment="center"
-                    android:textColor="@color/light" />
+                    android:textColor="@color/gray_light"
+                    android:textSize="24sp" />
 
                 <TextView
                     android:id="@+id/text_uuid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:layout_toEndOf="@id/text_id"
-                    android:autofillHints=""
-                    android:ems="10"
-                    android:inputType="text"
-                    android:textColor="@color/light" />
+                    android:textColor="@color/light"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/text_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_id"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/username"
+                    android:textColor="@color/gray_light"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/text_view_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_uuid"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_toEndOf="@+id/text_username"
+                    android:textColor="@color/light"
+                    android:textSize="24sp" />
             </RelativeLayout>
 
             <EditText
-                android:id="@+id/username"
+                android:id="@+id/text_edit_new_username"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:layout_below="@id/id"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="64dp"
                 android:autofillHints=""
                 android:background="@drawable/rounded_30"
                 android:backgroundTint="@color/dark"
                 android:ems="10"
-                android:hint="@string/edit_text_username"
+                android:hint="@string/edit_text_new_username"
                 android:inputType="text"
                 android:textAlignment="center"
                 android:textColor="@color/light"
                 android:textColorHint="@color/gray_light"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                tools:ignore="LabelFor" />
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/text_edit_old_password"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:layout_below="@id/username"
+                android:layout_below="@id/text_edit_new_username"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
                 android:autofillHints=""
                 android:background="@drawable/rounded_30"
                 android:backgroundTint="@color/dark"
                 android:ems="10"
-                android:hint="@string/edit_text_password"
+                android:hint="@string/edit_text_old_password"
                 android:inputType="textPassword"
                 android:maxLength="10"
                 android:textAlignment="center"
@@ -89,17 +111,17 @@
                 android:textSize="24sp" />
 
             <EditText
-                android:id="@+id/passwordVerify"
+                android:id="@+id/text_edit_new_password"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:layout_below="@id/password"
+                android:layout_below="@id/text_edit_old_password"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
                 android:autofillHints=""
                 android:background="@drawable/rounded_30"
                 android:backgroundTint="@color/dark"
                 android:ems="10"
-                android:hint="@string/edit_text_verify_password"
+                android:hint="@string/edit_text_new_password"
                 android:inputType="textPassword"
                 android:maxLength="10"
                 android:textAlignment="center"
@@ -108,10 +130,10 @@
                 android:textSize="24sp" />
 
             <Button
-                android:id="@+id/update"
+                android:id="@+id/update_button"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:layout_below="@id/passwordVerify"
+                android:layout_below="@id/text_edit_new_password"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/rounded_30"
