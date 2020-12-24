@@ -30,10 +30,10 @@ public class SignalCipher {
         SessionCipher cipher = new SessionCipher(store, remoteAddress);
 
         if (!store.containsSession(remoteAddress)) {
-            KeyServer.receive(remoteAddress, keyBundle -> {
+            KeyServer.receive(remoteAddress, receiveBundle -> {
                 SessionBuilder builder = new SessionBuilder(store, remoteAddress);
                 try {
-                    builder.process(keyBundle.toPreKeyBundle());
+                    builder.process(receiveBundle.toPreKeyBundle());
                 } catch (InvalidKeyException | UntrustedIdentityException e) {
                     e.printStackTrace();
                 }
@@ -63,8 +63,7 @@ public class SignalCipher {
         } else if (envelope.getType() == CiphertextMessage.PREKEY_TYPE){
             text = cipher.decrypt(new PreKeySignalMessage(envelope.getBody()));
         } else {
-            //TODO:Tanınlanamayan mesaj için istisna oluşturabilirsin.
-            text = null;
+            text = "".getBytes();
         }
 
         return new String(text);
