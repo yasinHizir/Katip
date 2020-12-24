@@ -6,7 +6,7 @@ import com.crypto.katip.cryptography.PublicKeyBundle;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DeliverCallback;
+import com.rabbitmq.client.GetResponse;
 
 import org.whispersystems.libsignal.SignalProtocolAddress;
 
@@ -45,14 +45,23 @@ public class KeyServer {
             Channel channel = connection.createChannel();
 
             channel.queueDeclare(queueName, false, false, false, null);
-            DeliverCallback deliverCallback = (consumerTag, message) -> {
-                PublicKeyBundle keyBundle = deserialize(message.getBody());
-                if (keyBundle != null) {
-                    callBack.handleReceivedKeys(keyBundle);
-                }
-            };
-            channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
 
+            new Thread() {
+                @Override
+                public void run() {
+                    GetResponse response;
+                    try {
+                        response = channel.basicGet(queueName, true);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    PublicKeyBundle keyBundle = deserialize(response.getBody());
+                    if (keyBundle != null) {
+                        callBack.handleReceivedKeys(keyBundle);
+                    }
+                }
+            }.start();
         } catch (TimeoutException | IOException e) {
             e.printStackTrace();
         }
