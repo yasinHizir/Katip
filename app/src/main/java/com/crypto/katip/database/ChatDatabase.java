@@ -27,70 +27,69 @@ public class ChatDatabase extends Database {
     }
 
     public void save(String interlocutor) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Date date = new Date();
-        ContentValues values = new ContentValues();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            Date date = new Date();
+            ContentValues values = new ContentValues();
 
-        values.put(USER_ID, userId);
-        values.put(INTERLOCUTOR, interlocutor);
-        values.put(CREATED_AT, date.getTime());
-        values.put(UPDATED_AT, date.getTime());
-        database.insert(TABLE_NAME, null, values);
-
-        database.close();
+            values.put(USER_ID, userId);
+            values.put(INTERLOCUTOR, interlocutor);
+            values.put(CREATED_AT, date.getTime());
+            values.put(UPDATED_AT, date.getTime());
+            database.insert(TABLE_NAME, null, values);
+        }
     }
 
     public boolean isRegistered(String interlocutor) {
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
         boolean result = false;
 
-        try (Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)){
-            if (cursor != null && cursor.moveToFirst()) {
-                result = true;
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
+            String sql = "SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId;
+            try (Cursor cursor = database.rawQuery(sql, null)){
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = true;
+                }
             }
         }
 
-        database.close();
         return result;
     }
 
     public ArrayList<String> getChatNames() {
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
         ArrayList<String> interlocutor = new ArrayList<>();
 
-        try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    interlocutor.add(cursor.getString((cursor.getColumnIndexOrThrow(INTERLOCUTOR))));
-                } while (cursor.moveToNext());
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
+            try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    do {
+                        interlocutor.add(cursor.getString((cursor.getColumnIndexOrThrow(INTERLOCUTOR))));
+                    } while (cursor.moveToNext());
+                }
             }
         }
 
-        database.close();
         return interlocutor;
     }
 
     @Nullable
     public Chat getChat(String interlocutor) {
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
         Chat chat = null;
 
-        try (Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, interlocutor);
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
+            try (Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, interlocutor);
+                }
             }
         }
 
-        database.close();
         return chat;
     }
 
     public void remove(int id) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-        database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id);
-
-        database.close();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
+            database.execSQL(sql);
+        }
     }
 
     public static String getCreateTable() {
