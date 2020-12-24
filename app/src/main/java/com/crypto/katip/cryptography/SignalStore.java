@@ -8,6 +8,7 @@ import com.crypto.katip.database.PreKeyDatabase;
 import com.crypto.katip.database.SessionDatabase;
 import com.crypto.katip.database.SignedPreKeyDatabase;
 import com.crypto.katip.database.UserDatabase;
+import com.crypto.katip.database.models.User;
 
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.IdentityKeyPair;
@@ -81,8 +82,11 @@ public class SignalStore implements SignalProtocolStore {
     @Override
     public void removePreKey(int preKeyId) {
         new PreKeyDatabase(new DbHelper(context), userId).remove(preKeyId);
-        String username = new UserDatabase(new DbHelper(context)).getUser(userId, context).getUsername();
-        new KeyManager().newPreKey(userId, username, context, preKeyId);
+        User user = new UserDatabase(new DbHelper(context)).getUser(userId, context);
+        if (user != null) {
+            String username = user.getUsername();
+            new KeyManager().newPreKey(userId, username, context, preKeyId);
+        }
     }
 
     @Override

@@ -87,6 +87,7 @@ public class KeyManager {
                 signedPreKeyDatabase.store(signedPreKeyRecord.getId(), signedPreKeyRecord);
             } catch (InvalidKeyException e) {
                 e.printStackTrace();
+                return;
             }
         }
 
