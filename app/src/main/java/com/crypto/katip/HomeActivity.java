@@ -37,12 +37,18 @@ public class HomeActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this, new HomeViewModelFactory()).get(HomeViewModel.class);
         recyclerView = findViewById(R.id.recycle_view);
-        user = LoginRepository.getInstance(getApplicationContext()).getUser();
+        user = LoginRepository.getInstance().getUser();
         setToolbar();
 
         viewModel.getLiveData().observe(this, strings -> viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext())));
         viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChatNames());
         startService();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService();
     }
 
     @Override
@@ -59,7 +65,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void logout(MenuItem item) {
-        LoginRepository loginRepository = LoginRepository.getInstance(getApplicationContext());
+        LoginRepository loginRepository = LoginRepository.getInstance();
         loginRepository.logout();
         stopService();
         startActivity(new Intent(HomeActivity.this, WelcomeActivity.class));

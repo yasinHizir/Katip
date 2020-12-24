@@ -12,8 +12,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.crypto.katip.database.DbHelper;
-import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.ui.register.RegisterViewModel;
 import com.crypto.katip.ui.register.RegisterViewModelFactory;
@@ -22,6 +20,7 @@ public class RegisterActivity extends AppCompatActivity {
     public RegisterViewModel viewModel;
     public EditText usernameTextEdit;
     public EditText passwordTextEdit;
+    public EditText passwordVerifyEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this, new RegisterViewModelFactory()).get(RegisterViewModel.class);
         usernameTextEdit = findViewById(R.id.username);
         passwordTextEdit = findViewById(R.id.password);
-        final EditText passwordVerifyEdit = findViewById(R.id.passwordVerify);
+        passwordVerifyEdit = findViewById(R.id.passwordVerify);
         final Button button = findViewById(R.id.register);
 
 
@@ -51,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         viewModel.getResult().observe(this, registerResult -> {
             if (registerResult.getError() == null) {
-                LoginRepository.getInstance(getApplicationContext()).login(registerResult.getUsername(), registerResult.getPassword(), new UserDatabase(new DbHelper(getApplicationContext())));
+                LoginRepository.getInstance().login(registerResult.getUsername(), registerResult.getPassword(), getApplicationContext());
                 startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                 finish();
             } else {
@@ -61,7 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -78,10 +77,15 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void register(View view) {
         viewModel.register(usernameTextEdit.getText().toString(), passwordTextEdit.getText().toString(), getApplicationContext());
+        usernameTextEdit.getText().clear();
+        passwordTextEdit.getText().clear();
+        passwordVerifyEdit.getText().clear();
     }
 
     public void loginPage(View view) {
+        usernameTextEdit.getText().clear();
+        passwordTextEdit.getText().clear();
+        passwordVerifyEdit.getText().clear();
         startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-        finish();
     }
 }

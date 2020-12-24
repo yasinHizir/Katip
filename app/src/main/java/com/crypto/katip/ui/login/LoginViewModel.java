@@ -5,9 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.login.LoginRepository;
-import com.crypto.katip.database.DbHelper;
 
 public class LoginViewModel extends ViewModel {
     private final MutableLiveData<LoginResult> result = new MutableLiveData<>();
@@ -17,8 +15,8 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password, Context context) {
-        LoginRepository loginRepository = LoginRepository.getInstance(context);
+        LoginRepository loginRepository = LoginRepository.getInstance();
 
-        result.setValue(loginRepository.login(username, password, new UserDatabase(new DbHelper(context))));
+        result.setValue(loginRepository.login(username, password, context));
     }
 }

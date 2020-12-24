@@ -2,6 +2,8 @@ package com.crypto.katip.communication;
 
 import androidx.annotation.Nullable;
 
+import com.crypto.katip.cryptography.SignalCipher;
+import com.crypto.katip.database.models.User;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -15,33 +17,30 @@ import java.util.concurrent.TimeoutException;
 
 public class MessageSender {
 
-    public void send(SignalProtocolAddress remoteAddress, Envelope envelope) {
-        send(remoteAddress, envelope, new NotCallBack());
-    }
-
-    public void send(SignalProtocolAddress remoteAddress, Envelope envelope, SendCallBack callBack) {
+    public void send(User user, String interlocutor, String text, SendCallBack callBack) {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("20.71.252.243");
 
+        SignalCipher cipher = new SignalCipher(user);
+        SignalProtocolAddress remoteAddress = new SignalProtocolAddress(interlocutor, 0);
+        String queueName = remoteAddress.toString();
 
-        try (Connection connection = factory.newConnection();
-             Channel channel = connection.createChannel()) {
-            channel.queueDeclare(remoteAddress.toString(), false, false, false, null);
-            channel.basicPublish("", remoteAddress.toString(), null, serialize(envelope));
-            callBack.handleSentMessage(envelope);
+        cipher.encrypt(remoteAddress, text, cipherTextMessage -> {
+            try (Connection connection = factory.newConnection();
+                 Channel channel = connection.createChannel()) {
 
-        } catch (TimeoutException | IOException e) {
-            e.printStackTrace();
-        }
+                Envelope envelope = new Envelope(cipherTextMessage.getType(), user.getUsername(), 0, cipherTextMessage.serialize());
+                sendMessage(channel, envelope, queueName);
+                callBack.handleSentMessage(envelope);
+
+            } catch (TimeoutException | IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public interface SendCallBack {
         void handleSentMessage(Envelope envelope);
-    }
-
-    private static class NotCallBack implements SendCallBack{
-        @Override
-        public void handleSentMessage(Envelope envelope) {}
     }
 
     @Nullable
@@ -58,5 +57,14 @@ public class MessageSender {
         }
 
         return bytes;
+    }
+
+    private void sendMessage(Channel channel, Envelope envelope, String queueName) {
+        try {
+            channel.queueDeclare(queueName, false, false, false, null);
+            channel.basicPublish("", queueName, null, serialize(envelope));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

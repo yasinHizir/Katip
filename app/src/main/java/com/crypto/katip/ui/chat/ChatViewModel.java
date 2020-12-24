@@ -5,27 +5,24 @@ import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.crypto.katip.communication.Envelope;
 import com.crypto.katip.communication.MessageSender;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.MessageDatabase;
+import com.crypto.katip.database.models.Chat;
 import com.crypto.katip.database.models.TextMessage;
-
-import org.whispersystems.libsignal.SignalProtocolAddress;
+import com.crypto.katip.database.models.User;
 
 import java.util.ArrayList;
 
 public class ChatViewModel extends ViewModel {
     private final MutableLiveData<ArrayList<TextMessage>> liveData = new MutableLiveData<>();
 
-    public void send(String text, String localUsername, String remoteUsername, int chatID, Context context) {
-        MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(context), chatID);
-        SignalProtocolAddress remoteAddress = new SignalProtocolAddress(remoteUsername, 0);
-        Envelope envelope = new Envelope(localUsername, text.getBytes());
+    public void send(String text, User user, Chat chat, Context context) {
+        MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(context), chat.getId());
 
-        new MessageSender().send(remoteAddress, envelope, message -> {
-            messageDatabase.save(new String(message.getBody()), true);
-            liveData.setValue(messageDatabase.getMessages());
+        new MessageSender().send(user, chat.getInterlocutor(), text, message -> {
+            messageDatabase.save(text, true);
+            liveData.postValue(messageDatabase.getMessages());
         });
     }
 

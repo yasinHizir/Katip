@@ -1,11 +1,13 @@
 package com.crypto.katip.database;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.Nullable;
 
+import com.crypto.katip.cryptography.SignalStore;
 import com.crypto.katip.database.models.User;
 
 import org.whispersystems.libsignal.IdentityKey;
@@ -35,122 +37,122 @@ public class UserDatabase extends Database {
     }
 
     public void save(String username, String password) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
-        Date date = new Date();
-        ContentValues values = new ContentValues();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
+            Date date = new Date();
+            ContentValues values = new ContentValues();
 
-        values.put(USERNAME, username);
-        values.put(PASSWORD, passwordDigest(password));
-        values.put(REGISTRATION_ID, KeyHelper.generateRegistrationId(false));
-        values.put(IDENTITY_PUBLIC_KEY, identityKeyPair.getPublicKey().serialize());
-        values.put(IDENTITY_PRIVATE_KEY, identityKeyPair.getPrivateKey().serialize());
-        values.put(CREATED_AT, date.getTime());
-        values.put(UPDATED_AT, date.getTime());
-        database.insert(TABLE_NAME, null, values);
-
-        database.close();
+            values.put(USERNAME, username);
+            values.put(PASSWORD, passwordDigest(password));
+            values.put(REGISTRATION_ID, KeyHelper.generateRegistrationId(false));
+            values.put(IDENTITY_PUBLIC_KEY, identityKeyPair.getPublicKey().serialize());
+            values.put(IDENTITY_PRIVATE_KEY, identityKeyPair.getPrivateKey().serialize());
+            values.put(CREATED_AT, date.getTime());
+            values.put(UPDATED_AT, date.getTime());
+            database.insert(TABLE_NAME, null, values);
+        }
     }
-
+    //TODO:Kullanıcı güncelleme işlemi geliştirilebilir.
     public void update(int id, String username, String password) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Date date = new Date();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            Date date = new Date();
 
-        String sql = "Update " + TABLE_NAME + " SET " + USERNAME + " = '" + username + "' , " + PASSWORD + " = '" + passwordDigest(password) + "' ," + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id + ";";
-        database.execSQL(sql);
-
-        database.close();
+            String sql = "Update " + TABLE_NAME + " SET " + USERNAME + " = '" + username + "' , " + PASSWORD + " = '" + passwordDigest(password) + "' ," + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id + ";";
+            database.execSQL(sql);
+        }
     }
 
     public IdentityKeyPair getIdentityKeyPair(int id) {
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + IDENTITY_PUBLIC_KEY + ", " + IDENTITY_PRIVATE_KEY + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id, null);
         IdentityKeyPair identityKeyPair = null;
 
-        if (cursor != null && cursor.moveToFirst()) {
-            try {
-                IdentityKey publicKey = new IdentityKey(Curve.decodePoint(cursor.getBlob(cursor.getColumnIndexOrThrow(IDENTITY_PUBLIC_KEY)), 0));
-                ECPrivateKey privateKey = Curve.decodePrivatePoint(cursor.getBlob(cursor.getColumnIndexOrThrow(IDENTITY_PRIVATE_KEY)));
-                identityKeyPair = new IdentityKeyPair(publicKey, privateKey);
-            } catch (InvalidKeyException e) {
-                e.printStackTrace();
-            } finally {
-                cursor.close();
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
+            String sql = "SELECT " + IDENTITY_PUBLIC_KEY + ", " + IDENTITY_PRIVATE_KEY + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
+            try (Cursor cursor = database.rawQuery(sql, null)){
+                if (cursor != null && cursor.moveToFirst()) {
+                    try {
+                        IdentityKey publicKey = new IdentityKey(Curve.decodePoint(cursor.getBlob(cursor.getColumnIndexOrThrow(IDENTITY_PUBLIC_KEY)), 0));
+                        ECPrivateKey privateKey = Curve.decodePrivatePoint(cursor.getBlob(cursor.getColumnIndexOrThrow(IDENTITY_PRIVATE_KEY)));
+                        identityKeyPair = new IdentityKeyPair(publicKey, privateKey);
+                    } catch (InvalidKeyException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 
-        database.close();
         return identityKeyPair;
     }
 
     public int getRegistrationID(int id) {
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + REGISTRATION_ID + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id, null);
         int registrationID = -1;
 
-        if (cursor != null && cursor.moveToFirst()) {
-            registrationID = cursor.getInt(cursor.getColumnIndexOrThrow(REGISTRATION_ID));
-            cursor.close();
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
+            String sql = "SELECT " + REGISTRATION_ID + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
+            try (Cursor cursor = database.rawQuery(sql, null)){
+                if (cursor != null && cursor.moveToFirst()) {
+                    registrationID = cursor.getInt(cursor.getColumnIndexOrThrow(REGISTRATION_ID));
+                }
+            }
         }
 
-        database.close();
         return registrationID;
     }
 
     @Nullable
-    public User getUser(String username) {
+    public User getUser(String username, Context context) {
         User user = null;
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
 
-        if (cursor != null && cursor.moveToFirst()) {
-            user = new User(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), username);
-            cursor.close();
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
+            String sql = "SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'";
+            try (Cursor cursor = database.rawQuery(sql, null)){
+                if (cursor != null && cursor.moveToFirst()) {
+                    int userId = cursor.getInt(cursor.getColumnIndexOrThrow(ID));
+                    user = new User(userId, username, new SignalStore(userId, context));
+                }
+            }
         }
 
-        database.close();
         return user;
     }
 
     @Nullable
-    public User getUser(int id) {
+    public User getUser(int id, Context context) {
         User user = null;
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id, null);
 
-        if (cursor != null && cursor.moveToFirst()) {
-            user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)));
-            cursor.close();
-        }
-
-        database.close();
-        return user;
-    }
-
-    public boolean isRegistered(String username, String password) {
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT " + PASSWORD + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'", null);
-        boolean result = false;
-
-        if (cursor != null && cursor.moveToFirst()) {
-            String passwordRegistered = cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD));
-            cursor.close();
-            if (passwordRegistered.equals(passwordDigest(password))) {
-                result = true;
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
+            String sql = "SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
+            try (Cursor cursor = database.rawQuery(sql, null)){
+                if (cursor != null && cursor.moveToFirst()) {
+                    user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)), new SignalStore(id, context));
+                }
             }
         }
 
-        database.close();
+        return user;
+    }
+    public boolean isRegistered(String username, String password) {
+        boolean result = false;
+
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
+            String sql = "SELECT " + PASSWORD + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'";
+            try (Cursor cursor = database.rawQuery(sql, null)){
+                if (cursor != null && cursor.moveToFirst()) {
+                    String passwordRegistered = cursor.getString(cursor.getColumnIndexOrThrow(PASSWORD));
+                    if (passwordRegistered.equals(passwordDigest(password))) {
+                        result = true;
+                    }
+                }
+            }
+        }
+
         return result;
     }
-
-
+    //TODO:Kullanıcı silme işlemi geliştirebilir.
     public void remove(int id) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-        database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id);
-
-        database.close();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
+            database.execSQL(sql);
+        }
     }
 
     public static String getCreateTable() {
@@ -166,7 +168,6 @@ public class UserDatabase extends Database {
     }
 
     private String passwordDigest(String password){
-
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             messageDigest.update(password.getBytes());

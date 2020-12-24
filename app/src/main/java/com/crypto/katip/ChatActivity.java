@@ -48,7 +48,7 @@ public class ChatActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this, new ChatViewModelFactory()).get(ChatViewModel.class);
         recyclerView = findViewById(R.id.recycle_view_messages);
         messageEditText = findViewById(R.id.edit_text_message);
-        user = LoginRepository.getInstance(getApplicationContext()).getUser();
+        user = LoginRepository.getInstance().getUser();
 
         Intent intent = getIntent();
         String interlocutor = intent.getStringExtra(INTERLOCUTOR);
@@ -70,8 +70,12 @@ public class ChatActivity extends AppCompatActivity {
 
     public void send(View view) {
         String text = messageEditText.getText().toString();
-        viewModel.send(text, user.getUsername(), chat.getInterlocutor(), chat.getId(), getApplicationContext());
         messageEditText.getText().clear();
+        if (text.trim().equals("")) {
+            messageEditText.setError("Lütfen mesaj yazınız");
+            return;
+        }
+        viewModel.send(text, user, chat, getApplicationContext());
     }
 
     public void remove(MenuItem item) {
