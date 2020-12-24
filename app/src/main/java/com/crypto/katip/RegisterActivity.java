@@ -77,15 +77,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void register(View view) {
         viewModel.register(usernameTextEdit.getText().toString(), passwordTextEdit.getText().toString(), getApplicationContext());
-        usernameTextEdit.getText().clear();
-        passwordTextEdit.getText().clear();
-        passwordVerifyEdit.getText().clear();
     }
 
     public void loginPage(View view) {
-        usernameTextEdit.getText().clear();
-        passwordTextEdit.getText().clear();
-        passwordVerifyEdit.getText().clear();
         startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
     }
 }

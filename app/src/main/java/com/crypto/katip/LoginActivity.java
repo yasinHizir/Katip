@@ -40,8 +40,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login(View view) {
         viewModel.login(usernameTextEdit.getText().toString(), passwordTextEdit.getText().toString(), getApplicationContext());
-        usernameTextEdit.getText().clear();
-        passwordTextEdit.getText().clear();
     }
 
     public void registerPage(View view) {
