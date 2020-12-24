@@ -4,13 +4,13 @@ import com.crypto.katip.database.models.User;
 
 public class LoginResult {
     private User success;
-    private String error;
+    private int error;
 
     public LoginResult(User user) {
         this.success = user;
     }
 
-    public LoginResult(String error) {
+    public LoginResult(int error) {
         this.error = error;
     }
 
@@ -18,7 +18,7 @@ public class LoginResult {
         return success;
     }
 
-    public String getError() {
+    public int getError() {
         return error;
     }
 }

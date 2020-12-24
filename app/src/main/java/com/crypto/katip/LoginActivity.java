@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordTextEdit = findViewById(R.id.password);
 
         viewModel.getResult().observe(this, loginResult -> {
-            if (loginResult.getError() != null) {
+            if (loginResult.getError() == R.string.error_user_not_registered) {
                 Toast.makeText(getApplicationContext(), loginResult.getError(), Toast.LENGTH_LONG).show();
             } else if (loginResult.getSuccess() != null) {
                 startActivity(new Intent(LoginActivity.this, HomeActivity.class));

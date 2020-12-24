@@ -28,12 +28,15 @@
     <string name="start_chat">Sohbet Başlat</string>
     <string name="create">Oluştur</string>
     <string name="button_settings">Ayarlar</string>
-    <string name="button_update">Güncelle</string>
+    <string name="button_update_user">Güncelle</string>
+    <string name="button_delete_user">Kullanıcıyı sil</string>
     <string name="error_username">Kullanıcı adı boş bırakılamaz</string>
     <string name="error_password">Şifre 5 harften büyük olmalı</string>
     <string name="error_verify_password">Lütfen şifreyi doğrulayın</string>
     <string name="error_old_password_verification">Lütfen eski şifrenizi doğru giriniz</string>
     <string name="error_empty_message">Lütfen mesaj yazınız></string>
+    <string name="error_register">Kullanıcı sisteme kayıtlanamadı</string>
+    <string name="error_user_not_registered">Kullanıcı sistemde kayıtlı değil</string>
     <string name="id">ID:</string>
     <string name="username">Kullanıcı ismi:</string>
 </resources>

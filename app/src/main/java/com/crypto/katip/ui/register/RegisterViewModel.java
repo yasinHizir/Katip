@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.crypto.katip.R;
 import com.crypto.katip.cryptography.KeyManager;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.UserDatabase;
@@ -20,17 +21,17 @@ public class RegisterViewModel extends ViewModel {
 
         if (userDatabase.isRegistered(username, password)) {
             result.setValue(new RegisterResult(username, password));
-            User user = userDatabase.getUser(username, context);
-            if (user!= null) {
-                new Thread() {
-                    @Override
-                    public void run() {
+            new Thread() {
+                @Override
+                public void run() {
+                    User user = userDatabase.getUser(username, context);
+                    if (user != null) {
                         new KeyManager().createPublicKeys(user.getId(), username, context, 100);
                     }
-                }.start();
-            }
+                }
+            }.start();
         } else {
-            result.setValue(new RegisterResult("Kullanıcı sisteme kayıtlanamadı."));
+            result.setValue(new RegisterResult(R.string.error_register));
         }
     }
 

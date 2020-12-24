@@ -2,6 +2,7 @@ package com.crypto.katip.login;
 
 import android.content.Context;
 
+import com.crypto.katip.R;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.database.models.User;
@@ -35,7 +36,7 @@ public class LoginRepository {
             }
         }
 
-        return new LoginResult("Kullanıcı sistemde kayıtlı değil.");
+        return new LoginResult(R.string.error_user_not_registered);
     }
 
     public boolean isLoggedIn(Context context) {
