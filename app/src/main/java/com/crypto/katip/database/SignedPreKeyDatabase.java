@@ -32,10 +32,10 @@ public class SignedPreKeyDatabase extends Database{
 
     public SignedPreKeyRecord load(int keyId){
         SignedPreKeyRecord record = null;
-        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
-            String query = "SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId;
-            try (Cursor cursor = database.rawQuery(query, null)) {
 
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
+            String sql = "SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId;
+            try (Cursor cursor = database.rawQuery(sql, null)) {
                 try {
                     if (cursor != null && cursor.moveToFirst()) {
                         record = create(keyId, cursor);
@@ -51,10 +51,10 @@ public class SignedPreKeyDatabase extends Database{
 
     public List<SignedPreKeyRecord> loadAll(){
         List<SignedPreKeyRecord> records = new LinkedList<>();
-        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
 
-            String query = "SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId;
-            try (Cursor cursor = database.rawQuery(query , null)) {
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
+            String sql = "SELECT " + PUBLIC_KEY + ", " + PRIVATE_KEY + ", " + SIGNATURE + ", " + TIMESTAMP + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId;
+            try (Cursor cursor = database.rawQuery(sql , null)) {
                 try {
                     if (cursor != null && cursor.moveToFirst()) {
                         do {
@@ -73,6 +73,7 @@ public class SignedPreKeyDatabase extends Database{
     public void store(int keyId, SignedPreKeyRecord record){
         byte[] publicKey = record.getKeyPair().getPublicKey().serialize();
         byte[] privateKey = record.getKeyPair().getPrivateKey().serialize();
+
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
             ContentValues values = new ContentValues();
 
@@ -90,9 +91,25 @@ public class SignedPreKeyDatabase extends Database{
         return load(keyId) != null;
     }
 
+    public int getAvailableSignedPreKeyId() {
+        int signedPreKeyId = -1;
+
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
+            String sql = "SELECT MAX(" + KEY_ID + ") FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId;
+            try (Cursor cursor = database.rawQuery(sql, null)){
+                if (cursor != null && cursor.moveToLast()) {
+                    signedPreKeyId = cursor.getInt(0) + 1;
+                }
+            }
+        }
+
+        return signedPreKeyId;
+    }
+
     public void remove(int keyId){
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
-            database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId);
+            String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId;
+            database.execSQL(sql);
         }
     }
 

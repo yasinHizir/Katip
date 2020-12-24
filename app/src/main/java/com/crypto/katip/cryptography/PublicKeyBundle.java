@@ -8,7 +8,7 @@ import org.whispersystems.libsignal.state.PreKeyBundle;
 
 import java.io.Serializable;
 
-public class SignalPublicKeyBundle implements Serializable {
+public class PublicKeyBundle implements Serializable {
     private final int registrationId;
     private final int deviceId;
     private final int preKeyId;
@@ -18,7 +18,7 @@ public class SignalPublicKeyBundle implements Serializable {
     private final byte[] signedPreKeySignature;
     private final byte[] identityKey;
 
-    public SignalPublicKeyBundle(int registrationId, int deviceId, int preKeyId, ECPublicKey preKeyPublic, int signedPreKeyId, ECPublicKey signedPreKeyPublic, byte[] signedPreKeySignature, IdentityKey identityKey) {
+    public PublicKeyBundle(int registrationId, int deviceId, int preKeyId, ECPublicKey preKeyPublic, int signedPreKeyId, ECPublicKey signedPreKeyPublic, byte[] signedPreKeySignature, IdentityKey identityKey) {
         this.registrationId        = registrationId;
         this.deviceId              = deviceId;
         this.preKeyId              = preKeyId;

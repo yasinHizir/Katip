@@ -25,11 +25,10 @@ public class IdentityKeyDatabase extends Database{
 
     public IdentityKey get(String address){
         IdentityKey identityKey = null;
-        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
 
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
             String query = "SELECT " + KEY + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + ADDRESS + " = '" + address + "';";
             try (Cursor cursor = database.rawQuery(query, null)) {
-
                 try {
                     if (cursor != null && cursor.moveToFirst()) {
                         identityKey = new IdentityKey(Curve.decodePoint(Base64.decode(cursor.getBlob(cursor.getColumnIndexOrThrow(KEY)), Base64.DEFAULT), 0));

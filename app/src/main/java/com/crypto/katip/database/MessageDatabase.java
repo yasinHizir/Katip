@@ -25,50 +25,52 @@ public class MessageDatabase extends Database{
     }
 
     public void save(String text, boolean own) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Date date = new Date();
-        ContentValues values = new ContentValues();
-        int selfValue = 0;
-        if (own) {
-            selfValue = 1;
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            Date date = new Date();
+            ContentValues values = new ContentValues();
+
+            int selfValue;
+            if (own) {
+                selfValue = 1;
+            } else {
+                selfValue = 0;
+            }
+
+            values.put(CHAT_ID, chatId);
+            values.put(OWN, selfValue);
+            values.put(BODY, text);
+            values.put(CREATED_AT, date.getTime());
+            database.insert(TABLE_NAME, null, values);
         }
-
-        values.put(CHAT_ID, chatId);
-        values.put(OWN, selfValue);
-        values.put(BODY, text);
-        values.put(CREATED_AT, date.getTime());
-        database.insert(TABLE_NAME, null, values);
-
-        database.close();
     }
-
+    //TODO:Mesaj silme işlemi geliştirilebilir.
     public void remove(int id) {
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-        database.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id);
-
-        database.close();
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
+            database.execSQL(sql);
+        }
     }
 
     public ArrayList<TextMessage> getMessages() {
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
         ArrayList<TextMessage> messages = new ArrayList<>();
 
-        try(Cursor cursor = database.rawQuery("SELECT " + ID + ", " + OWN + ", "+ BODY + " FROM " + TABLE_NAME + " WHERE " + CHAT_ID + " = " + chatId, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    int messageId = cursor.getInt(cursor.getColumnIndexOrThrow(ID));
-                    String body = cursor.getString(cursor.getColumnIndexOrThrow(BODY));
-                    boolean self = false;
-                    if (cursor.getInt(cursor.getColumnIndexOrThrow(OWN)) == 1) {
-                        self = true;
-                    }
-                    messages.add(new TextMessage(messageId, self, chatId, body));
-                } while (cursor.moveToNext());
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
+            String sql = "SELECT " + ID + ", " + OWN + ", "+ BODY + " FROM " + TABLE_NAME + " WHERE " + CHAT_ID + " = " + chatId;
+            try(Cursor cursor = database.rawQuery(sql, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    do {
+                        int messageId = cursor.getInt(cursor.getColumnIndexOrThrow(ID));
+                        String body = cursor.getString(cursor.getColumnIndexOrThrow(BODY));
+                        boolean self = false;
+                        if (cursor.getInt(cursor.getColumnIndexOrThrow(OWN)) == 1) {
+                            self = true;
+                        }
+                        messages.add(new TextMessage(messageId, self, chatId, body));
+                    } while (cursor.moveToNext());
+                }
             }
         }
 
-        database.close();
         return messages;
     }
 

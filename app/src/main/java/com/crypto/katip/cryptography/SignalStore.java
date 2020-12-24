@@ -81,6 +81,8 @@ public class SignalStore implements SignalProtocolStore {
     @Override
     public void removePreKey(int preKeyId) {
         new PreKeyDatabase(new DbHelper(context), userId).remove(preKeyId);
+        String username = new UserDatabase(new DbHelper(context)).getUser(userId, context).getUsername();
+        new KeyManager().newPreKey(userId, username, context, preKeyId);
     }
 
     @Override
