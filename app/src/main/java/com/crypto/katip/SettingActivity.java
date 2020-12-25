@@ -30,7 +30,7 @@ public class SettingActivity extends AppCompatActivity {
         user = LoginRepository.getInstance().getUser();
 
         TextView idTextView = findViewById(R.id.text_uuid);
-        idTextView.setText(String.valueOf(user.getId()));
+        idTextView.setText(user.getUuid().toString());
 
         TextView usernameTextView = findViewById(R.id.text_view_username);
         usernameTextView.setText(user.getUsername());

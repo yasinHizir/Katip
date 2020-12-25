@@ -10,11 +10,13 @@ import com.crypto.katip.database.models.Chat;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 public class ChatDatabase extends Database {
     private static final String TABLE_NAME = "chat";
     private static final String ID = "ID";
     private static final String USER_ID = "userID";
+    private static final String REMOTE_UUID = "remote_uuid";
     private static final String INTERLOCUTOR = "interlocutor";
     private static final String CREATED_AT = "created_at";
     private static final String UPDATED_AT = "updated_at";
@@ -26,11 +28,12 @@ public class ChatDatabase extends Database {
         this.userId = userId;
     }
 
-    public void save(String interlocutor) {
+    public void save(UUID uuid, String interlocutor) {
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
             Date date = new Date();
             ContentValues values = new ContentValues();
 
+            values.put(REMOTE_UUID, uuid.toString());
             values.put(USER_ID, userId);
             values.put(INTERLOCUTOR, interlocutor);
             values.put(CREATED_AT, date.getTime());
@@ -75,9 +78,10 @@ public class ChatDatabase extends Database {
         Chat chat = null;
 
         try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
-            try (Cursor cursor = database.rawQuery("SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)) {
+            try (Cursor cursor = database.rawQuery("SELECT " + ID + ", " + REMOTE_UUID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, interlocutor);
+                    UUID remoteUUID = UUID.fromString(cursor.getString(cursor.getColumnIndexOrThrow(REMOTE_UUID)));
+                    chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, remoteUUID, interlocutor);
                 }
             }
         }
@@ -93,7 +97,7 @@ public class ChatDatabase extends Database {
     }
 
     public static String getCreateTable() {
-        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + INTERLOCUTOR + " TEXT, " + CREATED_AT + " INTEGER, " + UPDATED_AT + " INTEGER, FOREIGN KEY(" + USER_ID + ") REFERENCES user (ID));";
+        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + REMOTE_UUID + " TEXT UNIQUE, " + INTERLOCUTOR + " TEXT, " + CREATED_AT + " INTEGER, " + UPDATED_AT + " INTEGER, FOREIGN KEY(" + USER_ID + ") REFERENCES user (ID));";
     }
 
     public static String getDropTable() {

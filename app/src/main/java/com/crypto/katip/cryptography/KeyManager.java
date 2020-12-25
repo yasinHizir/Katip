@@ -10,13 +10,13 @@ import com.crypto.katip.database.UserDatabase;
 
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.InvalidKeyException;
-import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.libsignal.ecc.Curve;
 import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class KeyManager {
@@ -32,7 +32,7 @@ public class KeyManager {
         return result;
     }
 
-    public void createPublicKeys(int userId, String username, Context context, int count) {
+    public void createPublicKeys(int userId, UUID userUUID, Context context, int count) {
         UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
         IdentityKeyPair identityKeyPair = userDatabase.getIdentityKeyPair(userId);
         int registrationId = userDatabase.getRegistrationID(userId);
@@ -58,12 +58,11 @@ public class KeyManager {
                                                             signedPreKeyRecord.getKeyPair().getPublicKey(),
                                                             signedPreKeyRecord.getSignature(),
                                                             identityKeyPair.getPublicKey());
-            KeyServer.send(new SignalProtocolAddress(username, 0), keyBundle,
-                    sentBundle -> preKeyDatabase.store(sentBundle.getPreKeyId(), preKeyRecord));
+            KeyServer.send(userUUID, keyBundle, sentBundle -> preKeyDatabase.store(sentBundle.getPreKeyId(), preKeyRecord));
         }
     }
 
-    public void newPreKey(int userId, String username, Context context, int keyId) {
+    public void newPreKey(int userId, UUID userUUID, Context context, int keyId) {
         UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
         IdentityKeyPair identityKeyPair = userDatabase.getIdentityKeyPair(userId);
         int registrationId = userDatabase.getRegistrationID(userId);
@@ -98,7 +97,6 @@ public class KeyManager {
                                                         signedPreKeyRecord.getKeyPair().getPublicKey(),
                                                         signedPreKeyRecord.getSignature(),
                                                         identityKeyPair.getPublicKey());
-        KeyServer.send(new SignalProtocolAddress(username, 0), keyBundle,
-                sentBundle -> preKeyDatabase.store(sentBundle.getPreKeyId(), preKeyRecord));
+        KeyServer.send(userUUID, keyBundle, sentBundle -> preKeyDatabase.store(sentBundle.getPreKeyId(), preKeyRecord));
     }
 }

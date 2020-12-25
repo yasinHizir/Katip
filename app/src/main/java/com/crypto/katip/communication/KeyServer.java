@@ -8,20 +8,19 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
 
-import org.whispersystems.libsignal.SignalProtocolAddress;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 public class KeyServer {
 
-    public static void send(SignalProtocolAddress localAddress, PublicKeyBundle keyBundle, SendCallBack callBack) {
+    public static void send(UUID userUUID, PublicKeyBundle keyBundle, SendCallBack callBack) {
         ConnectionFactory factory = new ConnectionFactory();
-        String queueName = localAddress.toString() + "Key";
+        String queueName = userUUID.toString() + "-Key";
         factory.setHost("20.71.252.243");
 
         try (Connection connection = factory.newConnection();
@@ -35,9 +34,9 @@ public class KeyServer {
         }
     }
 
-    public static void receive(SignalProtocolAddress remoteAddress, ReceiveKeyCallBack callBack) {
+    public static void receive(UUID remoteUUID, ReceiveKeyCallBack callBack) {
         ConnectionFactory factory = new ConnectionFactory();
-        String queueName = remoteAddress.toString() + "Key";
+        String queueName = remoteUUID.toString() + "-Key";
         factory.setHost("20.71.252.243");
 
         try {

@@ -23,8 +23,9 @@ import org.whispersystems.libsignal.InvalidMessageException;
 import org.whispersystems.libsignal.InvalidVersionException;
 import org.whispersystems.libsignal.LegacyMessageException;
 import org.whispersystems.libsignal.NoSessionException;
-import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.libsignal.UntrustedIdentityException;
+
+import java.util.UUID;
 
 public class MessageReceiverService extends Service {
     public static final String USERNAME = "username";
@@ -75,9 +76,8 @@ public class MessageReceiverService extends Service {
 
         @Override
         public void run() {
-            SignalProtocolAddress localAddress = new SignalProtocolAddress(user.getUsername(), 0);
-            new MessageReceiver().receive(localAddress, envelope -> {
-                SignalCipher cipher = new SignalCipher(user);
+            new MessageReceiver().receive(user.getUuid(), envelope -> {
+                SignalCipher cipher = new SignalCipher(user.getStore());
                 String text;
                 try {
                     text = cipher.decrypt(envelope);
@@ -87,7 +87,7 @@ public class MessageReceiverService extends Service {
                 }
 
                 if (!chatDatabase.isRegistered(envelope.getUsername())) {
-                    chatDatabase.save(envelope.getUsername());
+                    chatDatabase.save(UUID.fromString(envelope.getUuid()), envelope.getUsername());
                 }
 
                 Chat chat = chatDatabase.getChat(envelope.getUsername());

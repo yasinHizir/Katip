@@ -18,6 +18,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.GeneralSecurityException;
+import java.util.UUID;
 
 public class LoginDataSource {
 
@@ -39,7 +40,7 @@ public class LoginDataSource {
 
             OutputStream stream = encryptedFile.openFileOutput();
             ObjectOutputStream objectStream = new ObjectOutputStream(stream);
-            LoggedInUser logged = new LoggedInUser(user.getId(), user.getUsername());
+            LoggedInUser logged = new LoggedInUser(user.getUuid().toString(), user.getId(), user.getUsername());
             objectStream.writeObject(logged);
             objectStream.flush();
             objectStream.close();
@@ -68,7 +69,7 @@ public class LoginDataSource {
                 InputStream stream = encryptedFile.openFileInput();
                 ObjectInputStream objectStream = new ObjectInputStream(stream);
                 LoggedInUser logged = (LoggedInUser) objectStream.readObject();
-                user = new User(logged.getId(), logged.getUsername(), new SignalStore(logged.getId(), context));
+                user = new User(UUID.fromString(logged.uuid), logged.getId(), logged.getUsername(), new SignalStore(logged.getId(), context));
             }
         } catch (GeneralSecurityException | IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -82,12 +83,18 @@ public class LoginDataSource {
     }
 
     private static class LoggedInUser implements Serializable {
+        private final String uuid;
         private final int id;
         private final String username;
 
-        private LoggedInUser(int id, String username) {
+        private LoggedInUser(String uuid, int id, String username) {
+            this.uuid = uuid;
             this.id = id;
             this.username = username;
+        }
+
+        public String getUuid() {
+            return uuid;
         }
 
         public int getId() {

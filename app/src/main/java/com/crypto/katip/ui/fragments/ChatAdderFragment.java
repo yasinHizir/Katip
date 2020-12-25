@@ -16,9 +16,12 @@ import com.crypto.katip.R;
 import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.ui.home.HomeViewModel;
 
+import java.util.UUID;
+
 public class ChatAdderFragment extends DialogFragment {
     private final HomeViewModel viewModel;
     private final ChatDatabase chatDatabase;
+    private EditText uuidTextEdit;
     private EditText interlocutorTextEdit;
 
     private ChatAdderFragment(HomeViewModel viewModel, ChatDatabase chatDatabase) {
@@ -39,12 +42,14 @@ public class ChatAdderFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        interlocutorTextEdit = view.findViewById(R.id.interlocutor);
+        interlocutorTextEdit = view.findViewById(R.id.edit_text_interlocutor);
+        uuidTextEdit = view.findViewById(R.id.edit_text_UUID);
         Button button = view.findViewById(R.id.create);
         button.setOnClickListener(currentView -> {
+            UUID remoteUUID = UUID.fromString(uuidTextEdit.getText().toString());
             String username = interlocutorTextEdit.getText().toString();
             viewModel.addChat(username);
-            chatDatabase.save(username);
+            chatDatabase.save(remoteUUID, username);
             dismiss();
         });
     }

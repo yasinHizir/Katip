@@ -17,10 +17,27 @@
         android:textSize="24sp" />
 
     <EditText
-        android:id="@+id/interlocutor"
+        android:id="@+id/edit_text_UUID"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_below="@id/create_chat"
+        android:layout_below="@+id/create_chat"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/rounded_30"
+        android:backgroundTint="@color/dark"
+        android:hint="@string/edit_text_uuid"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/light"
+        android:textColorHint="@color/gray_light"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/edit_text_interlocutor"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/edit_text_UUID"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp"
         android:background="@drawable/rounded_30"
@@ -37,7 +54,7 @@
         android:id="@+id/create"
         android:layout_width="100dp"
         android:layout_height="48dp"
-        android:layout_below="@id/interlocutor"
+        android:layout_below="@id/edit_text_interlocutor"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="16dp"
         android:background="@drawable/rounded_30"

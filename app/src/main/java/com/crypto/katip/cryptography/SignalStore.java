@@ -84,8 +84,7 @@ public class SignalStore implements SignalProtocolStore {
         new PreKeyDatabase(new DbHelper(context), userId).remove(preKeyId);
         User user = new UserDatabase(new DbHelper(context)).getUser(userId, context);
         if (user != null) {
-            String username = user.getUsername();
-            new KeyManager().newPreKey(userId, username, context, preKeyId);
+            new KeyManager().newPreKey(userId, user.getUuid(), context, preKeyId);
         }
     }
 

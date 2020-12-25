@@ -2,7 +2,6 @@ package com.crypto.katip.cryptography;
 
 import com.crypto.katip.communication.Envelope;
 import com.crypto.katip.communication.KeyServer;
-import com.crypto.katip.database.models.User;
 
 import org.whispersystems.libsignal.DuplicateMessageException;
 import org.whispersystems.libsignal.InvalidKeyException;
@@ -19,18 +18,21 @@ import org.whispersystems.libsignal.protocol.CiphertextMessage;
 import org.whispersystems.libsignal.protocol.PreKeySignalMessage;
 import org.whispersystems.libsignal.protocol.SignalMessage;
 
+import java.util.UUID;
+
 public class SignalCipher {
     private final SignalStore store;
 
-    public SignalCipher(User user) {
-        this.store = user.getStore();
+    public SignalCipher(SignalStore userStore) {
+        this.store = userStore;
     }
 
-    public void encrypt(SignalProtocolAddress remoteAddress, String text, EncrypctionCallBack callBack) {
+    public void encrypt(UUID remoteUUID, String interlocutor, String text, EncryptionCallBack callBack) {
+        SignalProtocolAddress remoteAddress = new SignalProtocolAddress(interlocutor, 0);
         SessionCipher cipher = new SessionCipher(store, remoteAddress);
 
         if (!store.containsSession(remoteAddress)) {
-            KeyServer.receive(remoteAddress, receiveBundle -> {
+            KeyServer.receive(remoteUUID, receiveBundle -> {
                 SessionBuilder builder = new SessionBuilder(store, remoteAddress);
                 try {
                     builder.process(receiveBundle.toPreKeyBundle());
@@ -69,7 +71,7 @@ public class SignalCipher {
         return new String(text);
     }
 
-    public interface EncrypctionCallBack {
+    public interface EncryptionCallBack {
         void handleCipherText(CiphertextMessage cipherTextMessage);
     }
 }

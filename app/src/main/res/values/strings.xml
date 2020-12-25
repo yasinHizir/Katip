@@ -3,6 +3,7 @@
     <string name="button_login">Giriş Yap</string>
     <string name="edit_text_password">Şifre</string>
     <string name="edit_text_username">Kullanıcı Adı</string>
+    <string name="edit_text_uuid">Karşı tarafın id değeri</string>
     <string name="edit_text_interlocutor">Muhatabın Kullanıcı adı</string>
     <string name="edit_text_new_username">Yeni Kullanıcı İsmi</string>
     <string name="edit_text_old_password">Eski Şifre</string>

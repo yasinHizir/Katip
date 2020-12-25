@@ -20,7 +20,7 @@ public class ChatViewModel extends ViewModel {
     public void send(String text, User user, Chat chat, Context context) {
         MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(context), chat.getId());
 
-        new MessageSender().send(user, chat.getInterlocutor(), text, message -> {
+        new MessageSender().send(user, chat, text, message -> {
             messageDatabase.save(text, true);
             liveData.postValue(messageDatabase.getMessages());
         });

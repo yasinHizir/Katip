@@ -20,9 +20,11 @@ import org.whispersystems.libsignal.util.KeyHelper;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.UUID;
 
 public class UserDatabase extends Database {
     private static final String TABLE_NAME = "user";
+    private static final String UUID = "uuid";
     private static final String ID = "ID";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
@@ -42,6 +44,7 @@ public class UserDatabase extends Database {
             Date date = new Date();
             ContentValues values = new ContentValues();
 
+            values.put(UUID, java.util.UUID.randomUUID().toString());
             values.put(USERNAME, username);
             values.put(PASSWORD, passwordDigest(password));
             values.put(REGISTRATION_ID, KeyHelper.generateRegistrationId(false));
@@ -103,11 +106,12 @@ public class UserDatabase extends Database {
         User user = null;
 
         try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
-            String sql = "SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'";
+            String sql = "SELECT " + ID + ", " + UUID + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = '" + username + "'";
             try (Cursor cursor = database.rawQuery(sql, null)){
                 if (cursor != null && cursor.moveToFirst()) {
                     int userId = cursor.getInt(cursor.getColumnIndexOrThrow(ID));
-                    user = new User(userId, username, new SignalStore(userId, context));
+                    UUID uuid = java.util.UUID.fromString(cursor.getString(cursor.getColumnIndexOrThrow(UUID)));
+                    user = new User(uuid, userId, username, new SignalStore(userId, context));
                 }
             }
         }
@@ -120,10 +124,11 @@ public class UserDatabase extends Database {
         User user = null;
 
         try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
-            String sql = "SELECT " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
+            String sql = "SELECT " + UUID + ", " + USERNAME + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
             try (Cursor cursor = database.rawQuery(sql, null)){
                 if (cursor != null && cursor.moveToFirst()) {
-                    user = new User(id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)), new SignalStore(id, context));
+                    UUID uuid = java.util.UUID.fromString(cursor.getString(cursor.getColumnIndexOrThrow(UUID)));
+                    user = new User(uuid, id, cursor.getString(cursor.getColumnIndexOrThrow(USERNAME)), new SignalStore(id, context));
                 }
             }
         }
@@ -156,7 +161,7 @@ public class UserDatabase extends Database {
     }
 
     public static String getCreateTable() {
-        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USERNAME + " TEXT UNIQUE, " + PASSWORD + " TEXT, " + IDENTITY_PUBLIC_KEY + " BLOB, " + IDENTITY_PRIVATE_KEY + " BLOB, " + REGISTRATION_ID + " INTEGER, " + CREATED_AT + " INTEGER, " + UPDATED_AT + " INTEGER );";
+        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, "  + UUID + " TEXT UNIQUE, " + USERNAME + " TEXT UNIQUE, " + PASSWORD + " TEXT, " + IDENTITY_PUBLIC_KEY + " BLOB, " + IDENTITY_PRIVATE_KEY + " BLOB, " + REGISTRATION_ID + " INTEGER, " + CREATED_AT + " INTEGER, " + UPDATED_AT + " INTEGER );";
     }
 
     public static String getDropTable() {

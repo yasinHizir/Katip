@@ -26,7 +26,7 @@ public class RegisterViewModel extends ViewModel {
                 public void run() {
                     User user = userDatabase.getUser(username, context);
                     if (user != null) {
-                        new KeyManager().createPublicKeys(user.getId(), username, context, 100);
+                        new KeyManager().createPublicKeys(user.getId(), user.getUuid(), context, 100);
                     }
                 }
             }.start();

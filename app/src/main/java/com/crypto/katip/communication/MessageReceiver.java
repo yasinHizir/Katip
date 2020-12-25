@@ -7,18 +7,17 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
-import org.whispersystems.libsignal.SignalProtocolAddress;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 public class MessageReceiver {
 
-    public void receive(SignalProtocolAddress localAddress, ReceiveCallBack callBack){
+    public void receive(UUID userUUID, ReceiveCallBack callBack){
         ConnectionFactory factory = new ConnectionFactory();
-        String queueName = localAddress.toString();
+        String queueName = userUUID.toString();
         factory.setHost("20.71.252.243");
 
         try {
