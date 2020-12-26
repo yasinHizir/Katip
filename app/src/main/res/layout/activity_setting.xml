@@ -47,7 +47,8 @@
                     android:layout_marginStart="8dp"
                     android:layout_toEndOf="@id/text_id"
                     android:textColor="@color/light"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    android:textIsSelectable="true" />
 
                 <TextView
                     android:id="@+id/text_username"

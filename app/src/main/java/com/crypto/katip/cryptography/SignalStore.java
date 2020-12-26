@@ -104,7 +104,13 @@ public class SignalStore implements SignalProtocolStore {
 
     @Override
     public void storeSession(SignalProtocolAddress address, SessionRecord record) {
-        new SessionDatabase(new DbHelper(context), userId).store(address, record);
+        SessionDatabase sessionDatabase = new SessionDatabase(new DbHelper(context), userId);
+        SessionRecord oldRecord = sessionDatabase.load(address);
+        if (oldRecord != null) {
+            sessionDatabase.delete(address);
+        }
+
+        sessionDatabase.store(address, record);
     }
 
     @Override
