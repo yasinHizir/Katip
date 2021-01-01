@@ -29,15 +29,19 @@ public class PublicKeyBundle implements Serializable {
         this.identityKey           = identityKey.serialize();
     }
 
-    public int getDeviceId() {
+    public PreKeyBundle toPreKeyBundle() {
+        return new PreKeyBundle(this.getRegistrationId(), this.getDeviceId(), this.getPreKeyId(), this.getPreKey(), this.getSignedPreKeyId(), this.getSignedPreKey(), this.getSignedPreKeySignature(), this.getIdentityKey());
+    }
+
+    private int getDeviceId() {
         return deviceId;
     }
 
-    public int getPreKeyId() {
+    private int getPreKeyId() {
         return preKeyId;
     }
 
-    public ECPublicKey getPreKey() {
+    private ECPublicKey getPreKey() {
         try {
             return Curve.decodePoint(preKeyPublic, 0);
         } catch (InvalidKeyException e) {
@@ -46,11 +50,11 @@ public class PublicKeyBundle implements Serializable {
         return null;
     }
 
-    public int getSignedPreKeyId() {
+    private int getSignedPreKeyId() {
         return signedPreKeyId;
     }
 
-    public ECPublicKey getSignedPreKey() {
+    private ECPublicKey getSignedPreKey() {
         try {
             return Curve.decodePoint(signedPreKeyPublic, 0);
         } catch (InvalidKeyException e) {
@@ -59,11 +63,11 @@ public class PublicKeyBundle implements Serializable {
         return null;
     }
 
-    public byte[] getSignedPreKeySignature() {
+    private byte[] getSignedPreKeySignature() {
         return signedPreKeySignature;
     }
 
-    public IdentityKey getIdentityKey() {
+    private IdentityKey getIdentityKey() {
         try {
             return new IdentityKey(identityKey, 0);
         } catch (InvalidKeyException e) {
@@ -72,11 +76,7 @@ public class PublicKeyBundle implements Serializable {
         return null;
     }
 
-    public int getRegistrationId() {
+    private int getRegistrationId() {
         return registrationId;
-    }
-
-    public PreKeyBundle toPreKeyBundle() {
-        return new PreKeyBundle(this.getRegistrationId(), this.getDeviceId(), this.getPreKeyId(), this.getPreKey(), this.getSignedPreKeyId(), this.getSignedPreKey(), this.getSignedPreKeySignature(), this.getIdentityKey());
     }
 }
