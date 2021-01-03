@@ -30,7 +30,7 @@ public class MessageSender {
                 Envelope envelope = new Envelope(cipherTextMessage.getType(),
                                                     user.getUuid(),
                                                     user.getUsername(),
-                                            0,
+                                                    0,
                                                     cipherTextMessage.serialize());
                 sendMessage(channel, envelope, queueName);
                 callBack.handleSentMessage(envelope);
