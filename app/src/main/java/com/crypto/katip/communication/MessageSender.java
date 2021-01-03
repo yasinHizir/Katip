@@ -27,7 +27,11 @@ public class MessageSender {
             try (Connection connection = factory.newConnection();
                  Channel channel = connection.createChannel()) {
 
-                Envelope envelope = new Envelope(cipherTextMessage.getType(), user.getUuid(), user.getUsername(), 0, cipherTextMessage.serialize());
+                Envelope envelope = new Envelope(cipherTextMessage.getType(),
+                                                    user.getUuid(),
+                                                    user.getUsername(),
+                                            0,
+                                                    cipherTextMessage.serialize());
                 sendMessage(channel, envelope, queueName);
                 callBack.handleSentMessage(envelope);
 

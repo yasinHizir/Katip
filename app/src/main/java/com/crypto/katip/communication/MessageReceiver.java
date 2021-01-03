@@ -25,7 +25,9 @@ public class MessageReceiver {
             Channel channel = connection.createChannel();
 
             channel.queueDeclare(queueName, false, false, false, null);
-            DeliverCallback deliverCallback = (consumerTag, message) -> callBack.handleReceivedMessage( deserialize(message.getBody()));
+            DeliverCallback deliverCallback = (consumerTag, message) -> {
+                callBack.handleReceivedMessage( deserialize(message.getBody()));
+            };
             while (true) {
                 channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
                 if (Thread.interrupted()) {

@@ -57,7 +57,9 @@ public class SignalCipher {
     }
 
     public String decrypt(Envelope envelope) throws LegacyMessageException, InvalidMessageException, InvalidVersionException, DuplicateMessageException, InvalidKeyIdException, UntrustedIdentityException, InvalidKeyException, NoSessionException {
-        SessionCipher cipher = new SessionCipher(store, new SignalProtocolAddress(envelope.getUsername(), envelope.getDeviceId()));
+        SessionCipher cipher = new SessionCipher(store,
+                new SignalProtocolAddress(envelope.getUsername(), envelope.getDeviceId()));
+
         byte[] text;
 
         if (envelope.getType() == CiphertextMessage.WHISPER_TYPE) {
