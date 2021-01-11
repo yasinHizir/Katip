@@ -58,7 +58,7 @@ public class KeyManager {
                                                             signedPreKeyRecord.getKeyPair().getPublicKey(),
                                                             signedPreKeyRecord.getSignature(),
                                                             identityKeyPair.getPublicKey());
-            KeyServer.send(userUUID, keyBundle, sentBundle -> preKeyDatabase.store(sentBundle.getPreKeyId(), preKeyRecord));
+            KeyServer.send(userUUID, keyBundle, sentBundle -> preKeyDatabase.store(preKeyRecord.getId(), preKeyRecord));
         }
     }
 
@@ -97,6 +97,6 @@ public class KeyManager {
                                                         signedPreKeyRecord.getKeyPair().getPublicKey(),
                                                         signedPreKeyRecord.getSignature(),
                                                         identityKeyPair.getPublicKey());
-        KeyServer.send(userUUID, keyBundle, sentBundle -> preKeyDatabase.store(sentBundle.getPreKeyId(), preKeyRecord));
+        KeyServer.send(userUUID, keyBundle, sentBundle -> preKeyDatabase.store(preKeyRecord.getId(), preKeyRecord));
     }
 }
