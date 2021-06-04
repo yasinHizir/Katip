@@ -1,5 +1,6 @@
 package com.crypto.katip.ui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,24 +14,30 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.crypto.katip.R;
+import com.crypto.katip.communication.ChatBuilder;
 import com.crypto.katip.database.ChatDatabase;
+import com.crypto.katip.database.DbHelper;
+import com.crypto.katip.database.models.User;
+import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.ui.home.HomeViewModel;
 
 import java.util.UUID;
 
 public class ChatAdderFragment extends DialogFragment {
+    private final User user;
     private final HomeViewModel viewModel;
-    private final ChatDatabase chatDatabase;
+    private final Context context;
     private EditText uuidTextEdit;
-    private EditText interlocutorTextEdit;
 
-    private ChatAdderFragment(HomeViewModel viewModel, ChatDatabase chatDatabase) {
+    private ChatAdderFragment(User user, HomeViewModel viewModel, Context context) {
+        this.user = user;
         this.viewModel = viewModel;
-        this.chatDatabase = chatDatabase;
+        this.context = context;
     }
 
-    public static ChatAdderFragment newInstance(HomeViewModel homeViewModel, ChatDatabase chatDatabase) {
-        return new ChatAdderFragment(homeViewModel, chatDatabase);
+    public static ChatAdderFragment newInstance(HomeViewModel homeViewModel, Context context) {
+        User user = LoginRepository.getInstance().getUser();
+        return new ChatAdderFragment(user, homeViewModel, context);
     }
 
     @Override
@@ -42,14 +49,14 @@ public class ChatAdderFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        interlocutorTextEdit = view.findViewById(R.id.edit_text_interlocutor);
         uuidTextEdit = view.findViewById(R.id.edit_text_UUID);
         Button button = view.findViewById(R.id.create);
+
         button.setOnClickListener(currentView -> {
             UUID remoteUUID = UUID.fromString(uuidTextEdit.getText().toString());
-            String username = interlocutorTextEdit.getText().toString();
-            viewModel.addChat(username);
-            chatDatabase.save(remoteUUID, username);
+            if (new ChatBuilder(user.getId(), remoteUUID).build(context)) {
+                viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(context), user.getId()).getChats());
+            }
             dismiss();
         });
     }
