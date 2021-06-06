@@ -30,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
         viewModel.getResult().observe(this, loginResult -> {
             if (loginResult.getError() == R.string.error_user_not_registered) {
                 Toast.makeText(getApplicationContext(), loginResult.getError(), Toast.LENGTH_LONG).show();
-            } else if (loginResult.getSuccess() != null) {
+            } else if (loginResult.getSuccess()) {
                 startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                 finish();
             }

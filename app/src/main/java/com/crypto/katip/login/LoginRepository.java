@@ -32,7 +32,7 @@ public class LoginRepository {
 
             if (dataSource.login(user, context)) {
                 this.user = user;
-                return new LoginResult(user);
+                return new LoginResult(true);
             }
         }
 
