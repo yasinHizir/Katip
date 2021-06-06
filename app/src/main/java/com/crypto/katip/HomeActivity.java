@@ -16,7 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.crypto.katip.communication.MessageReceiverService;
+import com.crypto.katip.service.ReceivingMessageService;
 import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.database.models.User;
 import com.crypto.katip.login.LoginRepository;
@@ -40,8 +40,8 @@ public class HomeActivity extends AppCompatActivity {
         user = LoginRepository.getInstance().getUser();
         setToolbar();
 
-        viewModel.getLiveData().observe(this, strings -> viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext())));
-        viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChatNames());
+        viewModel.getLiveData().observe(this, chats -> viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext())));
+        viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChats());
         startService();
     }
 
@@ -60,7 +60,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void add(MenuItem item) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        ChatAdderFragment fragment = ChatAdderFragment.newInstance(viewModel, new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()));
+        ChatAdderFragment fragment = ChatAdderFragment.newInstance(viewModel, getApplicationContext());
         fragment.show(fragmentManager, "chat_adder_fragment");
     }
 
@@ -76,30 +76,30 @@ public class HomeActivity extends AppCompatActivity {
         finish();
     }
 
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChatNames());
-        }
-    };
-
-    private void startService() {
-        Intent intent = new Intent(getApplicationContext(), MessageReceiverService.class);
-        intent.putExtra(MessageReceiverService.USERNAME, user.getUsername());
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(MessageReceiverService.RECEIVE_MESSAGE));
-        startService(intent);
-    }
-
-    private void stopService() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-        Intent intent = new Intent(getApplicationContext(), MessageReceiverService.class);
-        stopService(intent);
-    }
-
     private void setToolbar() {
         setSupportActionBar(findViewById(R.id.home_bar));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(R.string.text_home_screen_title);
         }
     }
+
+    private void startService() {
+        Intent intent = new Intent(getApplicationContext(), ReceivingMessageService.class);
+        intent.putExtra(ReceivingMessageService.USERID, user.getId());
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(ReceivingMessageService.RECEIVE_MESSAGE));
+        startService(intent);
+    }
+
+    private void stopService() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        Intent intent = new Intent(getApplicationContext(), ReceivingMessageService.class);
+        stopService(intent);
+    }
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChats());
+        }
+    };
 }

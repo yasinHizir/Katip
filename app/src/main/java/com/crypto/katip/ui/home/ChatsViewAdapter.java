@@ -11,18 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.crypto.katip.ChatActivity;
 import com.crypto.katip.R;
+import com.crypto.katip.database.models.Chat;
 
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.ChatViewHolder> {
-    private final ArrayList<String> images;
-    private final ArrayList<String> interlocutor;
+    private final ArrayList<Chat> chats;
 
-    public ChatsViewAdapter(ArrayList<String> images, ArrayList<String> interlocutor) {
-        this.images = images;
-        this.interlocutor = interlocutor;
+    public ChatsViewAdapter(ArrayList<Chat> chats) {
+        this.chats = chats;
     }
 
     @NonNull
@@ -34,16 +33,18 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, final int position) {
-        holder.getInterlocutor().setText(this.interlocutor.get(position));
+        holder.getInterlocutor().setText(this.chats.get(position).getInterlocutor());
+        holder.setChatID(this.chats.get(position).getId());
     }
 
     @Override
     public int getItemCount() {
-        return this.interlocutor.size();
+        return this.chats.size();
     }
 
     public static class ChatViewHolder extends RecyclerView.ViewHolder {
 
+        private int chatID;
         private final CircleImageView image;
         private final TextView interlocutor;
 
@@ -51,12 +52,15 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
             super(itemView);
             image = itemView.findViewById(R.id.image);
             interlocutor = itemView.findViewById(R.id.image_name);
-
             itemView.setOnClickListener(view -> {
                 Intent intent = new Intent(view.getContext(), ChatActivity.class);
-                intent.putExtra(ChatActivity.INTERLOCUTOR, interlocutor.getText().toString());
+                intent.putExtra(ChatActivity.CHAT_ID, chatID);
                 view.getContext().startActivity(intent);
             });
+        }
+
+        public void setChatID(int chatID) {
+            this.chatID = chatID;
         }
 
         public CircleImageView getImage() {
