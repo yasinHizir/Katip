@@ -1,7 +1,7 @@
 package com.crypto.katip.ui.login;
 
 public class LoginResult {
-    private boolean success;
+    private boolean success = false;
     private int error;
 
     public LoginResult(boolean success) {
