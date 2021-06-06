@@ -2,11 +2,14 @@ package com.crypto.katip.cryptography;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import com.crypto.katip.communication.KeyServer;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.PreKeyDatabase;
 import com.crypto.katip.database.SignedPreKeyDatabase;
 import com.crypto.katip.database.UserDatabase;
+import com.crypto.katip.database.models.User;
 
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.InvalidKeyException;
@@ -16,6 +19,7 @@ import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +38,7 @@ public class KeyManager {
 
     public void createPublicKeys(int userId, UUID userUUID, Context context, int count) {
         UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
+        User user = userDatabase.getUser(userId, context);
         IdentityKeyPair identityKeyPair = userDatabase.getIdentityKeyPair(userId);
         int registrationId = userDatabase.getRegistrationID(userId);
 
@@ -51,19 +56,23 @@ public class KeyManager {
 
         for (int i = 0; i < count; i++) {
             PreKeyRecord preKeyRecord = new PreKeyRecord(i, Curve.generateKeyPair());
-            PublicKeyBundle keyBundle = new PublicKeyBundle(registrationId, 0,
+            PublicKeyBundle keyBundle = new PublicKeyBundle(Objects.requireNonNull(user).getUsername(),
+                                                            registrationId, 0,
                                                             preKeyRecord.getId(),
                                                             preKeyRecord.getKeyPair().getPublicKey(),
                                                             signedPreKeyRecord.getId(),
                                                             signedPreKeyRecord.getKeyPair().getPublicKey(),
                                                             signedPreKeyRecord.getSignature(),
                                                             identityKeyPair.getPublicKey());
-            KeyServer.send(userUUID, keyBundle, sentBundle -> preKeyDatabase.store(preKeyRecord.getId(), preKeyRecord));
+            if (KeyServer.send(userUUID, keyBundle)) {
+                preKeyDatabase.store(preKeyRecord.getId(), preKeyRecord);
+            }
         }
     }
 
     public void newPreKey(int userId, UUID userUUID, Context context, int keyId) {
         UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
+        User user = userDatabase.getUser(userId, context);
         IdentityKeyPair identityKeyPair = userDatabase.getIdentityKeyPair(userId);
         int registrationId = userDatabase.getRegistrationID(userId);
 
@@ -90,13 +99,16 @@ public class KeyManager {
             }
         }
 
-        PublicKeyBundle keyBundle = new PublicKeyBundle(registrationId, 0,
+        PublicKeyBundle keyBundle = new PublicKeyBundle(Objects.requireNonNull(user).getUsername(),
+                                                        registrationId, 0,
                                                         preKeyRecord.getId(),
                                                         preKeyRecord.getKeyPair().getPublicKey(),
                                                         signedPreKeyRecord.getId(),
                                                         signedPreKeyRecord.getKeyPair().getPublicKey(),
                                                         signedPreKeyRecord.getSignature(),
                                                         identityKeyPair.getPublicKey());
-        KeyServer.send(userUUID, keyBundle, sentBundle -> preKeyDatabase.store(preKeyRecord.getId(), preKeyRecord));
+        if (KeyServer.send(userUUID, keyBundle)) {
+            preKeyDatabase.store(preKeyRecord.getId(), preKeyRecord);
+        }
     }
 }
