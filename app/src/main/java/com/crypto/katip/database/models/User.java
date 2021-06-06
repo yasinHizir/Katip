@@ -1,4 +1,4 @@
-package com.crypto.katip.database.models;
+ package com.crypto.katip.database.models;
 
 import com.crypto.katip.cryptography.SignalStore;
 
