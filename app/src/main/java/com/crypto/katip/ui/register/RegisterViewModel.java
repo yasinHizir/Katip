@@ -10,6 +10,7 @@ import com.crypto.katip.cryptography.KeyManager;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.database.models.User;
+import com.crypto.katip.login.LoginRepository;
 
 public class RegisterViewModel extends ViewModel {
     private final MutableLiveData<RegisterFormState> formState = new MutableLiveData<>();
@@ -20,7 +21,10 @@ public class RegisterViewModel extends ViewModel {
         userDatabase.save(username, password);
 
         if (userDatabase.isRegistered(username, password)) {
-            result.setValue(new RegisterResult(username, password));
+            LoginRepository loginRepository = LoginRepository.getInstance();
+
+            loginRepository.login(username, password, context);
+            result.setValue(new RegisterResult(true));
             new Thread() {
                 @Override
                 public void run() {

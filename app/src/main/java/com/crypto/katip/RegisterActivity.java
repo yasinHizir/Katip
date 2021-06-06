@@ -49,8 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         viewModel.getResult().observe(this, registerResult -> {
-            if (registerResult.getError() != R.string.error_register) {
-                LoginRepository.getInstance().login(registerResult.getUsername(), registerResult.getPassword(), getApplicationContext());
+            if (registerResult.getSuccess()) {
                 startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                 finish();
             } else {

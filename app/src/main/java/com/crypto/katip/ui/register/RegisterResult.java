@@ -1,25 +1,19 @@
 package com.crypto.katip.ui.register;
 
 public class RegisterResult {
-    private String username;
-    private String password;
+    private boolean success = false;
     private int error;
 
-    public RegisterResult(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public RegisterResult(boolean success) {
+        this.success = success;
     }
 
     public RegisterResult(int error) {
         this.error = error;
     }
 
-    public String getUsername() {
-        return this.username;
-    }
-
-    public String getPassword() {
-        return password;
+    public boolean getSuccess() {
+        return this.success;
     }
 
     public int getError() {
