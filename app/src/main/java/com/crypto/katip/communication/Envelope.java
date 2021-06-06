@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class Envelope implements Serializable {
     public static final int START_CHAT_TYPE = 0;
-    public static final int TEXT_TYPE = 1;
+    public static final int CIPHERTEXT_TYPE = 1;
 
     private final int type;
     private final String uuid;

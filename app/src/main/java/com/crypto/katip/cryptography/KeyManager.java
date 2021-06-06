@@ -2,8 +2,6 @@ package com.crypto.katip.cryptography;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import com.crypto.katip.communication.KeyServer;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.PreKeyDatabase;

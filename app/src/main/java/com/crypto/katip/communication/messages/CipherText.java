@@ -10,20 +10,20 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public class CipherText implements Serializable {
-    private final int encryption_type;                  // WHISPER_TYPE or PREKEY_TYPE.
-    private final byte[] message;
+    private final int ciphertextMessageType;
+    private final byte[] ciphertext;
 
-    public CipherText(int encryption_type, byte[] message) {
-        this.encryption_type = encryption_type;
-        this.message = message;
+    public CipherText(int ciphertextMessageType, byte[] ciphertext) {
+        this.ciphertextMessageType = ciphertextMessageType;
+        this.ciphertext = ciphertext;
     }
 
-    public int getEncryption_type() {
-        return encryption_type;
+    public int getCiphertextMessageType() {
+        return ciphertextMessageType;
     }
 
-    public byte[] getMessage() {
-        return message;
+    public byte[] getCiphertext() {
+        return ciphertext;
     }
 
     @Nullable

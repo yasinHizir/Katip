@@ -93,12 +93,12 @@ public class ReceivingMessageService extends Service {
 
                 if (envelope.getType() == Envelope.START_CHAT_TYPE) {
                     buildChat(envelope.getUuid(), envelope.getMessage());
-                } else if (envelope.getType() == Envelope.TEXT_TYPE) {
+                } else if (envelope.getType() == Envelope.CIPHERTEXT_TYPE) {
                     CipherText cipherTextMessage = CipherText.deserialize(envelope.getMessage());
                     if (cipherTextMessage == null) {
                         return;
                     }
-                    decryptTextMessage(chat.getId(), envelope.getUuid(), cipherTextMessage.getEncryption_type(), cipherTextMessage.getMessage());
+                    decryptTextMessage(chat.getId(), envelope.getUuid(), cipherTextMessage.getCiphertextMessageType(), cipherTextMessage.getCiphertext());
                 }
             });
         }

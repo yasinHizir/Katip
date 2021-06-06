@@ -16,7 +16,6 @@ import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.database.models.Chat;
 import com.crypto.katip.database.models.TextMessage;
 import com.crypto.katip.database.models.User;
-import com.crypto.katip.login.LoginRepository;
 
 import org.whispersystems.libsignal.protocol.CiphertextMessage;
 
@@ -43,7 +42,7 @@ public class ChatViewModel extends ViewModel {
                 CipherText cipherTextMessage = new CipherText(ciphertextMessage.getType(), ciphertextMessage.serialize());
 
                 Envelope envelope = new Envelope(
-                        Envelope.TEXT_TYPE,
+                        Envelope.CIPHERTEXT_TYPE,
                         user.getUuid(),
                         user.getUsername(),
                         CipherText.serialize(cipherTextMessage)
