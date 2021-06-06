@@ -28,12 +28,12 @@ public class ChatDatabase extends Database {
         this.userId = userId;
     }
 
-    public void save(UUID uuid, String interlocutor) {
+    public void save(UUID remoteUUID, String interlocutor) {
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
             Date date = new Date();
             ContentValues values = new ContentValues();
 
-            values.put(REMOTE_UUID, uuid.toString());
+            values.put(REMOTE_UUID, remoteUUID.toString());
             values.put(USER_ID, userId);
             values.put(INTERLOCUTOR, interlocutor);
             values.put(CREATED_AT, date.getTime());
@@ -42,46 +42,55 @@ public class ChatDatabase extends Database {
         }
     }
 
-    public boolean isRegistered(String interlocutor) {
-        boolean result = false;
-
-        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
-            String sql = "SELECT " + ID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId;
-            try (Cursor cursor = database.rawQuery(sql, null)){
-                if (cursor != null && cursor.moveToFirst()) {
-                    result = true;
-                }
-            }
+    public void remove(int id) {
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
+            database.execSQL(sql);
         }
-
-        return result;
     }
 
-    public ArrayList<String> getChatNames() {
-        ArrayList<String> interlocutor = new ArrayList<>();
+    public void update(int id, UUID remoteUUID, String interlocutor) {
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            Date date = new Date();
+
+            String sql = "Update " + TABLE_NAME + " SET " + REMOTE_UUID + " = '" + remoteUUID.toString() + "' , " + INTERLOCUTOR + " = '" + interlocutor + "' ," + UPDATED_AT + " = " + date.getTime() + " WHERE " + ID + " = " + id + ";";
+            database.execSQL(sql);
+        }
+    }
+
+    public boolean isRegistered(UUID remoteUUID) {
+        return getChat(remoteUUID) != null;
+    }
+
+    public ArrayList<Chat> getChats() {
+        ArrayList<Chat> chats = new ArrayList<>();
 
         try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
-            try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId, null)) {
+            try (Cursor cursor = database.rawQuery("SELECT " + ID + ", " + REMOTE_UUID + ", " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
                     do {
-                        interlocutor.add(cursor.getString((cursor.getColumnIndexOrThrow(INTERLOCUTOR))));
+                        int id = cursor.getInt(cursor.getColumnIndexOrThrow(ID));
+                        UUID remoteUUID = UUID.fromString(cursor.getString(cursor.getColumnIndexOrThrow(REMOTE_UUID)));
+                        String interlocutor = cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR));
+                        chats.add(new Chat(id, userId, remoteUUID, interlocutor));
                     } while (cursor.moveToNext());
                 }
             }
         }
 
-        return interlocutor;
+        return chats;
     }
 
     @Nullable
-    public Chat getChat(String interlocutor) {
+    public Chat getChat(UUID remoteUUID) {
         Chat chat = null;
 
-        try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
-            try (Cursor cursor = database.rawQuery("SELECT " + ID + ", " + REMOTE_UUID + " FROM " + TABLE_NAME + " WHERE " + INTERLOCUTOR + " = '" + interlocutor + "' AND " + USER_ID + " = " + userId, null)) {
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
+            try (Cursor cursor = database.rawQuery("SELECT " + ID + ", " + INTERLOCUTOR + " FROM " + TABLE_NAME + " WHERE " + REMOTE_UUID + " = '" + remoteUUID.toString() + "' AND " + USER_ID + " = " + userId, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    UUID remoteUUID = UUID.fromString(cursor.getString(cursor.getColumnIndexOrThrow(REMOTE_UUID)));
-                    chat = new Chat(cursor.getInt(cursor.getColumnIndexOrThrow(ID)), userId, remoteUUID, interlocutor);
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(ID));
+                    String interlocutor = cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR));
+                    chat = new Chat(id, userId, remoteUUID, interlocutor);
                 }
             }
         }
@@ -89,11 +98,20 @@ public class ChatDatabase extends Database {
         return chat;
     }
 
-    public void remove(int id) {
-        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
-            String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
-            database.execSQL(sql);
+    @Nullable
+    public Chat getChat(int chatID) {
+        Chat chat = null;
+
+        try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
+            try (Cursor cursor = database.rawQuery("SELECT " + INTERLOCUTOR + ", " + REMOTE_UUID + " FROM " + TABLE_NAME + " WHERE " + ID + " = " + chatID + " AND " + USER_ID + " = " + userId, null)){
+                if (cursor != null && cursor.moveToFirst()) {
+                    UUID remoteUUID = UUID.fromString(cursor.getString(cursor.getColumnIndexOrThrow(REMOTE_UUID)));
+                    chat = new Chat(chatID, userId, remoteUUID, cursor.getString(cursor.getColumnIndexOrThrow(INTERLOCUTOR)));
+                }
+            }
         }
+
+        return chat;
     }
 
     public static String getCreateTable() {
