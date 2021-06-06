@@ -1,6 +1,7 @@
 package com.crypto.katip.cryptography;
 
-import com.crypto.katip.communication.Envelope;
+import androidx.annotation.Nullable;
+
 import com.crypto.katip.communication.KeyServer;
 
 import org.whispersystems.libsignal.DuplicateMessageException;
@@ -18,6 +19,7 @@ import org.whispersystems.libsignal.protocol.CiphertextMessage;
 import org.whispersystems.libsignal.protocol.PreKeySignalMessage;
 import org.whispersystems.libsignal.protocol.SignalMessage;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class SignalCipher {
@@ -27,53 +29,42 @@ public class SignalCipher {
         this.store = userStore;
     }
 
-    public void encrypt(UUID remoteUUID, String interlocutor, String text, EncryptionCallBack callBack) {
-        SignalProtocolAddress remoteAddress = new SignalProtocolAddress(interlocutor, 0);
+    @Nullable
+    public CiphertextMessage encrypt(UUID remoteUUID, String text) {
+        SignalProtocolAddress remoteAddress = new SignalProtocolAddress(remoteUUID.toString(), 0);
         SessionCipher cipher = new SessionCipher(store, remoteAddress);
+        CiphertextMessage ciphertextMessage = null;
 
         if (!store.containsSession(remoteAddress)) {
-            KeyServer.receive(remoteUUID, receiveBundle -> {
-                SessionBuilder builder = new SessionBuilder(store, remoteAddress);
-                try {
-                    builder.process(receiveBundle.toPreKeyBundle());
-                } catch (InvalidKeyException | UntrustedIdentityException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    CiphertextMessage ciphertextMessage = cipher.encrypt(text.getBytes());
-                    callBack.handleCipherText(ciphertextMessage);
-                } catch (UntrustedIdentityException e) {
-                    e.printStackTrace();
-                }
-            });
+            SessionBuilder builder = new SessionBuilder(store, remoteAddress);
+            try {
+                builder.process(Objects.requireNonNull(KeyServer.receive(remoteUUID)).toPreKeyBundle());
+                ciphertextMessage = cipher.encrypt(text.getBytes());
+            } catch (InvalidKeyException | UntrustedIdentityException e) {
+                e.printStackTrace();
+            }
         } else {
             try {
-                CiphertextMessage ciphertextMessage = cipher.encrypt(text.getBytes());
-                callBack.handleCipherText(ciphertextMessage);
+                ciphertextMessage = cipher.encrypt(text.getBytes());
             } catch (UntrustedIdentityException e) {
                 e.printStackTrace();
             }
         }
+        return ciphertextMessage;
     }
 
-    public String decrypt(Envelope envelope) throws LegacyMessageException, InvalidMessageException, InvalidVersionException, DuplicateMessageException, InvalidKeyIdException, UntrustedIdentityException, InvalidKeyException, NoSessionException {
-        SessionCipher cipher = new SessionCipher(store,
-                new SignalProtocolAddress(envelope.getUsername(), envelope.getDeviceId()));
-
+    public String decrypt(UUID remoteUUID, int encryption_type, byte[] ciphertext) throws LegacyMessageException, InvalidMessageException, InvalidVersionException, DuplicateMessageException, InvalidKeyIdException, UntrustedIdentityException, InvalidKeyException, NoSessionException {
+        SessionCipher cipher = new SessionCipher(store, new SignalProtocolAddress(remoteUUID.toString(), 0));
         byte[] text;
 
-        if (envelope.getType() == CiphertextMessage.WHISPER_TYPE) {
-            text = cipher.decrypt(new SignalMessage(envelope.getBody()));
-        } else if (envelope.getType() == CiphertextMessage.PREKEY_TYPE){
-            text = cipher.decrypt(new PreKeySignalMessage(envelope.getBody()));
+        if (encryption_type == CiphertextMessage.WHISPER_TYPE) {
+            text = cipher.decrypt(new SignalMessage(ciphertext));
+        } else if (encryption_type == CiphertextMessage.PREKEY_TYPE){
+            text = cipher.decrypt(new PreKeySignalMessage(ciphertext));
         } else {
             text = "".getBytes();
         }
 
         return new String(text);
-    }
-
-    public interface EncryptionCallBack {
-        void handleCipherText(CiphertextMessage cipherTextMessage);
     }
 }
