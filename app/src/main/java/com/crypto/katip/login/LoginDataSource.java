@@ -23,7 +23,7 @@ import java.util.UUID;
 public class LoginDataSource {
 
     @SuppressLint("SdCardPath")
-    private final File file = new File("/data/data/com.crypto.katip/cache", "User.dat");
+    private final File file = new File("/data/data/com.crypto.katip", "User.dat");
 
     public boolean login(User user, Context context) {
         boolean result = false;

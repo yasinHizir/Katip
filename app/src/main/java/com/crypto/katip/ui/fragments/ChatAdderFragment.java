@@ -58,6 +58,7 @@ public class ChatAdderFragment extends DialogFragment {
                 viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(context), user.getId()).getChats());
             }
             dismiss();
+            onDestroy();
         });
     }
 }
