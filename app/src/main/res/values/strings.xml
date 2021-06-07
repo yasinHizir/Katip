@@ -1,36 +1,40 @@
 <resources>
-    <string name="app_name">Katip</string>
-    <string name="button_login">Giriş Yap</string>
-    <string name="edit_text_password">Şifre</string>
+    <string name="text_app_name">Katip</string>
+    <string name="text_welcome">Hoşgeldiniz</string>
+    <string name="text_registration">Henüz üye değil misiniz? Kayıt Ol.</string>
+    <string name="text_home_screen_title">Sohbetler</string>
+    <string name="text_login">Giriş yapmak için tıklayınız!</string>
+    <string name="title_profile">Profil</string>
+    <string name="title_chat">Chat</string>
+    <string name="text_start_chat">Sohbet Başlat</string>
+    <string name="text_messages">Mesajlar</string>
+    <string name="text_create">Oluştur</string>
+    <string name="text_id">ID:</string>
+    <string name="text_username">Kullanıcı ismi:</string>
+
+
     <string name="edit_text_username">Kullanıcı Adı</string>
+    <string name="edit_text_password">Şifre</string>
     <string name="edit_text_uuid">Karşı tarafın id değeri</string>
     <string name="edit_text_interlocutor">Muhatabın Kullanıcı adı</string>
     <string name="edit_text_new_username">Yeni Kullanıcı İsmi</string>
     <string name="edit_text_old_password">Eski Şifre</string>
     <string name="edit_text_new_password">Yeni Şifre</string>
-    <string name="text_app_name">Katip</string>
-    <string name="text_welcome">Hoşgeldiniz</string>
-    <string name="text_registration">Henüz üye değil misiniz? Kayıt Ol.</string>
-    <string name="text_home_screen_title">Sohbetler</string>
-    <string name="todo">TODO</string>
     <string name="edit_text_verify_password">Şifreyi doğrulayın</string>
     <string name="edit_text_message">Mesajınızı yazın</string>
+
+
+    <string name="button_login">Giriş Yap</string>
     <string name="button_register">Kayıt Ol</string>
     <string name="button_create">Oluştur</string>
     <string name="button_create_chat">Sohbet oluştur</string>
     <string name="button_logout">Çıkış yap</string>
     <string name="button_send">Gönder</string>
     <string name="button_delete_chat">Sohbeti Sil</string>
-    <string name="text_login">Giriş yapmak için tıklayınız!</string>
-    <string name="title_profile">Profile</string>
-    <string name="title_chat">Chat</string>
-    <string name="text_chat_adder">Sohbet başlat</string>
-    <string name="messages">Mesajlar</string>
-    <string name="start_chat">Sohbet Başlat</string>
-    <string name="create">Oluştur</string>
     <string name="button_settings">Ayarlar</string>
     <string name="button_update_user">Güncelle</string>
     <string name="button_delete_user">Kullanıcıyı sil</string>
+
     <string name="error_username">Kullanıcı adı boş bırakılamaz</string>
     <string name="error_password">Şifre 5 harften büyük olmalı</string>
     <string name="error_verify_password">Lütfen şifreyi doğrulayın</string>
@@ -38,6 +42,7 @@
     <string name="error_empty_message">Lütfen mesaj yazınız></string>
     <string name="error_register">Kullanıcı sisteme kayıtlanamadı</string>
     <string name="error_user_not_registered">Kullanıcı sistemde kayıtlı değil</string>
-    <string name="id">ID:</string>
-    <string name="username">Kullanıcı ismi:</string>
+
+    <string name="description_logo">Uygulamanın ana logosu</string>
+    <string name="description_send_button">Gönderme butonu</string>
 </resources>

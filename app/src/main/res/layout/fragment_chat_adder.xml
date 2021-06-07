@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/start_chat"
+        android:text="@string/text_start_chat"
         android:textAlignment="center"
         android:textColor="@color/light"
         android:textSize="24sp" />
@@ -42,7 +42,7 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/rounded_30"
         android:backgroundTint="@color/gray_dark"
-        android:text="@string/create"
+        android:text="@string/text_create"
         android:textColor="@color/light" />
 
 </RelativeLayout>

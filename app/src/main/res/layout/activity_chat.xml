@@ -65,8 +65,8 @@
                 android:layout_toStartOf="@id/edit_text_message"
                 android:clickable="true"
                 android:onClick="send"
-                android:contentDescription="@string/todo"
                 android:focusable="true"
+                android:contentDescription="@string/description_send_button"
                 app:backgroundTint="@color/dark"
                 app:srcCompat="@drawable/ic_baseline_send_24"
                 tools:ignore="RelativeOverlap" />
