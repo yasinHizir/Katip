@@ -12,7 +12,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.ui.register.RegisterViewModel;
 import com.crypto.katip.ui.register.RegisterViewModelFactory;
 
