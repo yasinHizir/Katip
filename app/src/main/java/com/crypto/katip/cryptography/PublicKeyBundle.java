@@ -26,71 +26,39 @@ public class PublicKeyBundle implements Serializable {
     private final byte[]    signedPreKeySignature;
     private final byte[]    identityKey;
 
-    public PublicKeyBundle(String username, int registrationId, int deviceId, int preKeyId, ECPublicKey preKeyPublic, int signedPreKeyId, ECPublicKey signedPreKeyPublic, byte[] signedPreKeySignature, IdentityKey identityKey) {
+    public PublicKeyBundle(String username, PreKeyBundle preKeyBundle) {
         this.username              = username;
-        this.registrationId        = registrationId;
-        this.deviceId              = deviceId;
-        this.preKeyId              = preKeyId;
-        this.preKeyPublic          = preKeyPublic.serialize();
-        this.signedPreKeyId        = signedPreKeyId;
-        this.signedPreKeyPublic    = signedPreKeyPublic.serialize();
-        this.signedPreKeySignature = signedPreKeySignature;
-        this.identityKey           = identityKey.serialize();
+        this.registrationId        = preKeyBundle.getRegistrationId();
+        this.deviceId              = preKeyBundle.getDeviceId();
+        this.preKeyId              = preKeyBundle.getPreKeyId();
+        this.preKeyPublic          = preKeyBundle.getPreKey().serialize();
+        this.signedPreKeyId        = preKeyBundle.getSignedPreKeyId();
+        this.signedPreKeyPublic    = preKeyBundle.getSignedPreKey().serialize();
+        this.signedPreKeySignature = preKeyBundle.getSignedPreKeySignature();
+        this.identityKey           = preKeyBundle.getIdentityKey().serialize();
     }
 
-    public PreKeyBundle toPreKeyBundle() {
-        return new PreKeyBundle(this.getRegistrationId(), this.getDeviceId(), this.getPreKeyId(), this.getPreKey(), this.getSignedPreKeyId(), this.getSignedPreKey(), this.getSignedPreKeySignature(), this.getIdentityKey());
+    @Nullable
+    public PreKeyBundle getPreKeyBundle() {
+        try {
+            return new PreKeyBundle(
+                    registrationId,
+                    deviceId,
+                    preKeyId,
+                    Curve.decodePoint(preKeyPublic, 0),
+                    signedPreKeyId,
+                    Curve.decodePoint(signedPreKeyPublic, 0),
+                    signedPreKeySignature,
+                    new IdentityKey(identityKey, 0)
+            );
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public String getUsername() {
         return username;
-    }
-
-    private int getDeviceId() {
-        return deviceId;
-    }
-
-    private int getPreKeyId() {
-        return preKeyId;
-    }
-
-    private ECPublicKey getPreKey() {
-        try {
-            return Curve.decodePoint(preKeyPublic, 0);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private int getSignedPreKeyId() {
-        return signedPreKeyId;
-    }
-
-    private ECPublicKey getSignedPreKey() {
-        try {
-            return Curve.decodePoint(signedPreKeyPublic, 0);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private byte[] getSignedPreKeySignature() {
-        return signedPreKeySignature;
-    }
-
-    private IdentityKey getIdentityKey() {
-        try {
-            return new IdentityKey(identityKey, 0);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private int getRegistrationId() {
-        return registrationId;
     }
 
     @Nullable
