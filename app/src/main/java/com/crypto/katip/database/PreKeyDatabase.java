@@ -25,7 +25,7 @@ public class PreKeyDatabase extends Database{
         this.userId = userId;
     }
 
-    public PreKeyRecord load(int keyId){
+    public PreKeyRecord load(int keyId) {
         PreKeyRecord record = null;
 
         try (SQLiteDatabase database = dbHelper.getReadableDatabase()){
@@ -46,7 +46,7 @@ public class PreKeyDatabase extends Database{
         return record;
     }
 
-    public void store(int keyId, PreKeyRecord record){
+    public void store(int keyId, PreKeyRecord record) {
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
             byte[] publicKey = record.getKeyPair().getPublicKey().serialize();
             byte[] privateKey = record.getKeyPair().getPrivateKey().serialize();
@@ -60,22 +60,22 @@ public class PreKeyDatabase extends Database{
         }
     }
 
-    public boolean contain(int keyId){
+    public boolean contain(int keyId) {
         return load(keyId) != null;
     }
 
-    public void remove(int keyId){
+    public void remove(int keyId) {
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
             String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId;
             database.execSQL(sql);
         }
     }
 
-    public static String getCreateTable(){
+    public static String getCreateTable() {
         return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + KEY_ID + " INTEGER, " + PUBLIC_KEY + " BLOB, " + PRIVATE_KEY + " BLOB, UNIQUE(" + USER_ID + "," + KEY_ID + "), FOREIGN KEY(" + USER_ID + ") REFERENCES " + UserDatabase.getTableName() + " (ID));";
     }
 
-    public static String getDropTable(){
+    public static String getDropTable() {
         return "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
@@ -85,5 +85,9 @@ public class PreKeyDatabase extends Database{
 
     public static String getUserId() {
         return USER_ID;
+    }
+
+    public static String getKeyId() {
+        return KEY_ID;
     }
 }

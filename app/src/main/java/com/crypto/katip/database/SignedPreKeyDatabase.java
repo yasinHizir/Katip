@@ -30,7 +30,7 @@ public class SignedPreKeyDatabase extends Database{
         this.userId = userId;
     }
 
-    public SignedPreKeyRecord load(int keyId){
+    public SignedPreKeyRecord load(int keyId) {
         SignedPreKeyRecord record = null;
 
         try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
@@ -49,7 +49,7 @@ public class SignedPreKeyDatabase extends Database{
         return record;
     }
 
-    public List<SignedPreKeyRecord> loadAll(){
+    public List<SignedPreKeyRecord> loadAll() {
         List<SignedPreKeyRecord> records = new LinkedList<>();
 
         try (SQLiteDatabase database = dbHelper.getReadableDatabase()) {
@@ -70,7 +70,7 @@ public class SignedPreKeyDatabase extends Database{
         return records;
     }
 
-    public void store(int keyId, SignedPreKeyRecord record){
+    public void store(int keyId, SignedPreKeyRecord record) {
         byte[] publicKey = record.getKeyPair().getPublicKey().serialize();
         byte[] privateKey = record.getKeyPair().getPrivateKey().serialize();
 
@@ -87,7 +87,7 @@ public class SignedPreKeyDatabase extends Database{
         }
     }
 
-    public boolean contain(int keyId){
+    public boolean contain(int keyId) {
         return load(keyId) != null;
     }
 
@@ -106,25 +106,25 @@ public class SignedPreKeyDatabase extends Database{
         return signedPreKeyId;
     }
 
-    public void remove(int keyId){
+    public void remove(int keyId) {
         try (SQLiteDatabase database = dbHelper.getWritableDatabase()) {
             String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = " + userId + " AND " + KEY_ID + " = " + keyId;
             database.execSQL(sql);
         }
     }
 
-    private SignedPreKeyRecord create(int keyId, Cursor cursor) throws InvalidKeyException{
+    private SignedPreKeyRecord create(int keyId, Cursor cursor) throws InvalidKeyException {
         byte[] publicKeyEncoded = cursor.getBlob(cursor.getColumnIndexOrThrow(PUBLIC_KEY));
         byte[] privateKeyEncoded = cursor.getBlob(cursor.getColumnIndexOrThrow(PRIVATE_KEY));
         byte[] signature = cursor.getBlob(cursor.getColumnIndexOrThrow(SIGNATURE));
-        return new SignedPreKeyRecord(keyId, cursor.getInt(cursor.getColumnIndexOrThrow(TIMESTAMP)), new ECKeyPair(Curve.decodePoint(Base64.decode(publicKeyEncoded, Base64.DEFAULT), 0),Curve.decodePrivatePoint(Base64.decode(privateKeyEncoded, Base64.DEFAULT))), signature);
+        return new SignedPreKeyRecord(keyId, cursor.getLong(cursor.getColumnIndexOrThrow(TIMESTAMP)), new ECKeyPair(Curve.decodePoint(Base64.decode(publicKeyEncoded, Base64.DEFAULT), 0),Curve.decodePrivatePoint(Base64.decode(privateKeyEncoded, Base64.DEFAULT))), signature);
     }
 
-    public static String getCreateTable(){
+    public static String getCreateTable() {
         return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + KEY_ID + " INTEGER, " + PUBLIC_KEY + " BLOB, " + PRIVATE_KEY + " BLOB, " + SIGNATURE + " BLOB, " + TIMESTAMP + " INTEGER, UNIQUE(" + USER_ID + "," + KEY_ID + "), FOREIGN KEY(" + USER_ID + ") REFERENCES " + UserDatabase.getTableName() + " (ID));";
     }
 
-    public static String getDropTable(){
+    public static String getDropTable() {
         return "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
@@ -134,5 +134,9 @@ public class SignedPreKeyDatabase extends Database{
 
     public static String getUserId() {
         return USER_ID;
+    }
+
+    public static String getKeyId() {
+        return KEY_ID;
     }
 }

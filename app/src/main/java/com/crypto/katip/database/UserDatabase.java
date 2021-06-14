@@ -65,6 +65,13 @@ public class UserDatabase extends Database {
         }
     }
 
+    public void remove(int id) {
+        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
+            String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
+            database.execSQL(sql);
+        }
+    }
+
     public IdentityKeyPair getIdentityKeyPair(int id) {
         IdentityKeyPair identityKeyPair = null;
 
@@ -151,13 +158,6 @@ public class UserDatabase extends Database {
         }
 
         return result;
-    }
-
-    public void remove(int id) {
-        try (SQLiteDatabase database = dbHelper.getWritableDatabase()){
-            String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + ID + " = " + id;
-            database.execSQL(sql);
-        }
     }
 
     public static String getCreateTable() {

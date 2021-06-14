@@ -6,11 +6,18 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.crypto.katip.R;
+import com.crypto.katip.communication.KeyServer;
 import com.crypto.katip.cryptography.KeyManager;
+import com.crypto.katip.cryptography.PublicKeyBundle;
 import com.crypto.katip.database.DbHelper;
+import com.crypto.katip.database.KeyBundleDatabase;
 import com.crypto.katip.database.UserDatabase;
 import com.crypto.katip.database.models.User;
 import com.crypto.katip.login.LoginRepository;
+
+import org.whispersystems.libsignal.state.PreKeyBundle;
+
+import java.util.List;
 
 public class RegisterViewModel extends ViewModel {
     private final MutableLiveData<RegisterFormState> formState = new MutableLiveData<>();
@@ -30,7 +37,14 @@ public class RegisterViewModel extends ViewModel {
                 public void run() {
                     User user = userDatabase.getUser(username, context);
                     if (user != null) {
-                        new KeyManager().createPublicKeys(user.getId(), user.getUuid(), context, 100);
+                        List<PreKeyBundle> preKeyBundles = new KeyManager(user.getStore()).generateKeyBundles(0, 0, 100);
+                        for (PreKeyBundle preKeyBundle : preKeyBundles) {
+                            if (KeyServer.send(user.getUuid(), new PublicKeyBundle(username, preKeyBundle))) {
+                                new KeyBundleDatabase(new DbHelper(context), user.getId()).save(preKeyBundle.getSignedPreKeyId(), preKeyBundle.getPreKeyId());
+                            } else {
+                                return;
+                            }
+                        }
                     }
                 }
             }.start();

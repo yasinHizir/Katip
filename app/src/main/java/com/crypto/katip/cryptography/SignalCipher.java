@@ -38,7 +38,7 @@ public class SignalCipher {
         if (!store.containsSession(remoteAddress)) {
             SessionBuilder builder = new SessionBuilder(store, remoteAddress);
             try {
-                builder.process(Objects.requireNonNull(KeyServer.receive(remoteUUID)).toPreKeyBundle());
+                builder.process(Objects.requireNonNull(KeyServer.receive(remoteUUID)).getPreKeyBundle());
                 ciphertextMessage = cipher.encrypt(text.getBytes());
             } catch (InvalidKeyException | UntrustedIdentityException e) {
                 e.printStackTrace();

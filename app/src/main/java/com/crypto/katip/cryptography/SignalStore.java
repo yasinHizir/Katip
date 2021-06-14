@@ -2,8 +2,10 @@ package com.crypto.katip.cryptography;
 
 import android.content.Context;
 
+import com.crypto.katip.communication.KeyServer;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.IdentityKeyDatabase;
+import com.crypto.katip.database.KeyBundleDatabase;
 import com.crypto.katip.database.PreKeyDatabase;
 import com.crypto.katip.database.SessionDatabase;
 import com.crypto.katip.database.SignedPreKeyDatabase;
@@ -13,6 +15,7 @@ import com.crypto.katip.database.models.User;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.SignalProtocolAddress;
+import org.whispersystems.libsignal.state.PreKeyBundle;
 import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.SessionRecord;
 import org.whispersystems.libsignal.state.SignalProtocolStore;
@@ -81,11 +84,24 @@ public class SignalStore implements SignalProtocolStore {
 
     @Override
     public void removePreKey(int preKeyId) {
-        new PreKeyDatabase(new DbHelper(context), userId).remove(preKeyId);
-        User user = new UserDatabase(new DbHelper(context)).getUser(userId, context);
-        if (user != null) {
-            new KeyManager().newPreKey(userId, user.getUuid(), context, preKeyId);
-        }
+        DbHelper dbHelper = new DbHelper(context);
+        new PreKeyDatabase(dbHelper, userId).remove(preKeyId);
+
+        new Thread() {
+            @Override
+            public void run() {
+                User user = new UserDatabase(dbHelper).getUser(userId, context);
+                KeyBundleDatabase keyBundleDatabase = new KeyBundleDatabase(dbHelper, userId);
+                keyBundleDatabase.remove(preKeyId);
+
+                if (user != null) {
+                    PreKeyBundle preKeyBundle = new KeyManager(user.getStore()).newKeyBundle(preKeyId);
+                    if (KeyServer.send(user.getUuid(), new PublicKeyBundle(user.getUsername(), preKeyBundle))) {
+                        keyBundleDatabase.save(preKeyBundle.getSignedPreKeyId(), preKeyBundle.getPreKeyId());
+                    }
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -150,6 +166,17 @@ public class SignalStore implements SignalProtocolStore {
 
     @Override
     public void removeSignedPreKey(int signedPreKeyId) {
-        new SignedPreKeyDatabase(new DbHelper(context), userId).remove(signedPreKeyId);
+        DbHelper dbHelper = new DbHelper(context);
+        new SignedPreKeyDatabase(dbHelper, userId).remove(signedPreKeyId);
+
+        User user = new UserDatabase(new DbHelper(context)).getUser(userId, context);
+
+        if (user != null) {
+            List<Integer> preKeyIds = new KeyBundleDatabase(dbHelper, userId).getPreKeys(signedPreKeyId);
+            for (Integer preKeyId : preKeyIds) {
+                removePreKey(preKeyId);
+            }
+        }
+
     }
 }

@@ -1,112 +1,109 @@
 package com.crypto.katip.cryptography;
 
-import android.content.Context;
-
-import com.crypto.katip.communication.KeyServer;
-import com.crypto.katip.database.DbHelper;
-import com.crypto.katip.database.PreKeyDatabase;
-import com.crypto.katip.database.SignedPreKeyDatabase;
-import com.crypto.katip.database.UserDatabase;
-import com.crypto.katip.database.models.User;
+import androidx.annotation.Nullable;
 
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.ecc.Curve;
+import org.whispersystems.libsignal.state.PreKeyBundle;
 import org.whispersystems.libsignal.state.PreKeyRecord;
+import org.whispersystems.libsignal.state.SignalProtocolStore;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
+import org.whispersystems.libsignal.util.Medium;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class KeyManager {
+    private final SignalProtocolStore store;
+
+    public KeyManager(SignalProtocolStore signalProtocolStore) {
+        this.store = signalProtocolStore;
+    }
+
     public boolean keyTimestampControl(long timeStamp) {
         boolean result = false;
-        long lifeTime = TimeUnit.DAYS.toDays(7);
+        long lifeTime = TimeUnit.DAYS.toMillis(7);
         long currentTime = System.currentTimeMillis();
 
-        if (currentTime - timeStamp < lifeTime) {
+        if (currentTime - timeStamp <= lifeTime) {
             result = true;
         }
 
         return result;
     }
 
-    public void createPublicKeys(int userId, UUID userUUID, Context context, int count) {
-        UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
-        User user = userDatabase.getUser(userId, context);
-        IdentityKeyPair identityKeyPair = userDatabase.getIdentityKeyPair(userId);
-        int registrationId = userDatabase.getRegistrationID(userId);
-
-        SignedPreKeyDatabase signedPreKeyDatabase = new SignedPreKeyDatabase(new DbHelper(context), userId);
-        SignedPreKeyRecord signedPreKeyRecord;
-        try {
-            signedPreKeyRecord = KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyDatabase.getAvailableSignedPreKeyId());
-            signedPreKeyDatabase.store(signedPreKeyRecord.getId(), signedPreKeyRecord);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        PreKeyDatabase preKeyDatabase = new PreKeyDatabase(new DbHelper(context), userId);
+    public List<PreKeyBundle> generateKeyBundles(int startPreKeyId, int startSignedPreKeyId, int count) {
+        List<PreKeyBundle> results = new LinkedList<>();
 
         for (int i = 0; i < count; i++) {
-            PreKeyRecord preKeyRecord = new PreKeyRecord(i, Curve.generateKeyPair());
-            PublicKeyBundle keyBundle = new PublicKeyBundle(Objects.requireNonNull(user).getUsername(),
-                                                            registrationId, 0,
-                                                            preKeyRecord.getId(),
-                                                            preKeyRecord.getKeyPair().getPublicKey(),
-                                                            signedPreKeyRecord.getId(),
-                                                            signedPreKeyRecord.getKeyPair().getPublicKey(),
-                                                            signedPreKeyRecord.getSignature(),
-                                                            identityKeyPair.getPublicKey());
-            if (KeyServer.send(userUUID, keyBundle)) {
-                preKeyDatabase.store(preKeyRecord.getId(), preKeyRecord);
-            }
+            int preKeyId = ((startPreKeyId + i) % (Medium.MAX_VALUE-1)) + 1;
+            int signedPreKeyId = ((startSignedPreKeyId + i) % (Medium.MAX_VALUE-1)) + 1;
+            SignedPreKeyRecord signedPreKeyRecord = createSignedPreKey(store.getIdentityKeyPair(), signedPreKeyId);
+            PreKeyBundle keyBundle = createKeyBundle(preKeyId, Objects.requireNonNull(signedPreKeyRecord));
+            results.add(keyBundle);
         }
+
+        return results;
     }
 
-    public void newPreKey(int userId, UUID userUUID, Context context, int keyId) {
-        UserDatabase userDatabase = new UserDatabase(new DbHelper(context));
-        User user = userDatabase.getUser(userId, context);
-        IdentityKeyPair identityKeyPair = userDatabase.getIdentityKeyPair(userId);
-        int registrationId = userDatabase.getRegistrationID(userId);
+    public PreKeyBundle newKeyBundle(int preKeyId) {
+        return createKeyBundle(preKeyId, Objects.requireNonNull(getSignedPreKey(store.getIdentityKeyPair())));
+    }
 
-        PreKeyDatabase preKeyDatabase = new PreKeyDatabase(new DbHelper(context), userId);
-        PreKeyRecord preKeyRecord = new PreKeyRecord(keyId, Curve.generateKeyPair());
+    private PreKeyBundle createKeyBundle(int preKeyId, SignedPreKeyRecord signedPreKeyRecord) {
+        IdentityKeyPair identityKeyPair = store.getIdentityKeyPair();
+        int registrationId = store.getLocalRegistrationId();
 
-        SignedPreKeyDatabase  signedPreKeyDatabase = new SignedPreKeyDatabase(new DbHelper(context), userId);
-        List<SignedPreKeyRecord> signedPreKeyRecords = signedPreKeyDatabase.loadAll();
+        PreKeyRecord preKeyRecord = new PreKeyRecord(preKeyId, Curve.generateKeyPair());
+        store.storePreKey(preKeyId, preKeyRecord);
+
+        return new PreKeyBundle(
+                registrationId, 0,
+                preKeyRecord.getId(),
+                preKeyRecord.getKeyPair().getPublicKey(),
+                signedPreKeyRecord.getId(),
+                signedPreKeyRecord.getKeyPair().getPublicKey(),
+                signedPreKeyRecord.getSignature(),
+                identityKeyPair.getPublicKey());
+    }
+
+    @Nullable
+    private SignedPreKeyRecord getSignedPreKey(IdentityKeyPair identityKeyPair) {
+        List<SignedPreKeyRecord> signedPreKeyRecords = store.loadSignedPreKeys();
         SignedPreKeyRecord signedPreKeyRecord = null;
 
-        for (int i = 0; i < signedPreKeyRecords.size(); i++) {
+        for (int i = 1; i <= signedPreKeyRecords.size(); i++) {
             if (keyTimestampControl(signedPreKeyRecords.get(i).getTimestamp())) {
                 signedPreKeyRecord = signedPreKeyRecords.get(i);
+                break;
+            } else {
+                store.removeSignedPreKey(signedPreKeyRecords.get(i).getId());
             }
         }
 
         if (signedPreKeyRecord == null) {
-            try {
-                signedPreKeyRecord = KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyDatabase.getAvailableSignedPreKeyId());
-                signedPreKeyDatabase.store(signedPreKeyRecord.getId(), signedPreKeyRecord);
-            } catch (InvalidKeyException e) {
-                e.printStackTrace();
-                return;
-            }
+            signedPreKeyRecord = createSignedPreKey(identityKeyPair, 0);
         }
 
-        PublicKeyBundle keyBundle = new PublicKeyBundle(Objects.requireNonNull(user).getUsername(),
-                                                        registrationId, 0,
-                                                        preKeyRecord.getId(),
-                                                        preKeyRecord.getKeyPair().getPublicKey(),
-                                                        signedPreKeyRecord.getId(),
-                                                        signedPreKeyRecord.getKeyPair().getPublicKey(),
-                                                        signedPreKeyRecord.getSignature(),
-                                                        identityKeyPair.getPublicKey());
-        if (KeyServer.send(userUUID, keyBundle)) {
-            preKeyDatabase.store(preKeyRecord.getId(), preKeyRecord);
+        return signedPreKeyRecord;
+    }
+
+    @Nullable
+    private SignedPreKeyRecord createSignedPreKey(IdentityKeyPair identityKeyPair, int signedPreKeyId) {
+        SignedPreKeyRecord signedPreKeyRecord;
+
+        try {
+            signedPreKeyRecord = KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId);
+            store.storeSignedPreKey(signedPreKeyRecord.getId(), signedPreKeyRecord);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+            return null;
         }
+
+        return signedPreKeyRecord;
     }
 }

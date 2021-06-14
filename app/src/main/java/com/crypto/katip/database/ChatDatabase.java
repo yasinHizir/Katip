@@ -115,7 +115,7 @@ public class ChatDatabase extends Database {
     }
 
     public static String getCreateTable() {
-        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + REMOTE_UUID + " TEXT UNIQUE, " + INTERLOCUTOR + " TEXT, " + CREATED_AT + " INTEGER, " + UPDATED_AT + " INTEGER, FOREIGN KEY(" + USER_ID + ") REFERENCES user (ID));";
+        return "CREATE TABLE " + TABLE_NAME + " ( " + ID + " INTEGER PRIMARY KEY, " + USER_ID + " INTEGER NOT NULL, " + REMOTE_UUID + " TEXT, " + INTERLOCUTOR + " TEXT, " + CREATED_AT + " INTEGER, " + UPDATED_AT + " INTEGER, FOREIGN KEY(" + USER_ID + ") REFERENCES user (ID));";
     }
 
     public static String getDropTable() {

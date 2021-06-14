@@ -51,7 +51,7 @@ public class ChatBuilder {
             if (keyBundle == null) {
                 return false;
             }
-            builder.process(keyBundle.toPreKeyBundle());
+            builder.process(keyBundle.getPreKeyBundle());
             interlocutor = keyBundle.getUsername();
         } catch (InvalidKeyException | UntrustedIdentityException e) {
             e.printStackTrace();

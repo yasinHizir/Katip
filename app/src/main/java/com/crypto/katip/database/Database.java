@@ -40,4 +40,12 @@ public abstract class Database {
     public static String getRemoveSignedPreKeysTrigger() {
         return "CREATE TRIGGER remove_signed_pre_keys_after_delete_user AFTER DELETE ON " + UserDatabase.getTableName() + " BEGIN DELETE FROM " + SignedPreKeyDatabase.getTableName() + " WHERE " + SignedPreKeyDatabase.getUserId() + " = OLD." + UserDatabase.getID() + "; END;";
     }
+
+    public static String getRemoveKeyBundleTrigger() {
+        return "CREATE TRIGGER remove_key_bundle_after_delete_pre_key AFTER DELETE ON " + PreKeyDatabase.getTableName() + " BEGIN DELETE FROM " + KeyBundleDatabase.getTableName() + "  WHERE " + KeyBundleDatabase.getUserId() + " = OLD." + PreKeyDatabase.getUserId() + " AND " + KeyBundleDatabase.getPreKeyId() + "= OLD." + PreKeyDatabase.getKeyId() + "; END;";
+    }
+
+    public static String getRemoveKeyBundlesTrigger() {
+        return "CREATE TRIGGER remove_key_bundles_after_delete_signed_pre_Key AFTER DELETE ON " + SignedPreKeyDatabase.getTableName() +  " BEGIN DELETE FROM " + KeyBundleDatabase.getTableName() + "  WHERE " + KeyBundleDatabase.getUserId() + " = OLD." + SignedPreKeyDatabase.getUserId() + " AND " + KeyBundleDatabase.getSignedPreKeyId() + "= OLD." + SignedPreKeyDatabase.getKeyId() + "; END;";
+    }
 }
