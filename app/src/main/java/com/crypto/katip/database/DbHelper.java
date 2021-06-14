@@ -19,6 +19,7 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SessionDatabase.getCreateTable());
         sqLiteDatabase.execSQL(ChatDatabase.getCreateTable());
         sqLiteDatabase.execSQL(MessageDatabase.getCreateTable());
+        sqLiteDatabase.execSQL(KeyBundleDatabase.getCreateTable());
 
         sqLiteDatabase.execSQL(Database.getRemoveMessagesTrigger());
         sqLiteDatabase.execSQL(Database.getRemoveChatsTrigger());
@@ -26,6 +27,8 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(Database.getRemovePreKeysTrigger());
         sqLiteDatabase.execSQL(Database.getRemoveSessionsTrigger());
         sqLiteDatabase.execSQL(Database.getRemoveSignedPreKeysTrigger());
+        sqLiteDatabase.execSQL(Database.getRemoveKeyBundleTrigger());
+        sqLiteDatabase.execSQL(Database.getRemoveKeyBundlesTrigger());
     }
 
     @Override
@@ -37,6 +40,7 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SessionDatabase.getDropTable());
         sqLiteDatabase.execSQL(ChatDatabase.getDropTable());
         sqLiteDatabase.execSQL(MessageDatabase.getDropTable());
+        sqLiteDatabase.execSQL(KeyBundleDatabase.getDropTable());
 
         onCreate(sqLiteDatabase);
     }
