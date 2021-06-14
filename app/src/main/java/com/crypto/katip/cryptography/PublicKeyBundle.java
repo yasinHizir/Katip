@@ -80,6 +80,7 @@ public class PublicKeyBundle implements Serializable {
     @Nullable
     public static PublicKeyBundle deserialize(byte[] bytes) {
         PublicKeyBundle bundle = null;
+
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)){
             ObjectInputStream inputStream = new ObjectInputStream(byteArrayInputStream);
             bundle = (PublicKeyBundle) inputStream.readObject();
