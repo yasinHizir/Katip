@@ -20,6 +20,7 @@ public abstract class Server {
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
 
+            channel.queueDeclare(queueName, false, false, false, null);
             channel.basicPublish("", queueName, null, message);
             return true;
 
@@ -39,8 +40,10 @@ public abstract class Server {
              Channel channel = connection.createChannel()) {
 
             channel.queueDeclare(queueName, false, false, false, null);
-            message = channel.basicGet(queueName, true).getBody();
-
+            GetResponse response = channel.basicGet(queueName, true);
+            if(response != null) {
+                message = response.getBody();
+            }
         } catch (TimeoutException | IOException e) {
             e.printStackTrace();
         }
