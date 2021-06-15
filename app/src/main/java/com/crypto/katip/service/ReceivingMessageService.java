@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.crypto.katip.communication.Envelope;
-import com.crypto.katip.communication.MessageReceiver;
+import com.crypto.katip.communication.MessageServer;
 import com.crypto.katip.communication.messages.CipherText;
 import com.crypto.katip.cryptography.SignalCipher;
 import com.crypto.katip.database.ChatDatabase;
@@ -77,7 +77,7 @@ public class ReceivingMessageService extends Service {
 
         @Override
         public void run() {
-            new MessageReceiver().receive(user.getUuid(), envelope -> {
+            new MessageServer().receive(user.getUuid(), envelope -> {
                 ChatDatabase chatDatabase = new ChatDatabase(new DbHelper(getApplicationContext()), user.getId());
 
                 if (!chatDatabase.isRegistered(envelope.getUuid())) {

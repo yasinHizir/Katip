@@ -39,7 +39,7 @@ public class RegisterViewModel extends ViewModel {
                     if (user != null) {
                         List<PreKeyBundle> preKeyBundles = new KeyManager(user.getStore()).generateKeyBundles(0, 0, 100);
                         for (PreKeyBundle preKeyBundle : preKeyBundles) {
-                            if (KeyServer.send(user.getUuid(), new PublicKeyBundle(username, preKeyBundle))) {
+                            if (new KeyServer().send(user.getUuid(), new PublicKeyBundle(username, preKeyBundle))) {
                                 new KeyBundleDatabase(new DbHelper(context), user.getId()).save(preKeyBundle.getSignedPreKeyId(), preKeyBundle.getPreKeyId());
                             } else {
                                 return;

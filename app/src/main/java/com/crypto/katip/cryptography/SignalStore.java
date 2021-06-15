@@ -96,7 +96,7 @@ public class SignalStore implements SignalProtocolStore {
 
                 if (user != null) {
                     PreKeyBundle preKeyBundle = new KeyManager(user.getStore()).newKeyBundle(preKeyId);
-                    if (KeyServer.send(user.getUuid(), new PublicKeyBundle(user.getUsername(), preKeyBundle))) {
+                    if (new KeyServer().send(user.getUuid(), new PublicKeyBundle(user.getUsername(), preKeyBundle))) {
                         keyBundleDatabase.save(preKeyBundle.getSignedPreKeyId(), preKeyBundle.getPreKeyId());
                     }
                 }

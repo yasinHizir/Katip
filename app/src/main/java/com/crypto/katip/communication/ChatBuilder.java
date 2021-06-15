@@ -47,7 +47,7 @@ public class ChatBuilder {
         SessionBuilder builder = new SessionBuilder(user.getStore(), remoteAddress);
 
         try {
-            PublicKeyBundle keyBundle = KeyServer.receive(remoteUUID);
+            PublicKeyBundle keyBundle = new KeyServer().receive(remoteUUID);
             if (keyBundle == null) {
                 return false;
             }
@@ -65,7 +65,7 @@ public class ChatBuilder {
         SessionCipher cipher = new SessionCipher(user.getStore(), remoteAddress);
 
         try {
-            new MessageSender().send(remoteUUID, new Envelope(Envelope.START_CHAT_TYPE, user.getUuid(), user.getUsername(), cipher.encrypt("".getBytes()).serialize()));
+            new MessageServer().send(remoteUUID, new Envelope(Envelope.START_CHAT_TYPE, user.getUuid(), user.getUsername(), cipher.encrypt("".getBytes()).serialize()));
         } catch (UntrustedIdentityException e) {
             e.printStackTrace();
             return false;

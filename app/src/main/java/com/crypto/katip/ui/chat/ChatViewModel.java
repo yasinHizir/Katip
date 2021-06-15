@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.crypto.katip.communication.Envelope;
-import com.crypto.katip.communication.MessageSender;
+import com.crypto.katip.communication.MessageServer;
 import com.crypto.katip.communication.messages.CipherText;
 import com.crypto.katip.cryptography.SignalCipher;
 import com.crypto.katip.database.ChatDatabase;
@@ -48,7 +48,7 @@ public class ChatViewModel extends ViewModel {
                         CipherText.serialize(cipherTextMessage)
                 );
 
-                if (new MessageSender().send(chat.getRemoteUUID(), envelope)) {
+                if (new MessageServer().send(chat.getRemoteUUID(), envelope)) {
                     messageDatabase.save(text, true);
                     liveData.postValue(messageDatabase.getMessages());
                 }
