@@ -22,6 +22,13 @@ import org.whispersystems.libsignal.protocol.SignalMessage;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * The SignalCipher class encrypt and decrypt messages
+ *
+ * @author  Yasin HIZIR
+ * @version Beta
+ * @since   2021-06-17
+ */
 public class SignalCipher {
     private final SignalStore store;
 
@@ -29,6 +36,13 @@ public class SignalCipher {
         this.store = userStore;
     }
 
+    /**
+     *  This method encrypt a text
+     *
+     * @param remoteUUID remote id of the person to send message
+     * @param text text to encrypt
+     * @return returns encrypted text
+     */
     @Nullable
     public CiphertextMessage encrypt(UUID remoteUUID, String text) {
         SignalProtocolAddress remoteAddress = new SignalProtocolAddress(remoteUUID.toString(), 0);
@@ -37,24 +51,36 @@ public class SignalCipher {
 
         if (!store.containsSession(remoteAddress)) {
             SessionBuilder builder = new SessionBuilder(store, remoteAddress);
+
             try {
                 builder.process(Objects.requireNonNull(new KeyServer().receive(remoteUUID)).getPreKeyBundle());
                 ciphertextMessage = cipher.encrypt(text.getBytes());
+
             } catch (InvalidKeyException | UntrustedIdentityException e) {
                 e.printStackTrace();
             }
         } else {
             try {
                 ciphertextMessage = cipher.encrypt(text.getBytes());
+
             } catch (UntrustedIdentityException e) {
                 e.printStackTrace();
             }
         }
+
         return ciphertextMessage;
     }
 
+    /**
+     *  This method decrypt a text
+     *
+     * @param remoteUUID remote id of the person to receive message
+     * @param encryption_type cipherType in CipherText object.
+     * @return returns decrypted text
+     */
     public String decrypt(UUID remoteUUID, int encryption_type, byte[] ciphertext) throws LegacyMessageException, InvalidMessageException, InvalidVersionException, DuplicateMessageException, InvalidKeyIdException, UntrustedIdentityException, InvalidKeyException, NoSessionException {
-        SessionCipher cipher = new SessionCipher(store, new SignalProtocolAddress(remoteUUID.toString(), 0));
+        SignalProtocolAddress remoteAddress = new SignalProtocolAddress(remoteUUID.toString(), 0);
+        SessionCipher cipher = new SessionCipher(store, remoteAddress);
         byte[] text;
 
         if (encryption_type == CiphertextMessage.WHISPER_TYPE) {

@@ -23,6 +23,15 @@ import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 
 import java.util.List;
 
+/**
+ * This class implements SignalProtocolStore interface.
+ * This class manages identity keypair, identities,
+ * pre-keys, signed pre-keys and sessions.
+ *
+ * @author  Yasin HIZIR
+ * @version Beta
+ * @since   2021-06-17
+ */
 public class SignalStore implements SignalProtocolStore {
     private final int userId;
     private final Context context;
@@ -44,17 +53,21 @@ public class SignalStore implements SignalProtocolStore {
 
     @Override
     public boolean saveIdentity(SignalProtocolAddress address, IdentityKey identityKey) {
-        IdentityKeyDatabase database = new IdentityKeyDatabase(new DbHelper(context),userId);
-        IdentityKey verifyIdentityKey = database.get(address.toString());
+        IdentityKeyDatabase identityKeyDatabase = new IdentityKeyDatabase(new DbHelper(context),userId);
+
+        IdentityKey verifyIdentityKey = identityKeyDatabase.get(address.toString());
         if (identityKey.equals(verifyIdentityKey)) {
             return true;
         }
-        return database.save(address.toString(), identityKey);
+
+        return identityKeyDatabase.save(address.toString(), identityKey);
     }
 
     @Override
     public boolean isTrustedIdentity(SignalProtocolAddress address, IdentityKey identityKey, Direction direction) {
-        IdentityKey ourRegisteredKey = new IdentityKeyDatabase(new DbHelper(context), userId).get(address.toString());
+        IdentityKeyDatabase identityKeyDatabase = new IdentityKeyDatabase(new DbHelper(context), userId);
+
+        IdentityKey ourRegisteredKey = identityKeyDatabase.get(address.toString());
         if (ourRegisteredKey != null) {
             return ourRegisteredKey.equals(identityKey);
         }
@@ -92,8 +105,8 @@ public class SignalStore implements SignalProtocolStore {
             public void run() {
                 User user = new UserDatabase(dbHelper).getUser(userId, context);
                 KeyBundleDatabase keyBundleDatabase = new KeyBundleDatabase(dbHelper, userId);
-                keyBundleDatabase.remove(preKeyId);
 
+                keyBundleDatabase.remove(preKeyId);
                 if (user != null) {
                     PreKeyBundle preKeyBundle = new KeyManager(user.getStore()).newKeyBundle(preKeyId);
                     if (new KeyServer().send(user.getUuid(), new PublicKeyBundle(user.getUsername(), preKeyBundle))) {
@@ -106,10 +119,13 @@ public class SignalStore implements SignalProtocolStore {
 
     @Override
     public SessionRecord loadSession(SignalProtocolAddress address) {
-        SessionRecord record = new SessionDatabase(new DbHelper(context), userId).load(address);
+        SessionDatabase sessionDatabase = new SessionDatabase(new DbHelper(context), userId);
+
+        SessionRecord record = sessionDatabase.load(address);
         if (record == null) {
             return new SessionRecord();
         }
+
         return record;
     }
 
@@ -121,11 +137,11 @@ public class SignalStore implements SignalProtocolStore {
     @Override
     public void storeSession(SignalProtocolAddress address, SessionRecord record) {
         SessionDatabase sessionDatabase = new SessionDatabase(new DbHelper(context), userId);
+
         SessionRecord oldRecord = sessionDatabase.load(address);
         if (oldRecord != null) {
             sessionDatabase.delete(address);
         }
-
         sessionDatabase.store(address, record);
     }
 
@@ -167,15 +183,11 @@ public class SignalStore implements SignalProtocolStore {
     @Override
     public void removeSignedPreKey(int signedPreKeyId) {
         DbHelper dbHelper = new DbHelper(context);
+
         new SignedPreKeyDatabase(dbHelper, userId).remove(signedPreKeyId);
-
-        User user = new UserDatabase(new DbHelper(context)).getUser(userId, context);
-
-        if (user != null) {
-            List<Integer> preKeyIds = new KeyBundleDatabase(dbHelper, userId).getPreKeys(signedPreKeyId);
-            for (Integer preKeyId : preKeyIds) {
-                removePreKey(preKeyId);
-            }
+        List<Integer> preKeyIds = new KeyBundleDatabase(dbHelper, userId).getPreKeys(signedPreKeyId);
+        for (Integer preKeyId : preKeyIds) {
+            removePreKey(preKeyId);
         }
 
     }

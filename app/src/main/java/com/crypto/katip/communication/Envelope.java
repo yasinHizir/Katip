@@ -10,6 +10,13 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * This class represents message sent to server.
+ *
+ * @author Yasin HIZIR
+ * @version Beta
+ * @since 2021-06-17
+ */
 public class Envelope implements Serializable {
     public static final int START_CHAT_TYPE = 0;
     public static final int CIPHERTEXT_TYPE = 1;
@@ -46,11 +53,12 @@ public class Envelope implements Serializable {
     public static byte[] serialize(Envelope envelope) {
         byte[] bytes = null;
 
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()){
-            ObjectOutputStream objectOutputStream =  new ObjectOutputStream(byteArrayOutputStream);
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             ObjectOutputStream objectOutputStream =  new ObjectOutputStream(byteArrayOutputStream)) {
+
             objectOutputStream.writeObject(envelope);
-            objectOutputStream.close();
             bytes = byteArrayOutputStream.toByteArray();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,12 +69,16 @@ public class Envelope implements Serializable {
     @Nullable
     public static Envelope deserialize(byte[] bytes) {
         Envelope envelope = null;
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)){
-            ObjectInputStream inputStream = new ObjectInputStream(byteArrayInputStream);
+
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+             ObjectInputStream inputStream = new ObjectInputStream(byteArrayInputStream)) {
+
             envelope = (Envelope) inputStream.readObject();
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+
         return envelope;
     }
 }

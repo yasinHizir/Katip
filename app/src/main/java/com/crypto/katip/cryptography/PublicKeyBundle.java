@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.ecc.Curve;
-import org.whispersystems.libsignal.ecc.ECPublicKey;
 import org.whispersystems.libsignal.state.PreKeyBundle;
 
 import java.io.ByteArrayInputStream;
@@ -15,6 +14,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+/**
+ * The PublicKeyBundle class represents pre-key bundles
+ * to send to the server.
+ *
+ * @author  Yasin HIZIR
+ * @version Beta
+ * @since   2021-06-17
+ */
 public class PublicKeyBundle implements Serializable {
     private final String    username;
     private final int       registrationId;
@@ -38,6 +45,12 @@ public class PublicKeyBundle implements Serializable {
         this.identityKey           = preKeyBundle.getIdentityKey().serialize();
     }
 
+    /**
+     *  This method receives pre-key bundle to represent
+     *  this object
+     *
+     * @return returns pre-key bundle
+     */
     @Nullable
     public PreKeyBundle getPreKeyBundle() {
         try {
@@ -65,11 +78,12 @@ public class PublicKeyBundle implements Serializable {
     public static byte[] serialize(PublicKeyBundle keyBundle) {
         byte[] bytes = null;
 
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()){
-            ObjectOutputStream objectOutputStream =  new ObjectOutputStream(byteArrayOutputStream);
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             ObjectOutputStream objectOutputStream =  new ObjectOutputStream(byteArrayOutputStream)) {
+
             objectOutputStream.writeObject(keyBundle);
-            objectOutputStream.close();
             bytes = byteArrayOutputStream.toByteArray();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,12 +95,15 @@ public class PublicKeyBundle implements Serializable {
     public static PublicKeyBundle deserialize(byte[] bytes) {
         PublicKeyBundle bundle = null;
 
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)){
-            ObjectInputStream inputStream = new ObjectInputStream(byteArrayInputStream);
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+             ObjectInputStream inputStream = new ObjectInputStream(byteArrayInputStream)) {
+
             bundle = (PublicKeyBundle) inputStream.readObject();
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+
         return bundle;
     }
 }
