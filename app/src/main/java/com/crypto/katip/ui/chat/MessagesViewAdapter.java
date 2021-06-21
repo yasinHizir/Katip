@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.crypto.katip.R;
 import com.crypto.katip.database.models.TextMessage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MessagesViewAdapter extends RecyclerView.Adapter<MessagesViewAdapter.MessageViewHolder> {
@@ -24,9 +23,11 @@ public class MessagesViewAdapter extends RecyclerView.Adapter<MessagesViewAdapte
     @Override
     public int getItemViewType(int position) {
         TextMessage message = messages.get(position);
+
         if (!message.isOwn()) {
             return 1;
         }
+
         return 0;
     }
 
@@ -34,6 +35,7 @@ public class MessagesViewAdapter extends RecyclerView.Adapter<MessagesViewAdapte
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
+
         if (viewType == 0) {
             view = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.messages_list_sended_message,
