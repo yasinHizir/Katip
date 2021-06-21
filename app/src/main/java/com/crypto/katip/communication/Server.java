@@ -22,11 +22,11 @@ public abstract class Server {
     private static final String HOST = "138.68.78.206";
 
     /**
-     *  This method sends data to the server
+     *  This method sends data to the server.
      *
      * @param queueName Queue name of the user to send
-     * @param data data to send to the server
-     * @return returns send or not send
+     * @param data      Data to send to the server
+     * @return          Send or not send
      */
     protected boolean send(String queueName, byte[] data) {
         ConnectionFactory factory = new ConnectionFactory();
@@ -35,21 +35,33 @@ public abstract class Server {
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
 
-            channel.queueDeclare(queueName, false, false, false, null);
-            channel.basicPublish("", queueName, null, data);
-            return true;
+            channel.queueDeclare(
+                    queueName,
+                    false,
+                    false,
+                    false,
+                    null
+            );
+            channel.basicPublish(
+                    "",
+                    queueName,
+                    null,
+                    data
+            );
 
+            return true;
         } catch (TimeoutException | IOException e) {
             e.printStackTrace();
+
             return false;
         }
     }
 
     /**
-     *  This method receives data from the server
+     *  This method receives data from the server.
      *
      * @param queueName Queue name of the user to receive
-     * @return returns data of receives
+     * @return          Data of receives
      */
     @Nullable
     protected byte[] receive(String queueName) {
@@ -60,8 +72,18 @@ public abstract class Server {
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
 
-            channel.queueDeclare(queueName, false, false, false, null);
-            GetResponse response = channel.basicGet(queueName, true);
+            channel.queueDeclare(
+                    queueName,
+                    false,
+                    false,
+                    false,
+                    null
+            );
+            GetResponse response = channel.basicGet(
+                    queueName,
+                    true
+            );
+
             if(response != null) {
                 data = response.getBody();
             }

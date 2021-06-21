@@ -20,31 +20,45 @@ import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.util.UUID;
 
-public class LoginDataSource {
-
+/**
+ * This class manages to store logged in user.
+ */
+class LoginDataSource {
     @SuppressLint("SdCardPath")
     private final File file = new File("/data/data/com.crypto.katip", "User.dat");
+    private EncryptedFile encryptedFile;
 
-    public boolean login(User user, Context context) {
+    /**
+     * This method write logged in user to the
+     * encrypted file.
+     *
+     * @param user      Logged in user
+     * @param context   Application Context
+     * @return          logged or not
+     */
+    protected boolean login(User user, Context context) {
         boolean result = false;
 
         try {
-            MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
+            if (this.encryptedFile == null) {
+                createEncryptedFile(context);
+            }
 
-            EncryptedFile encryptedFile = new EncryptedFile.Builder(
-                    context,
-                    this.file,
-                    masterKey,
-                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-            ).build();
+            try (OutputStream stream = encryptedFile.openFileOutput();
+                 ObjectOutputStream objectStream = new ObjectOutputStream(stream)) {
 
-            OutputStream stream = encryptedFile.openFileOutput();
-            ObjectOutputStream objectStream = new ObjectOutputStream(stream);
-            LoggedInUser logged = new LoggedInUser(user.getUuid().toString(), user.getId(), user.getUsername());
-            objectStream.writeObject(logged);
-            objectStream.flush();
-            objectStream.close();
-            result = true;
+                LoggedInUser logged = new LoggedInUser(
+                        user.getUuid().toString(),
+                        user.getId(),
+                        user.getUsername()
+                );
+
+                objectStream.writeObject(logged);
+                objectStream.flush();
+                result = true;
+            }
+
+
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
         }
@@ -52,34 +66,63 @@ public class LoginDataSource {
         return result;
     }
 
+    /**
+     * This method reads logged in user from the encrypted
+     * file.
+     *
+     * @param context   Application context
+     * @return          Logged in user
+     */
     @Nullable
-    public User getLoggedInUser(Context context) {
+    protected User getLoggedInUser(Context context) {
         User user = null;
 
-        try {
-            MasterKey masterKey = new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
-            if (this.file.exists()) {
-                EncryptedFile encryptedFile = new EncryptedFile.Builder(
-                        context,
-                        this.file,
-                        masterKey,
-                        EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-                ).build();
-
-                InputStream stream = encryptedFile.openFileInput();
-                ObjectInputStream objectStream = new ObjectInputStream(stream);
-                LoggedInUser logged = (LoggedInUser) objectStream.readObject();
-                user = new User(UUID.fromString(logged.uuid), logged.getId(), logged.getUsername(), new SignalStore(logged.getId(), context));
+        if (this.file.exists()) {
+            if (this.encryptedFile == null) {
+                createEncryptedFile(context);
             }
-        } catch (GeneralSecurityException | IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+
+            try (InputStream stream = encryptedFile.openFileInput();
+                 ObjectInputStream objectStream = new ObjectInputStream(stream)) {
+
+                LoggedInUser logged = (LoggedInUser) objectStream.readObject();
+
+                user = new User(
+                        UUID.fromString(logged.uuid),
+                        logged.getId(),
+                        logged.getUsername(),
+                        new SignalStore(logged.getId(), context)
+                );
+            } catch (GeneralSecurityException | IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         return user;
     }
 
-    public boolean logout() {
+    /**
+     * This method remove logged in user from the encrypted
+     * file.
+     *
+     * @return  removed or not removed
+     */
+    protected boolean logout() {
         return this.file.delete();
+    }
+
+    private void createEncryptedFile(Context context) {
+        try {
+            this.encryptedFile = new EncryptedFile.Builder(
+                    context,
+                    this.file,
+                    new MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
+                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+            ).build();
+
+        }  catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static class LoggedInUser implements Serializable {

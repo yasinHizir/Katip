@@ -1,5 +1,8 @@
 package com.crypto.katip.database.models;
 
+/**
+ * This class represents a received text message.
+ */
 public class TextMessage {
     private final int id;
     private final int chatId;

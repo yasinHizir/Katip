@@ -17,7 +17,7 @@ import org.whispersystems.libsignal.UntrustedIdentityException;
 import java.util.UUID;
 
 /**
- * Chat builder build a chat between two clients
+ * Chat builder build a chat between two clients.
  *
  * @author Yasin HIZIR
  * @version Beta
@@ -38,11 +38,11 @@ public class ChatBuilder {
     /**
      *  This method builds a chat and saves this chat to database
      *
-     * @param context Application context
-     * @return returns built or not built
+     * @param context   Application context
+     * @return          Built or not built
      */
     public boolean build(Context context) {
-        User user = new UserDatabase(new DbHelper(context)).getUser(userID, context);
+        User user = new UserDatabase(new DbHelper(context)).get(userID, context);
 
         if (user == null) {
             return false;
@@ -81,7 +81,12 @@ public class ChatBuilder {
         try {
             // create empty PreKeySignalMessage to send to the server:
             byte[] message = cipher.encrypt("".getBytes()).serialize();
-            Envelope envelope = new Envelope(Envelope.START_CHAT_TYPE, user.getUuid(), user.getUsername(), message);
+            Envelope envelope = new Envelope(
+                    Envelope.START_CHAT_TYPE,
+                    user.getUuid(),
+                    user.getUsername(),
+                    message
+            );
             new MessageServer().send(remoteUUID, envelope);
 
         } catch (UntrustedIdentityException e) {

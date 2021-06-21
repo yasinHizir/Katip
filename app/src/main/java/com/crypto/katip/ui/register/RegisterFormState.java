@@ -1,5 +1,8 @@
 package com.crypto.katip.ui.register;
 
+/**
+ * This class represents errors in registration form
+ */
 public class RegisterFormState {
     private int usernameError;
     private int passwordError;

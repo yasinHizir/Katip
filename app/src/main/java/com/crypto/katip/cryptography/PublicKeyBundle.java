@@ -15,12 +15,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * The PublicKeyBundle class represents pre-key bundles
+ * The PublicKeyBundle class represents {@link org.whispersystems.libsignal.state.PreKeyBundle}s
  * to send to the server.
- *
- * @author  Yasin HIZIR
- * @version Beta
- * @since   2021-06-17
  */
 public class PublicKeyBundle implements Serializable {
     private final String    username;

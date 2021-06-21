@@ -11,10 +11,6 @@ import java.io.Serializable;
 
 /**
  * This class represents ciphertext message sent to server.
- *
- * @author Yasin HIZIR
- * @version Beta
- * @since 2021-06-17
  */
 public class CipherText implements Serializable {
     private final int cipherType;       // CiphertextMessage.WHISPER_TYPE or CiphertextMessage.PREKEY_TYPE

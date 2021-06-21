@@ -12,10 +12,6 @@ import java.util.UUID;
 
 /**
  * This class represents message sent to server.
- *
- * @author Yasin HIZIR
- * @version Beta
- * @since 2021-06-17
  */
 public class Envelope implements Serializable {
     public static final int START_CHAT_TYPE = 0;

@@ -82,12 +82,12 @@ public class SignalStore implements SignalProtocolStore {
 
     @Override
     public PreKeyRecord loadPreKey(int preKeyId) {
-        return new PreKeyDatabase(new DbHelper(context), userId).load(preKeyId);
+        return new PreKeyDatabase(new DbHelper(context), userId).get(preKeyId);
     }
 
     @Override
     public void storePreKey(int preKeyId, PreKeyRecord record) {
-        new PreKeyDatabase(new DbHelper(context), userId).store(preKeyId, record);
+        new PreKeyDatabase(new DbHelper(context), userId).save(preKeyId, record);
     }
 
     @Override
@@ -103,13 +103,18 @@ public class SignalStore implements SignalProtocolStore {
         new Thread() {
             @Override
             public void run() {
-                User user = new UserDatabase(dbHelper).getUser(userId, context);
+                User user = new UserDatabase(dbHelper).get(userId, context);
                 KeyBundleDatabase keyBundleDatabase = new KeyBundleDatabase(dbHelper, userId);
 
                 keyBundleDatabase.remove(preKeyId);
                 if (user != null) {
                     PreKeyBundle preKeyBundle = new KeyManager(user.getStore()).newKeyBundle(preKeyId);
-                    if (new KeyServer().send(user.getUuid(), new PublicKeyBundle(user.getUsername(), preKeyBundle))) {
+                    boolean result = new KeyServer().send(
+                            user.getUuid(),
+                            new PublicKeyBundle(user.getUsername(), preKeyBundle)
+                    );
+
+                    if (result) {
                         keyBundleDatabase.save(preKeyBundle.getSignedPreKeyId(), preKeyBundle.getPreKeyId());
                     }
                 }
@@ -121,7 +126,7 @@ public class SignalStore implements SignalProtocolStore {
     public SessionRecord loadSession(SignalProtocolAddress address) {
         SessionDatabase sessionDatabase = new SessionDatabase(new DbHelper(context), userId);
 
-        SessionRecord record = sessionDatabase.load(address);
+        SessionRecord record = sessionDatabase.get(address);
         if (record == null) {
             return new SessionRecord();
         }
@@ -138,11 +143,12 @@ public class SignalStore implements SignalProtocolStore {
     public void storeSession(SignalProtocolAddress address, SessionRecord record) {
         SessionDatabase sessionDatabase = new SessionDatabase(new DbHelper(context), userId);
 
-        SessionRecord oldRecord = sessionDatabase.load(address);
+        SessionRecord oldRecord = sessionDatabase.get(address);
         if (oldRecord != null) {
-            sessionDatabase.delete(address);
+            sessionDatabase.remove(address);
         }
-        sessionDatabase.store(address, record);
+
+        sessionDatabase.save(address, record);
     }
 
     @Override
@@ -152,27 +158,27 @@ public class SignalStore implements SignalProtocolStore {
 
     @Override
     public void deleteSession(SignalProtocolAddress address) {
-        new SessionDatabase(new DbHelper(context), userId).delete(address);
+        new SessionDatabase(new DbHelper(context), userId).remove(address);
     }
 
     @Override
     public void deleteAllSessions(String name) {
-        new SessionDatabase(new DbHelper(context), userId).deleteAll(name);
+        new SessionDatabase(new DbHelper(context), userId).removeAll(name);
     }
 
     @Override
     public SignedPreKeyRecord loadSignedPreKey(int signedPreKeyId) {
-        return new SignedPreKeyDatabase(new DbHelper(context), userId).load(signedPreKeyId);
+        return new SignedPreKeyDatabase(new DbHelper(context), userId).get(signedPreKeyId);
     }
 
     @Override
     public List<SignedPreKeyRecord> loadSignedPreKeys() {
-        return new SignedPreKeyDatabase(new DbHelper(context), userId).loadAll();
+        return new SignedPreKeyDatabase(new DbHelper(context), userId).get();
     }
 
     @Override
     public void storeSignedPreKey(int signedPreKeyId, SignedPreKeyRecord record) {
-        new SignedPreKeyDatabase(new DbHelper(context), userId).store(signedPreKeyId, record);
+        new SignedPreKeyDatabase(new DbHelper(context), userId).save(signedPreKeyId, record);
     }
 
     @Override
@@ -185,7 +191,7 @@ public class SignalStore implements SignalProtocolStore {
         DbHelper dbHelper = new DbHelper(context);
 
         new SignedPreKeyDatabase(dbHelper, userId).remove(signedPreKeyId);
-        List<Integer> preKeyIds = new KeyBundleDatabase(dbHelper, userId).getPreKeys(signedPreKeyId);
+        List<Integer> preKeyIds = new KeyBundleDatabase(dbHelper, userId).getPreKeyIds(signedPreKeyId);
         for (Integer preKeyId : preKeyIds) {
             removePreKey(preKeyId);
         }

@@ -17,6 +17,16 @@ import java.util.UUID;
  */
 public class KeyServer extends Server {
 
+    /**
+     * This method sends the key bundle to
+     * the server.
+     *
+     * @param userUUID  The UUID of the user who
+     *                  has the key bundle
+     * @param keyBundle The bundle of the public
+     *                  keys
+     * @return          send or not send
+     */
     public boolean send(UUID userUUID, PublicKeyBundle keyBundle) {
         String queueName = userUUID.toString() + "-Key";
         byte[] bytes = PublicKeyBundle.serialize(keyBundle);
@@ -24,6 +34,14 @@ public class KeyServer extends Server {
         return send(queueName, bytes);
     }
 
+    /**
+     * This method receive the key bundle from the server.
+     *
+     * @param remoteUUID    The uuid of the user who you
+     *                      want to establish  encrypted
+     *                      sessions
+     * @return              Received key bundle
+     */
     @Nullable
     public PublicKeyBundle receive(UUID remoteUUID) {
         String queueName = remoteUUID.toString() + "-Key";

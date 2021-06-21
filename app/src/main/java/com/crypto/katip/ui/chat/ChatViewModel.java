@@ -4,6 +4,8 @@ import android.content.Context;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.crypto.katip.communication.Envelope;
 import com.crypto.katip.communication.MessageServer;
@@ -19,27 +21,50 @@ import com.crypto.katip.database.models.User;
 
 import org.whispersystems.libsignal.protocol.CiphertextMessage;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 
+/**
+ * The ChatViewModel preparing and managing the data for {@link com.crypto.katip.ChatActivity}
+ */
 public class ChatViewModel extends ViewModel {
-    private final MutableLiveData<ArrayList<TextMessage>> liveData = new MutableLiveData<>();
+    private final MutableLiveData<List<TextMessage>> liveData = new MutableLiveData<>();
 
+    /**
+     * This method sends a text message after it is encrypted.
+     * If sending is successful, saves this message.
+     *
+     * @param userID    The id of the user who wants to send
+     *                  a text message
+     * @param chatID    The id of the chat that sends a text
+     *                  message
+     * @param text      Text to send
+     * @param context   Application context
+     */
     public void send(int userID, int chatID, String text, Context context) {
 
         new Thread() {
             @Override
             public void run() {
-                User user = new UserDatabase(new DbHelper(context)).getUser(userID, context);
-                Chat chat = new ChatDatabase(new DbHelper(context), Objects.requireNonNull(user).getId()).getChat(chatID);
-                MessageDatabase messageDatabase = new MessageDatabase(new DbHelper(context), Objects.requireNonNull(chat).getId());
+                DbHelper dbHelper = new DbHelper(context);
+                User user = new UserDatabase(dbHelper).get(userID, context);
+                if (user == null) {
+                    return;
+                }
+                Chat chat = new ChatDatabase(dbHelper, user.getId()).get(chatID);
+                if (chat == null) {
+                    return;
+                }
+                MessageDatabase messageDatabase = new MessageDatabase(dbHelper, chat.getId());
                 SignalCipher cipher = new SignalCipher(user.getStore());
 
                 CiphertextMessage ciphertextMessage = cipher.encrypt(chat.getRemoteUUID(), text);
                 if (ciphertextMessage == null){
                     return;
                 }
-                CipherText cipherTextMessage = new CipherText(ciphertextMessage.getType(), ciphertextMessage.serialize());
+                CipherText cipherTextMessage = new CipherText(
+                        ciphertextMessage.getType(),
+                        ciphertextMessage.serialize()
+                );
 
                 Envelope envelope = new Envelope(
                         Envelope.CIPHERTEXT_TYPE,
@@ -50,13 +75,19 @@ public class ChatViewModel extends ViewModel {
 
                 if (new MessageServer().send(chat.getRemoteUUID(), envelope)) {
                     messageDatabase.save(text, true);
-                    liveData.postValue(messageDatabase.getMessages());
+                    liveData.postValue(messageDatabase.get());
                 }
             }
         }.start();
     }
 
-    public MutableLiveData<ArrayList<TextMessage>> getLiveData() {
+    public void refreshRecycleView(RecyclerView recyclerView, LinearLayoutManager layout) {
+        MessagesViewAdapter adapter = new MessagesViewAdapter(liveData.getValue());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(layout);
+    }
+
+    public MutableLiveData<List<TextMessage>> getLiveData() {
         return this.liveData;
     }
 }

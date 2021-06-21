@@ -2,13 +2,16 @@ package com.crypto.katip.database.models;
 
 import java.util.UUID;
 
+/**
+ * This class represents a built chat.
+ */
 public class Chat {
     private final int id;
     private final int userId;
     private final UUID remoteUUID;
     private final String interlocutor;
 
-    public Chat(int id, int userId, UUID remoteUUID, String interlocutor){
+    public Chat(int id, int userId, UUID remoteUUID, String interlocutor) {
         this.id = id;
         this.userId = userId;
         this.remoteUUID = remoteUUID;

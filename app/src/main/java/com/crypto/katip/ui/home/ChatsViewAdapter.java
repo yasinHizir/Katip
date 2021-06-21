@@ -13,14 +13,12 @@ import com.crypto.katip.ChatActivity;
 import com.crypto.katip.R;
 import com.crypto.katip.database.models.Chat;
 
-import java.util.ArrayList;
-
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.List;
 
 public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.ChatViewHolder> {
-    private final ArrayList<Chat> chats;
+    private final List<Chat> chats;
 
-    public ChatsViewAdapter(ArrayList<Chat> chats) {
+    public ChatsViewAdapter(List<Chat> chats) {
         this.chats = chats;
     }
 
@@ -43,14 +41,11 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
     }
 
     public static class ChatViewHolder extends RecyclerView.ViewHolder {
-
         private int chatID;
-        private final CircleImageView image;
         private final TextView interlocutor;
 
         public ChatViewHolder(@NonNull final View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.image);
             interlocutor = itemView.findViewById(R.id.image_name);
             itemView.setOnClickListener(view -> {
                 Intent intent = new Intent(view.getContext(), ChatActivity.class);
@@ -61,10 +56,6 @@ public class ChatsViewAdapter extends RecyclerView.Adapter<ChatsViewAdapter.Chat
 
         public void setChatID(int chatID) {
             this.chatID = chatID;
-        }
-
-        public CircleImageView getImage() {
-            return this.image;
         }
 
         public TextView getInterlocutor() {
