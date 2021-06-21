@@ -31,6 +31,9 @@ import org.whispersystems.libsignal.protocol.CiphertextMessage;
 
 import java.util.UUID;
 
+/**
+ * This service receives messages from the server and processes their.
+ */
 public class ReceivingMessageService extends Service {
     public static final String RECEIVE_MESSAGE = "receive_message";
     public static final String USERID = "userID";
@@ -38,8 +41,8 @@ public class ReceivingMessageService extends Service {
 
     private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
     private final Intent intent = new Intent(RECEIVE_MESSAGE);
-    private MessageReceiveTask task;
     private User user;
+    private MessageReceiveTask task;
 
     @Nullable
     @Override
@@ -50,11 +53,13 @@ public class ReceivingMessageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int userId = intent.getIntExtra(USERID, -1);
-        this.user = new UserDatabase(new DbHelper(getApplicationContext())).getUser(userId, getApplicationContext());
-        task = new MessageReceiveTask();
+        this.user = new UserDatabase(new DbHelper(getApplicationContext()))
+                .get(userId, getApplicationContext());
         if (user == null) {
             onDestroy();
         }
+
+        task = new MessageReceiveTask();
         task.start();
 
         return super.onStartCommand(intent, flags, startId);
@@ -78,50 +83,76 @@ public class ReceivingMessageService extends Service {
         @Override
         public void run() {
             new MessageServer().receive(user.getUuid(), envelope -> {
-                ChatDatabase chatDatabase = new ChatDatabase(new DbHelper(getApplicationContext()), user.getId());
+                ChatDatabase chatDatabase = new ChatDatabase(
+                        new DbHelper(getApplicationContext()),
+                        user.getId()
+                );
 
                 if (!chatDatabase.isRegistered(envelope.getUuid())) {
                     chatDatabase.save(envelope.getUuid(), envelope.getUsername());
                 }
 
-                Chat chat = chatDatabase.getChat(envelope.getUuid());
+                Chat chat = chatDatabase.get(envelope.getUuid());
                 if (chat == null) {
                     return;
                 } else if (!chat.getInterlocutor().equals(envelope.getUsername())) {
-                    chatDatabase.update(chat.getId(), chat.getRemoteUUID(), envelope.getUsername());
+                    chatDatabase.update(chat.getId(), envelope.getUsername());
                 }
 
-                if (envelope.getType() == Envelope.START_CHAT_TYPE) {
-                    buildChat(envelope.getUuid(), envelope.getMessage());
-                } else if (envelope.getType() == Envelope.CIPHERTEXT_TYPE) {
-                    CipherText cipherTextMessage = CipherText.deserialize(envelope.getMessage());
-                    if (cipherTextMessage == null) {
-                        return;
+                try {
+                    if (envelope.getType() == Envelope.START_CHAT_TYPE) {
+                        buildChat(envelope.getUuid(), envelope.getMessage());
+                    } else if (envelope.getType() == Envelope.CIPHERTEXT_TYPE) {
+                        CipherText cipherTextMessage = CipherText.deserialize(envelope.getMessage());
+                        if (cipherTextMessage == null) {
+                            return;
+                        }
+                        decryptTextMessage(
+                                chat.getId(),
+                                envelope.getUuid(),
+                                cipherTextMessage.getCipherType(),
+                                cipherTextMessage.getCiphertext()
+                        );
                     }
-                    decryptTextMessage(chat.getId(), envelope.getUuid(), cipherTextMessage.getCiphertextMessageType(), cipherTextMessage.getCiphertext());
+                } catch (InvalidKeyIdException |
+                        LegacyMessageException |
+                        InvalidMessageException |
+                        UntrustedIdentityException |
+                        InvalidKeyException |
+                        DuplicateMessageException |
+                        InvalidVersionException |
+                        NoSessionException e) {
+
+                    e.printStackTrace();
                 }
+
+                intent.putExtra(CHAT_ID, chat.getId());
+                localBroadcastManager.sendBroadcast(intent);
             });
         }
 
-        private void buildChat(UUID remoteUUID, byte[] ciphertext) {
-            try {
-                new SignalCipher(user.getStore()).decrypt(remoteUUID, CiphertextMessage.PREKEY_TYPE, ciphertext);
-            } catch (LegacyMessageException | InvalidMessageException | InvalidVersionException | DuplicateMessageException | InvalidKeyIdException | UntrustedIdentityException | InvalidKeyException | NoSessionException e) {
-                e.printStackTrace();
-            }
+        private void buildChat(UUID remoteUUID, byte[] ciphertext)
+                throws NoSessionException, InvalidKeyException, LegacyMessageException,
+                InvalidVersionException, InvalidMessageException, DuplicateMessageException,
+                InvalidKeyIdException, UntrustedIdentityException
+        {
+            new SignalCipher(user.getStore()).decrypt(
+                    remoteUUID,
+                    CiphertextMessage.PREKEY_TYPE,
+                    ciphertext
+            );
         }
 
-        private void decryptTextMessage(int chatID, UUID remoteUUID, int encryption_type, byte[] message) {
-            try {
-                String text = new SignalCipher(user.getStore()).decrypt(remoteUUID, encryption_type, message);
-                new MessageDatabase(new DbHelper(getApplicationContext()), chatID).save(text, false);
-            } catch (LegacyMessageException | InvalidMessageException | InvalidVersionException | DuplicateMessageException | InvalidKeyIdException | UntrustedIdentityException | InvalidKeyException | NoSessionException e) {
-                e.printStackTrace();
-                return;
-            }
-
-            intent.putExtra(CHAT_ID, chatID);
-            localBroadcastManager.sendBroadcast(intent);
+        private void decryptTextMessage(int chatID, UUID remoteUUID, int encryption_type, byte[] message)
+                throws NoSessionException, InvalidKeyException, LegacyMessageException, InvalidVersionException,
+                InvalidMessageException, DuplicateMessageException, InvalidKeyIdException, UntrustedIdentityException
+        {
+            String text = new SignalCipher(user.getStore()).decrypt(
+                    remoteUUID,
+                    encryption_type,
+                    message
+            );
+            new MessageDatabase(new DbHelper(getApplicationContext()), chatID).save(text, false);
         }
     }
 }

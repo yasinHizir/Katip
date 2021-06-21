@@ -55,7 +55,9 @@ public class ChatAdderFragment extends DialogFragment {
         button.setOnClickListener(currentView -> {
             UUID remoteUUID = UUID.fromString(uuidTextEdit.getText().toString());
             if (new ChatBuilder(user.getId(), remoteUUID).build(context)) {
-                viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(context), user.getId()).getChats());
+                viewModel.getLiveData()
+                        .setValue(new ChatDatabase(new DbHelper(context), user.getId())
+                        .get());
             }
             dismiss();
             onDestroy();

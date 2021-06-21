@@ -21,15 +21,11 @@ import com.crypto.katip.service.ReceivingMessageService;
 import com.crypto.katip.database.ChatDatabase;
 import com.crypto.katip.database.DbHelper;
 import com.crypto.katip.database.MessageDatabase;
-import com.crypto.katip.database.models.TextMessage;
 import com.crypto.katip.database.models.User;
 import com.crypto.katip.login.LoginRepository;
 import com.crypto.katip.database.models.Chat;
 import com.crypto.katip.ui.chat.ChatViewModel;
 import com.crypto.katip.ui.chat.ChatViewModelFactory;
-import com.crypto.katip.ui.chat.MessagesViewAdapter;
-
-import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
     public static final String CHAT_ID = "chatID";
@@ -50,18 +46,25 @@ public class ChatActivity extends AppCompatActivity {
         messageEditText = findViewById(R.id.edit_text_message);
         user = LoginRepository.getInstance().getUser();
 
-        Intent intent = getIntent();
-        int chatID = intent.getIntExtra(CHAT_ID, -1);
-        chat = new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChat(chatID);
+        int chatID = getIntent().getIntExtra(CHAT_ID, -1);
+        DbHelper dbHelper = new DbHelper(getApplicationContext());
+        chat = new ChatDatabase(dbHelper, user.getId()).get(chatID);
         if (chat == null) {
             onDestroy();
         }
         setToolbar(chat.getInterlocutor());
 
-        viewModel.getLiveData().observe(this, this::refreshRecycleView);
-        viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chat.getId()).getMessages());
+        viewModel.getLiveData().observe(
+                this,
+                messages -> viewModel.refreshRecycleView(
+                        recyclerView,
+                        new LinearLayoutManager(getApplicationContext())
+                )
+        );
+        viewModel.getLiveData().setValue(new MessageDatabase(dbHelper, chat.getId()).get());
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(ReceivingMessageService.RECEIVE_MESSAGE));
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(receiver, new IntentFilter(ReceivingMessageService.RECEIVE_MESSAGE));
     }
 
     @Override
@@ -73,12 +76,19 @@ public class ChatActivity extends AppCompatActivity {
 
     public void send(View view) {
         String text = messageEditText.getText().toString();
+
         messageEditText.getText().clear();
         if (text.trim().equals("")) {
             messageEditText.setError(getString(R.string.error_empty_message));
             return;
         }
-        viewModel.send(user.getId(), chat.getId(), text, getApplicationContext());
+
+        viewModel.send(
+                user.getId(),
+                chat.getId(),
+                text,
+                getApplicationContext()
+        );
     }
 
     public void remove(MenuItem item) {
@@ -95,6 +105,7 @@ public class ChatActivity extends AppCompatActivity {
             finish();
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -112,21 +123,12 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private void refreshRecycleView(ArrayList<TextMessage> messages) {
-        if (messages != null) {
-            MessagesViewAdapter adapter = new MessagesViewAdapter(messages);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-            recyclerView.scrollToPosition(messages.size() - 1);
-        }
-    }
-
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             int chatId = intent.getIntExtra(ReceivingMessageService.CHAT_ID, -1);
             if (chatId == chat.getId()) {
-                viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chatId).getMessages());
+                viewModel.getLiveData().setValue(new MessageDatabase(new DbHelper(getApplicationContext()), chatId).get());
             }
         }
     };

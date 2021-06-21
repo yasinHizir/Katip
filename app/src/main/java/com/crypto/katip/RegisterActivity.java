@@ -58,14 +58,22 @@ public class RegisterActivity extends AppCompatActivity {
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+            }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                viewModel.dataChanged(usernameTextEdit.getText().toString(), passwordTextEdit.getText().toString(), passwordVerifyEdit.getText().toString());
+                viewModel.dataChanged(
+                        usernameTextEdit.getText().toString(),
+                        passwordTextEdit.getText().toString(),
+                        passwordVerifyEdit.getText().toString()
+                );
             }
         };
         usernameTextEdit.addTextChangedListener(textWatcher);
@@ -74,7 +82,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void register(View view) {
-        viewModel.register(usernameTextEdit.getText().toString(), passwordTextEdit.getText().toString(), getApplicationContext());
+        viewModel.register(
+                usernameTextEdit.getText().toString(),
+                passwordTextEdit.getText().toString(),
+                getApplicationContext()
+        );
     }
 
     public void loginPage(View view) {

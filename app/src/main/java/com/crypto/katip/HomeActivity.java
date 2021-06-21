@@ -40,8 +40,15 @@ public class HomeActivity extends AppCompatActivity {
         user = LoginRepository.getInstance().getUser();
         setToolbar();
 
-        viewModel.getLiveData().observe(this, chats -> viewModel.refreshRecycleView(recyclerView, new LinearLayoutManager(getApplicationContext())));
-        viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChats());
+        viewModel.getLiveData().observe(
+                this,
+                chats -> viewModel.refreshRecycleView(
+                        recyclerView,
+                        new LinearLayoutManager(getApplicationContext())
+                )
+        );
+        DbHelper dbHelper = new DbHelper(getApplicationContext());
+        viewModel.getLiveData().setValue(new ChatDatabase(dbHelper, user.getId()).get());
         startService();
     }
 
@@ -86,7 +93,8 @@ public class HomeActivity extends AppCompatActivity {
     private void startService() {
         Intent intent = new Intent(getApplicationContext(), ReceivingMessageService.class);
         intent.putExtra(ReceivingMessageService.USERID, user.getId());
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(ReceivingMessageService.RECEIVE_MESSAGE));
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(receiver, new IntentFilter(ReceivingMessageService.RECEIVE_MESSAGE));
         startService(intent);
     }
 
@@ -99,7 +107,8 @@ public class HomeActivity extends AppCompatActivity {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            viewModel.getLiveData().setValue(new ChatDatabase(new DbHelper(getApplicationContext()), user.getId()).getChats());
+            DbHelper dbHelper = new DbHelper(getApplicationContext());
+            viewModel.getLiveData().setValue(new ChatDatabase(dbHelper, user.getId()).get());
         }
     };
 }

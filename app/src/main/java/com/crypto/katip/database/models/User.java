@@ -1,9 +1,12 @@
- package com.crypto.katip.database.models;
+package com.crypto.katip.database.models;
 
 import com.crypto.katip.cryptography.SignalStore;
 
 import java.util.UUID;
 
+/**
+ * This class represents a registered user.
+ */
 public class User {
     private final UUID uuid;
     private final int id;

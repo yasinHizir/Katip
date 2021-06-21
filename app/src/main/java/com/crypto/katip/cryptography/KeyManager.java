@@ -17,6 +17,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The KeyManager class provide synchronization of keys
+ * on the client and server.
+ *
+ * @author  Yasin HIZIR
+ * @version Beta
+ * @since   2021-06-17
+ */
 public class KeyManager {
     private final SignalProtocolStore store;
 
@@ -24,6 +32,13 @@ public class KeyManager {
         this.store = signalProtocolStore;
     }
 
+    /**
+     *  This method calculate age of the package and returns
+     *  this package is available or not available
+     *
+     * @param timeStamp this is when the package was created.
+     * @return returns available or not available
+     */
     public boolean keyTimestampControl(long timeStamp) {
         boolean result = false;
         long lifeTime = TimeUnit.DAYS.toMillis(7);
@@ -36,29 +51,57 @@ public class KeyManager {
         return result;
     }
 
+    /**
+     *  This method generate key bundles when they will be created for the first time.
+     *
+     * @param startPreKeyId         This is the first id value of the pre-keys
+     *                              to be generated
+     * @param startSignedPreKeyId   This is the first id value of the signed pre-keys
+     *                              to be generated
+     * @param count                 Bundles count
+     * @return                      Generated pre-key bundles
+     */
     public List<PreKeyBundle> generateKeyBundles(int startPreKeyId, int startSignedPreKeyId, int count) {
         List<PreKeyBundle> results = new LinkedList<>();
 
         for (int i = 0; i < count; i++) {
             int preKeyId = ((startPreKeyId + i) % (Medium.MAX_VALUE-1)) + 1;
             int signedPreKeyId = ((startSignedPreKeyId + i) % (Medium.MAX_VALUE-1)) + 1;
-            SignedPreKeyRecord signedPreKeyRecord = createSignedPreKey(store.getIdentityKeyPair(), signedPreKeyId);
-            PreKeyBundle keyBundle = createKeyBundle(preKeyId, Objects.requireNonNull(signedPreKeyRecord));
+            SignedPreKeyRecord signedPreKeyRecord = createSignedPreKey(
+                    store.getIdentityKeyPair(),
+                    signedPreKeyId
+            );
+            PreKeyBundle keyBundle = createKeyBundle(
+                    preKeyId,
+                    Objects.requireNonNull(signedPreKeyRecord)
+            );
             results.add(keyBundle);
         }
 
         return results;
     }
 
-    public PreKeyBundle newKeyBundle(int preKeyId) {
-        return createKeyBundle(preKeyId, Objects.requireNonNull(getSignedPreKey(store.getIdentityKeyPair())));
+    /**
+     *  This method generate key bundle when a package is removed.
+     *
+     * @param preKeyId  This is the first id value of the pre-keys to be generated
+     * @return          Generated pre-key bundle
+     */
+    public PreKeyBundle newKeyBundle(int preKeyId) throws NullPointerException {
+        return createKeyBundle(
+                preKeyId,
+                Objects.requireNonNull(getSignedPreKey(store.getIdentityKeyPair()))
+        );
     }
 
     private PreKeyBundle createKeyBundle(int preKeyId, SignedPreKeyRecord signedPreKeyRecord) {
         IdentityKeyPair identityKeyPair = store.getIdentityKeyPair();
         int registrationId = store.getLocalRegistrationId();
 
-        PreKeyRecord preKeyRecord = new PreKeyRecord(preKeyId, Curve.generateKeyPair());
+        PreKeyRecord preKeyRecord = new PreKeyRecord(
+                preKeyId,
+                Curve.generateKeyPair()
+        );
         store.storePreKey(preKeyId, preKeyRecord);
 
         return new PreKeyBundle(
@@ -68,7 +111,8 @@ public class KeyManager {
                 signedPreKeyRecord.getId(),
                 signedPreKeyRecord.getKeyPair().getPublicKey(),
                 signedPreKeyRecord.getSignature(),
-                identityKeyPair.getPublicKey());
+                identityKeyPair.getPublicKey()
+        );
     }
 
     @Nullable
@@ -77,7 +121,9 @@ public class KeyManager {
         SignedPreKeyRecord signedPreKeyRecord = null;
 
         for (int i = 1; i <= signedPreKeyRecords.size(); i++) {
+
             if (keyTimestampControl(signedPreKeyRecords.get(i).getTimestamp())) {
+
                 signedPreKeyRecord = signedPreKeyRecords.get(i);
                 break;
             } else {
@@ -97,8 +143,14 @@ public class KeyManager {
         SignedPreKeyRecord signedPreKeyRecord;
 
         try {
-            signedPreKeyRecord = KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId);
-            store.storeSignedPreKey(signedPreKeyRecord.getId(), signedPreKeyRecord);
+            signedPreKeyRecord = KeyHelper.generateSignedPreKey(
+                    identityKeyPair,
+                    signedPreKeyId
+            );
+            store.storeSignedPreKey(
+                    signedPreKeyRecord.getId(),
+                    signedPreKeyRecord
+            );
         } catch (InvalidKeyException e) {
             e.printStackTrace();
             return null;

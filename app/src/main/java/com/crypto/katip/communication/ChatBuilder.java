@@ -16,6 +16,13 @@ import org.whispersystems.libsignal.UntrustedIdentityException;
 
 import java.util.UUID;
 
+/**
+ * Chat builder build a chat between two clients.
+ *
+ * @author Yasin HIZIR
+ * @version Beta
+ * @since 2021-06-17
+ */
 public class ChatBuilder {
     private final SignalProtocolAddress remoteAddress;
     private final int userID;
@@ -28,8 +35,14 @@ public class ChatBuilder {
         this.remoteUUID = remoteUUID;
     }
 
+    /**
+     *  This method builds a chat and saves this chat to database
+     *
+     * @param context   Application context
+     * @return          Built or not built
+     */
     public boolean build(Context context) {
-        User user = new UserDatabase(new DbHelper(context)).getUser(userID, context);
+        User user = new UserDatabase(new DbHelper(context)).get(userID, context);
 
         if (user == null) {
             return false;
@@ -53,6 +66,7 @@ public class ChatBuilder {
             }
             builder.process(keyBundle.getPreKeyBundle());
             interlocutor = keyBundle.getUsername();
+
         } catch (InvalidKeyException | UntrustedIdentityException e) {
             e.printStackTrace();
             return false;
@@ -65,7 +79,16 @@ public class ChatBuilder {
         SessionCipher cipher = new SessionCipher(user.getStore(), remoteAddress);
 
         try {
-            new MessageServer().send(remoteUUID, new Envelope(Envelope.START_CHAT_TYPE, user.getUuid(), user.getUsername(), cipher.encrypt("".getBytes()).serialize()));
+            // create empty PreKeySignalMessage to send to the server:
+            byte[] message = cipher.encrypt("".getBytes()).serialize();
+            Envelope envelope = new Envelope(
+                    Envelope.START_CHAT_TYPE,
+                    user.getUuid(),
+                    user.getUsername(),
+                    message
+            );
+            new MessageServer().send(remoteUUID, envelope);
+
         } catch (UntrustedIdentityException e) {
             e.printStackTrace();
             return false;

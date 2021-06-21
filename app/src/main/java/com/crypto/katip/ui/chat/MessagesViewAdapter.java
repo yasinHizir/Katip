@@ -11,21 +11,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.crypto.katip.R;
 import com.crypto.katip.database.models.TextMessage;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MessagesViewAdapter extends RecyclerView.Adapter<MessagesViewAdapter.MessageViewHolder> {
-    private final ArrayList<TextMessage> messages;
+    private final List<TextMessage> messages;
 
-    public MessagesViewAdapter(ArrayList<TextMessage> messages) {
+    public MessagesViewAdapter(List<TextMessage> messages) {
         this.messages = messages;
     }
 
     @Override
     public int getItemViewType(int position) {
         TextMessage message = messages.get(position);
+
         if (!message.isOwn()) {
             return 1;
         }
+
         return 0;
     }
 
@@ -33,10 +35,19 @@ public class MessagesViewAdapter extends RecyclerView.Adapter<MessagesViewAdapte
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
+
         if (viewType == 0) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_list_sended_message, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.messages_list_sended_message,
+                    parent,
+                    false
+            );
         } else{
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_list_received_message, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.messages_list_received_message,
+                    parent,
+                    false
+            );
         }
 
         return new MessageViewHolder(view);
