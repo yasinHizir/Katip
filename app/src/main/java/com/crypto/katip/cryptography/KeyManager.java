@@ -84,7 +84,7 @@ public class KeyManager {
     /**
      *  This method generate key bundle when a package is removed.
      *
-     * @param preKeyId  This is the first id value of the pre-keys to be generated
+     * @param preKeyId  This is the id of removed pre-key
      * @return          Generated pre-key bundle
      */
     public PreKeyBundle newKeyBundle(int preKeyId) throws NullPointerException {
